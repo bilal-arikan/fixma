@@ -1,5 +1,6 @@
 #!/bin/bash
 # Figma Plugin Build and Development Script
+# Uses esbuild to bundle src/ modules into a single code.js
 
 set -e
 
@@ -11,9 +12,9 @@ if [ ! -d "node_modules" ]; then
     npm install
 fi
 
-# Compile TypeScript
-echo "⚙️  Compiling TypeScript..."
-npx tsc
+# Bundle with esbuild
+echo "⚙️  Bundling with esbuild (src/ → code.js)..."
+node esbuild.config.js
 
 # Check if code.js was created
 if [ -f "code.js" ]; then

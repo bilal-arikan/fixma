@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
+        Arial, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      padding: 8px;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      max-width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .main-wrapper {
+      background: white;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 12px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      background: white;
+      padding: 12px;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      flex-wrap: wrap;
+    }
+
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex: 1;
+      min-width: 100px;
+    }
+
+    .btn-apply {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-apply:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-apply:active {
+      transform: translateY(0);
+    }
+
+    /* Export Section */
+    .export-section {
+      background: white;
+      padding: 12px;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .export-section h3 {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .export-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .export-stat {
+      background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+      padding: 10px;
+      border-radius: 4px;
+      border-left: 3px solid #667eea;
+      text-align: center;
+    }
+
+    .export-stat .label {
+      font-size: 10px;
+      color: #666;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .export-stat .value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #667eea;
+    }
+
+    .export-results {
+      background: #fafafa;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      padding: 10px;
+      min-height: 50px;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: "Courier New", monospace;
+      font-size: 11px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #333;
+    }
+
+    .export-results.empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+      font-style: italic;
+      text-align: center;
+      padding: 16px 10px;
+    }
+
+    /* Module Controls */
+    .modules-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 4px;
+      border: 1px solid #eee;
+    }
+
+    .module-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 6px;
+      border-radius: 3px;
+      transition: background 0.2s;
+    }
+
+    .module-toggle:hover {
+      background: #f0f0f0;
+    }
+
+    .module-toggle input[type="checkbox"] {
+      cursor: pointer;
+      width: 14px;
+      height: 14px;
+      accent-color: #667eea;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="main-wrapper">
+      <div class="main-content">
+
+        <!-- ==================== Export ==================== -->
+        <div class="export-section">
+          <h3>📦 Page JSON Export</h3>
+          <p style="font-size: 11px; color: #666; margin-bottom: 12px; line-height: 1.5;">
+            Scans the Figma page and generates JSON output similar to REST API format.
+            You can export directly from the plugin without needing the API.
+          </p>
+
+          <div class="modules-controls" style="grid-template-columns: 1fr;">
+            <label class="module-toggle">
+              <input type="radio" name="exportScope" value="current" checked style="width:14px; height:14px; accent-color:#667eea;">
+              <span>📄 Current Page Only</span>
+            </label>
+            <label class="module-toggle">
+              <input type="radio" name="exportScope" value="all" style="width:14px; height:14px; accent-color:#667eea;">
+              <span>📚 All Pages</span>
+            </label>
+            <label class="module-toggle">
+              <input type="checkbox" id="exportGeometry" style="width:14px; height:14px; accent-color:#667eea;">
+              <span>📐 Include Geometry Data (fillGeometry, strokeGeometry - increases file size)</span>
+            </label>
+          </div>
+
+          <div class="controls" style="margin-top: 12px;">
+            <button class="btn-apply" onclick="exportPageJSON()" id="exportBtn">
+              📦 Export JSON
+            </button>
+          </div>
+        </div>
+
+        <div class="export-section">
+          <h3>📊 Export Status</h3>
+          <div id="exportStats" class="export-grid">
+            <div class="export-stat">
+              <div class="label">Total Nodes</div>
+              <div class="value" id="exportNodeCount">-</div>
+            </div>
+            <div class="export-stat">
+              <div class="label">Pages</div>
+              <div class="value" id="exportPageCount">-</div>
+            </div>
+            <div class="export-stat">
+              <div class="label">Components</div>
+              <div class="value" id="exportCompCount">-</div>
+            </div>
+            <div class="export-stat">
+              <div class="label">File Size</div>
+              <div class="value" id="exportFileSize">-</div>
+            </div>
+          </div>
+          <div class="export-results empty" id="exportStatus" style="margin-top: 12px;">
+            Click the Export button to download your page in JSON format.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+  {{SCRIPT}}
+  </script>
+</body>
+</html>

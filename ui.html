@@ -14,106 +14,66 @@
         Arial, sans-serif;
       background: #f5f5f5;
       color: #333;
-      padding: 16px;
+      padding: 8px;
+      height: 100vh;
+      overflow: hidden;
     }
 
     .container {
       max-width: 100%;
-      height: 100vh;
+      height: 100%;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 8px;
     }
 
-    .header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 16px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .header h1 {
-      font-size: 20px;
-      margin-bottom: 4px;
-    }
-
-    .header p {
-      font-size: 12px;
-      opacity: 0.9;
-    }
-
-    .input-section {
+    .main-wrapper {
       background: white;
-      padding: 16px;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
-
-    .input-section label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 8px;
-      font-size: 13px;
-      color: #333;
-    }
-
-    textarea {
-      width: 100%;
-      height: 210px;
-      padding: 12px;
-      border: 1px solid #ddd;
       border-radius: 6px;
-      font-family: "Courier New", monospace;
-      font-size: 12px;
-      resize: vertical;
-      transition: border-color 0.2s;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
     }
 
-    textarea:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 12px;
+      flex: 1;
+      overflow-y: auto;
     }
 
+    /* Controls */
     .controls {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       align-items: center;
       background: white;
-      padding: 16px;
-      border-radius: 8px;
+      padding: 12px;
+      border-radius: 6px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
-
-    .checkbox-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
+      flex-wrap: wrap;
     }
 
     input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       cursor: pointer;
-    }
-
-    .checkbox-group label {
-      font-size: 13px;
-      cursor: pointer;
-      margin: 0 !important;
     }
 
     button {
-      padding: 10px 20px;
+      padding: 8px 16px;
       border: none;
-      border-radius: 6px;
-      font-size: 13px;
+      border-radius: 4px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
       flex: 1;
+      min-width: 100px;
     }
 
     .btn-apply {
@@ -130,128 +90,113 @@
       transform: translateY(0);
     }
 
-    .btn-clear {
-      background: #f0f0f0;
-      color: #333;
-    }
-
-    .btn-clear:hover {
-      background: #e0e0e0;
-    }
-
-    .btn-download {
-      background: #10b981;
-      color: white;
-    }
-
-    .btn-download:hover {
-      background: #059669;
-    }
-
-    .btn-download {
-      background: #10b981;
-      color: white;
-    }
-
-    .btn-download:hover {
-      background: #059669;
-    }
-
-    .logs-section {
+    /* Export Section */
+    .export-section {
       background: white;
-      padding: 16px;
-      border-radius: 8px;
+      padding: 12px;
+      border-radius: 6px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      flex: 1;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
     }
 
-    .logs-section h3 {
-      font-size: 13px;
+    .export-section h3 {
+      font-size: 12px;
       font-weight: 600;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       color: #333;
     }
 
-    .logs-container {
-      flex: 1;
-      overflow-y: auto;
-      background: #f9f9f9;
+    .export-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .export-stat {
+      background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+      padding: 10px;
+      border-radius: 4px;
+      border-left: 3px solid #667eea;
+      text-align: center;
+    }
+
+    .export-stat .label {
+      font-size: 10px;
+      color: #666;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .export-stat .value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #667eea;
+    }
+
+    .export-results {
+      background: #fafafa;
       border: 1px solid #eee;
-      border-radius: 6px;
-      padding: 12px;
+      border-radius: 4px;
+      padding: 10px;
+      min-height: 50px;
+      max-height: 300px;
+      overflow-y: auto;
       font-family: "Courier New", monospace;
       font-size: 11px;
-    }
-
-    .log-entry {
-      padding: 8px;
-      margin-bottom: 8px;
-      border-left: 3px solid #999;
-      border-radius: 2px;
-      background: white;
       line-height: 1.4;
-    }
-
-    .log-entry.info {
-      border-left-color: #667eea;
-      background: #f0f4ff;
-    }
-
-    .log-entry.warning {
-      border-left-color: #f59e0b;
-      background: #fffbf0;
-    }
-
-    .log-entry.error {
-      border-left-color: #ef4444;
-      background: #fef2f2;
-    }
-
-    .log-time {
-      color: #999;
-      font-size: 10px;
-    }
-
-    .log-message {
-      color: #333;
+      white-space: pre-wrap;
       word-break: break-word;
+      color: #333;
     }
 
-    .empty-logs {
+    .export-results.empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       color: #999;
       font-style: italic;
       text-align: center;
-      padding: 24px 12px;
+      padding: 16px 10px;
     }
 
-    .summary {
-      background: #f0f4ff;
-      border: 1px solid #dde7f8;
-      padding: 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      margin-bottom: 12px;
-      color: #333;
+    /* Module Controls */
+    .modules-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 4px;
+      border: 1px solid #eee;
     }
 
-    .summary-row {
-      display: inline-block;
-      margin-right: 24px;
-      padding: 0;
+    .module-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 6px;
+      border-radius: 3px;
+      transition: background 0.2s;
     }
 
-    .summary-label {
-      font-weight: 600;
+    .module-toggle:hover {
+      background: #f0f0f0;
     }
 
-    .summary-value {
-      color: #667eea;
-      font-weight: 600;
+    .module-toggle input[type="checkbox"] {
+      cursor: pointer;
+      width: 14px;
+      height: 14px;
+      accent-color: #667eea;
     }
 
+    /* Scrollbar */
     ::-webkit-scrollbar {
       width: 8px;
       height: 8px;
@@ -274,140 +219,153 @@
 </head>
 <body>
   <div class="container">
-    <div class="input-section">
-      <label for="rulesInput">Rules JSON Yapıştırın:</label>
-      <textarea
-        id="rulesInput"
-        placeholder='Örnek: {
-  "rename": [
-    { "id": "12:32", "name": "btn_start" }
-  ]
-}'
-      ></textarea>
-    </div>
+    <div class="main-wrapper">
+      <div class="main-content">
 
-    <div class="controls">
-      <div class="checkbox-group">
-        <input type="checkbox" id="dryRunCheck" />
-        <label for="dryRunCheck">Dry-run (Preview)</label>
-      </div>
-      <button class="btn-apply" onclick="applyRules()">Apply Rules</button>
-      <button class="btn-clear" onclick="clearLogs()">Clear Logs</button>
-    </div>
+        <!-- ==================== Export ==================== -->
+        <div class="export-section">
+          <h3>📦 Page JSON Export</h3>
+          <p style="font-size: 11px; color: #666; margin-bottom: 12px; line-height: 1.5;">
+            Scans the Figma page and generates JSON output similar to REST API format.
+            You can export directly from the plugin without needing the API.
+          </p>
 
-    <div class="logs-section">
-      <h3>Operation Log</h3>
-      <div id="summary" class="summary" style="display: none">
-        <div class="summary-row">
-          <span class="summary-label">Total Operations:</span>
-          <span class="summary-value" id="totalActions">0</span>
+          <div class="modules-controls" style="grid-template-columns: 1fr;">
+            <label class="module-toggle">
+              <input type="radio" name="exportScope" value="current" checked style="width:14px; height:14px; accent-color:#667eea;">
+              <span>📄 Current Page Only</span>
+            </label>
+            <label class="module-toggle">
+              <input type="radio" name="exportScope" value="all" style="width:14px; height:14px; accent-color:#667eea;">
+              <span>📚 All Pages</span>
+            </label>
+            <label class="module-toggle">
+              <input type="checkbox" id="exportGeometry" style="width:14px; height:14px; accent-color:#667eea;">
+              <span>📐 Include Geometry Data (fillGeometry, strokeGeometry - increases file size)</span>
+            </label>
+          </div>
+
+          <div class="controls" style="margin-top: 12px;">
+            <button class="btn-apply" onclick="exportPageJSON()" id="exportBtn">
+              📦 Export JSON
+            </button>
+          </div>
         </div>
-        <div class="summary-row">
-          <span class="summary-label">Successful:</span>
-          <span class="summary-value" id="successCount">0</span>
+
+        <div class="export-section">
+          <h3>📊 Export Status</h3>
+          <div id="exportStats" class="export-grid">
+            <div class="export-stat">
+              <div class="label">Total Nodes</div>
+              <div class="value" id="exportNodeCount">-</div>
+            </div>
+            <div class="export-stat">
+              <div class="label">Pages</div>
+              <div class="value" id="exportPageCount">-</div>
+            </div>
+            <div class="export-stat">
+              <div class="label">Components</div>
+              <div class="value" id="exportCompCount">-</div>
+            </div>
+            <div class="export-stat">
+              <div class="label">File Size</div>
+              <div class="value" id="exportFileSize">-</div>
+            </div>
+          </div>
+          <div class="export-results empty" id="exportStatus" style="margin-top: 12px;">
+            Click the Export button to download your page in JSON format.
+          </div>
         </div>
-        <div class="summary-row">
-          <span class="summary-label">Failed:</span>
-          <span class="summary-value" id="failCount">0</span>
-        </div>
-      </div>
-      <div class="logs-container" id="logsContainer">
-        <div class="empty-logs">No operations yet...</div>
+
       </div>
     </div>
   </div>
 
   <script>
-    function applyRules() {
-      const rulesText = document.getElementById("rulesInput").value;
-      const dryRun = document.getElementById("dryRunCheck").checked;
-
-      if (!rulesText.trim()) {
-        showLog("Please paste JSON", "warning");
-        return;
-      }
-
-      try {
-        const rules = JSON.parse(rulesText);
-        parent.postMessage(
-          {
-            pluginMessage: {
-              type: "applyRules",
-              rules: rules,
-              dryRun: dryRun,
-            },
-          },
-          "*"
-        );
-      } catch (error) {
-        showLog(`JSON Error: ${error.message}`, "error");
-      }
+  (() => {
+  // src/ui/export.ts
+  function exportPageJSON() {
+    const scopeInput = document.querySelector(
+      'input[name="exportScope"]:checked'
+    );
+    const scope = scopeInput ? scopeInput.value : "current";
+    const includeGeometry = document.getElementById("exportGeometry").checked;
+    const statusDiv = document.getElementById("exportStatus");
+    statusDiv.classList.remove("empty");
+    statusDiv.textContent = "\u23F3 Scanning Figma page...";
+    const exportBtn = document.getElementById("exportBtn");
+    exportBtn.disabled = true;
+    exportBtn.textContent = "\u23F3 Exporting...";
+    parent.postMessage(
+      {
+        pluginMessage: {
+          type: "exportPageJSON",
+          scope,
+          includeGeometry
+        }
+      },
+      "*"
+    );
+  }
+  function handleExportResult(response) {
+    var _a, _b, _c;
+    const exportBtn = document.getElementById("exportBtn");
+    exportBtn.disabled = false;
+    exportBtn.textContent = "\u{1F4E6} Export JSON";
+    const statusDiv = document.getElementById("exportStatus");
+    if (!response.success) {
+      statusDiv.textContent = "\u274C Export error: " + (response.error || "Unknown error");
+      return;
     }
-
-    function clearLogs() {
-      const container = document.getElementById("logsContainer");
-      container.innerHTML =
-        '<div class="empty-logs">No operations yet...</div>';
-      document.getElementById("summary").style.display = "none";
+    const data = response.data;
+    const jsonStr = JSON.stringify(data, null, "	");
+    const fileSizeBytes = new Blob([jsonStr]).size;
+    const fileSize = fileSizeBytes > 1024 * 1024 ? (fileSizeBytes / (1024 * 1024)).toFixed(1) + " MB" : (fileSizeBytes / 1024).toFixed(1) + " KB";
+    const pageCount = ((_b = (_a = data.document) == null ? void 0 : _a.children) == null ? void 0 : _b.length) || 0;
+    const compCount = Object.keys(data.components || {}).length;
+    const totalNodes = response.totalNodes || 0;
+    document.getElementById("exportNodeCount").textContent = String(totalNodes);
+    document.getElementById("exportPageCount").textContent = String(pageCount);
+    document.getElementById("exportCompCount").textContent = String(compCount);
+    document.getElementById("exportFileSize").textContent = fileSize;
+    let statusText = "\u2705 EXPORT COMPLETED\n";
+    statusText += "\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\n";
+    statusText += "\u{1F4C4} Document: " + data.name + "\n";
+    statusText += "\u{1F4DA} Pages: " + pageCount + "\n";
+    if ((_c = data.document) == null ? void 0 : _c.children) {
+      data.document.children.forEach(function(page, i) {
+        const childCount = page.children ? page.children.length : 0;
+        statusText += "   " + (i + 1) + ". " + page.name + " (" + childCount + " top-level nodes)\n";
+      });
     }
+    statusText += "\n\u{1F3A8} Components: " + compCount + "\n";
+    statusText += "\u{1F4CF} File Size: " + fileSize + "\n";
+    statusText += "\u23F0 Exported: " + (/* @__PURE__ */ new Date()).toLocaleTimeString() + "\n";
+    statusText += "\n\u{1F4BE} Downloading JSON file...";
+    statusDiv.textContent = statusText;
+    const fileName = data.name ? data.name.replace(/[^a-z0-9_-]/gi, "_").toLowerCase() : "figma-export";
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName + "-" + (/* @__PURE__ */ new Date()).toISOString().split("T")[0] + ".json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
 
-    function showLog(message, level = "info") {
-      const container = document.getElementById("logsContainer");
-
-      // Remove empty message
-      const empty = container.querySelector(".empty-logs");
-      if (empty) empty.remove();
-
-      const now = new Date().toLocaleTimeString();
-      const entry = document.createElement("div");
-      entry.className = `log-entry ${level}`;
-      entry.innerHTML = `
-        <span class="log-time">${now}</span>
-        <div class="log-message">${escapeHtml(message)}</div>
-      `;
-
-      container.appendChild(entry);
-      container.scrollTop = container.scrollHeight;
+  // src/ui/main.ts
+  window.exportPageJSON = exportPageJSON;
+  window.onmessage = (event) => {
+    const response = event.data.pluginMessage;
+    if (!response) return;
+    if (response.type === "exportResult") {
+      handleExportResult(response);
     }
+  };
+})();
 
-    function escapeHtml(text) {
-      const map = {
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;",
-      };
-      return text.replace(/[&<>"']/g, (m) => map[m]);
-    }
-
-    function updateSummary(summary) {
-      const summaryDiv = document.getElementById("summary");
-      document.getElementById("totalActions").textContent = summary.totalActions;
-      document.getElementById("successCount").textContent =
-        summary.successfulActions;
-      document.getElementById("failCount").textContent = summary.failedActions;
-      summaryDiv.style.display = "block";
-    }
-
-    // Listen for messages from plugin
-    window.onmessage = (event) => {
-      const response = event.data.pluginMessage;
-
-      if (response.logs && Array.isArray(response.logs)) {
-        response.logs.forEach((log) => {
-          showLog(log.message, log.level);
-        });
-      }
-
-      if (response.summary) {
-        updateSummary(response.summary);
-      }
-
-      if (!response.success && response.logs.length === 0) {
-        showLog("An error occurred during operation", "error");
-      }
-    };
   </script>
 </body>
 </html>

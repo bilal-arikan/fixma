@@ -1,5 +1,6 @@
 @echo off
-REM Figma Plugin Build Script (Windows PowerShell)
+REM Figma Plugin Build Script (Windows)
+REM Uses esbuild to bundle src/ modules into a single code.js
 
 echo.
 echo ^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=
@@ -17,11 +18,12 @@ if not exist "node_modules" (
     )
 )
 
-REM Compile TypeScript
-echo [*] Compiling TypeScript...
-    call npx tsc
+REM Bundle with esbuild
+echo [*] Bundling with esbuild (src/ -^> code.js)...
+call node esbuild.config.js
 if errorlevel 1 (
-    echo [!] TypeScript compilation failed
+    echo [!] esbuild bundle failed
+    exit /b 1
 )
 
 REM Check if code.js file was created

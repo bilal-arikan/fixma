@@ -4,9 +4,11 @@
   "description": "Figma plugin that applies JSON rules prepared to Figma documents",
   "main": "code.js",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
-    "dev": "npm run build && npm run watch"
+    "build": "node esbuild.config.js",
+    "watch": "node esbuild.config.js --watch",
+    "dev": "npm run build && npm run watch",
+    "analyze": "npx ts-node analyzer/index.ts",
+    "server": "tsc && node dist/analyzer/server.js"
   },
   "keywords": [
     "figma",
@@ -19,6 +21,8 @@
   "license": "MIT",
   "devDependencies": {
     "@figma/plugin-typings": "^1.123.0",
+    "@types/node": "^25.2.3",
+    "esbuild": "^0.27.3",
     "typescript": "^4.9.0"
   }
 }
