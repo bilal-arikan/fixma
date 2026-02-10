@@ -1,0 +1,76 @@
+{
+  "rename": [
+    {
+      "id": "12:32",
+      "name": "btn_primary_default"
+    },
+    {
+      "id": "12:33",
+      "name": "btn_primary_hover"
+    },
+    {
+      "id": "12:34",
+      "name": "btn_secondary_default"
+    }
+  ],
+  "makeComponent": [
+    {
+      "id": "12:40",
+      "type": "button"
+    },
+    {
+      "id": "12:50",
+      "type": "card"
+    },
+    {
+      "id": "12:60",
+      "type": "input_field"
+    }
+  ],
+  "layout": [
+    {
+      "id": "12:50",
+      "mode": "auto",
+      "spacing": 8,
+      "padding": {
+        "horizontal": 16,
+        "vertical": 12
+      }
+    },
+    {
+      "id": "12:60",
+      "mode": "auto",
+      "spacing": 4
+    }
+  ],
+  "variants": [
+    {
+      "base": "btn_primary",
+      "props": ["default", "hover", "pressed", "disabled"]
+    },
+    {
+      "base": "btn_secondary",
+      "props": ["default", "hover", "disabled"]
+    }
+  ],
+  "styles": [
+    {
+      "id": "14:2",
+      "textStyle": "heading/h1",
+      "fillColor": {
+        "r": 51,
+        "g": 51,
+        "b": 51
+      }
+    },
+    {
+      "id": "14:3",
+      "textStyle": "body/regular",
+      "fillColor": {
+        "r": 102,
+        "g": 102,
+        "b": 102
+      }
+    }
+  ]
+}

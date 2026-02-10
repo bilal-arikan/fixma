@@ -1,0 +1,24 @@
+{
+  "name": "figma-unity-bridge-organizer",
+  "version": "1.0.0",
+  "description": "Figma plugin that applies JSON rules prepared to Figma documents",
+  "main": "code.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "dev": "npm run build && npm run watch"
+  },
+  "keywords": [
+    "figma",
+    "plugin",
+    "unity",
+    "components",
+    "automation"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.123.0",
+    "typescript": "^4.9.0"
+  }
+}
