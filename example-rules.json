@@ -1,6 +1,20 @@
 {
+  "_doc": {
+    "description": "FigmaOrganizer rules file. Load this in the Edit tab → Preview → Apply to Figma.",
+    "how_to_get_node_ids": [
+      "Option 1 — Export tab: download the page JSON, find the node's 'id' field.",
+      "Option 2 — Figma: right-click a node → Copy/Paste as → Copy link. The URL contains '?node-id=12-32', replace the dash with colon → '12:32'."
+    ],
+    "sections": {
+      "rename":        "Renames any node to the given name. Works on any node type.",
+      "makeComponent": "Converts a FRAME or GROUP into a Figma COMPONENT. Children are moved into the new component. The original node is replaced.",
+      "addSafeArea":   "Inserts a transparent fullscreen child FRAME named 'safearea' inside the target FRAME or COMPONENT. All existing children are moved into it. No padding is changed — the safearea frame is purely a structural wrapper you style yourself."
+    }
+  },
+
   "rename": [
     {
+      "_how": "Set 'id' to the node's Figma ID and 'name' to the desired new name.",
       "id": "12:32",
       "name": "btn_primary_default"
     },
@@ -13,64 +27,24 @@
       "name": "btn_secondary_default"
     }
   ],
+
   "makeComponent": [
     {
-      "id": "12:40",
-      "type": "button"
+      "_how": "Set 'id' to a FRAME or GROUP node. It will be replaced by a COMPONENT that contains the same children.",
+      "id": "12:40"
     },
     {
-      "id": "12:50",
-      "type": "card"
-    },
-    {
-      "id": "12:60",
-      "type": "input_field"
+      "id": "12:50"
     }
   ],
-  "layout": [
+
+  "addSafeArea": [
     {
-      "id": "12:50",
-      "mode": "auto",
-      "spacing": 8,
-      "padding": {
-        "horizontal": 16,
-        "vertical": 12
-      }
+      "_how": "Set 'id' to a FRAME or COMPONENT. A new transparent child frame named 'safearea' will be created at x:0 y:0 with the same width/height as the parent. All existing children are moved into it.",
+      "id": "12:60"
     },
     {
-      "id": "12:60",
-      "mode": "auto",
-      "spacing": 4
-    }
-  ],
-  "variants": [
-    {
-      "base": "btn_primary",
-      "props": ["default", "hover", "pressed", "disabled"]
-    },
-    {
-      "base": "btn_secondary",
-      "props": ["default", "hover", "disabled"]
-    }
-  ],
-  "styles": [
-    {
-      "id": "14:2",
-      "textStyle": "heading/h1",
-      "fillColor": {
-        "r": 51,
-        "g": 51,
-        "b": 51
-      }
-    },
-    {
-      "id": "14:3",
-      "textStyle": "body/regular",
-      "fillColor": {
-        "r": 102,
-        "g": 102,
-        "b": 102
-      }
+      "id": "18:5"
     }
   ]
 }

@@ -24,38 +24,75 @@
       height: 100%;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 0;
     }
 
+    /* ── Tab Bar ─────────────────────────────────────────────────────────── */
+    .tab-bar {
+      display: flex;
+      background: white;
+      border-radius: 6px 6px 0 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 6px;
+      border: none;
+      background: transparent;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #888;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      color: #667eea;
+      background: #f8f8ff;
+    }
+
+    .tab-btn.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+      background: #f8f8ff;
+    }
+
+    /* ── Main Wrapper ────────────────────────────────────────────────────── */
     .main-wrapper {
       background: white;
-      border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border-radius: 0 0 6px 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       overflow: hidden;
       flex: 1;
       display: flex;
       flex-direction: column;
+      min-height: 0;
     }
 
-    .main-content {
-      display: flex;
+    .tab-panel {
+      display: none;
       flex-direction: column;
       gap: 12px;
       padding: 12px;
       flex: 1;
       overflow-y: auto;
+      height: 100%;
     }
 
-    /* Controls */
+    .tab-panel.active-panel {
+      display: flex;
+    }
+
+    /* ── Controls & Buttons ──────────────────────────────────────────────── */
     .controls {
       display: flex;
       gap: 10px;
       align-items: center;
-      background: white;
-      padding: 12px;
-      border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      flex-wrap: wrap;
     }
 
     input[type="checkbox"] {
@@ -72,47 +109,111 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
-      flex: 1;
-      min-width: 100px;
     }
 
-    .btn-apply {
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .btn-primary {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
+      flex: 1;
     }
 
-    .btn-apply:hover {
-      transform: translateY(-2px);
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
     }
 
-    .btn-apply:active {
-      transform: translateY(0);
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
     }
 
-    /* Export Section */
-    .export-section {
+    .btn-secondary:hover:not(:disabled) {
+      background: #e0e0e0;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      flex: 1;
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
+    }
+
+    /* ── Section Cards ───────────────────────────────────────────────────── */
+    .section-card {
       background: white;
       padding: 12px;
       border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border: 1px solid #eee;
     }
 
-    .export-section h3 {
+    .section-card h3 {
       font-size: 12px;
       font-weight: 600;
       margin-bottom: 10px;
       color: #333;
     }
 
-    .export-grid {
+    .section-desc {
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    /* ── Scope / Module Toggles ──────────────────────────────────────────── */
+    .scope-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 12px;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 4px;
+      border: 1px solid #eee;
+    }
+
+    .scope-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 5px;
+      border-radius: 3px;
+      transition: background 0.2s;
+    }
+
+    .scope-label:hover {
+      background: #f0f0f0;
+    }
+
+    .scope-label input {
+      width: 14px;
+      height: 14px;
+      accent-color: #667eea;
+    }
+
+    /* ── Export Stats ────────────────────────────────────────────────────── */
+    .stats-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
       margin-bottom: 12px;
     }
 
-    .export-stat {
+    .stat-card {
       background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
       padding: 10px;
       border-radius: 4px;
@@ -120,7 +221,7 @@
       text-align: center;
     }
 
-    .export-stat .label {
+    .stat-card .label {
       font-size: 10px;
       color: #666;
       font-weight: 600;
@@ -128,19 +229,23 @@
       margin-bottom: 3px;
     }
 
-    .export-stat .value {
+    .stat-card .value {
       font-size: 20px;
       font-weight: 700;
       color: #667eea;
     }
 
-    .export-results {
+    .stat-card.warn .value { color: #f5a623; }
+    .stat-card.warn { border-left-color: #f5a623; background: linear-gradient(135deg, #f5a62315 0%, #f5a62305 100%); }
+
+    /* ── Log / Status Box ────────────────────────────────────────────────── */
+    .log-box {
       background: #fafafa;
       border: 1px solid #eee;
       border-radius: 4px;
       padding: 10px;
       min-height: 50px;
-      max-height: 300px;
+      max-height: 220px;
       overflow-y: auto;
       font-family: "Courier New", monospace;
       font-size: 11px;
@@ -150,7 +255,7 @@
       color: #333;
     }
 
-    .export-results.empty {
+    .log-box.empty {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -158,126 +263,498 @@
       font-style: italic;
       text-align: center;
       padding: 16px 10px;
+      font-family: inherit;
     }
 
-    /* Module Controls */
-    .modules-controls {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 16px;
-      padding: 10px;
-      background: #f9f9f9;
-      border-radius: 4px;
-      border: 1px solid #eee;
+    /* ── Analyze Results ─────────────────────────────────────────────────── */
+    .analyze-results {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    .module-toggle {
+    .analyze-empty {
       display: flex;
       align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      user-select: none;
-      font-size: 11px;
-      font-weight: 500;
-      padding: 6px;
-      border-radius: 3px;
-      transition: background 0.2s;
+      justify-content: center;
+      color: #999;
+      font-style: italic;
+      text-align: center;
+      padding: 20px 10px;
+      font-size: 12px;
     }
 
-    .module-toggle:hover {
+    /* Accordion */
+    .accordion {
+      border: 1px solid #e8e8e8;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .accordion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 12px;
+      background: #f9f9f9;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      color: #333;
+      user-select: none;
+      transition: background 0.15s;
+    }
+
+    .accordion-header:hover {
       background: #f0f0f0;
     }
 
-    .module-toggle input[type="checkbox"] {
+    .accordion-body {
+      padding: 8px;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #667eea;
+      color: white;
+      border-radius: 10px;
+      padding: 1px 7px;
+      font-size: 10px;
+      font-weight: 700;
+      margin-left: 4px;
+    }
+
+    .chevron {
+      font-size: 10px;
+      color: #888;
+    }
+
+    /* Issue Cards */
+    .issue-card {
+      background: #fafafa;
+      border: 1px solid #eee;
+      border-radius: 5px;
+      padding: 8px 10px;
+    }
+
+    .issue-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+
+    .issue-icon {
+      font-size: 14px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .issue-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .issue-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: #333;
+      word-break: break-all;
+    }
+
+    .issue-type {
+      font-size: 10px;
+      color: #888;
+      font-family: monospace;
+    }
+
+    .issue-desc {
+      font-size: 11px;
+      color: #555;
+      line-height: 1.4;
+      margin-bottom: 4px;
+    }
+
+    .issue-suggestion {
+      font-size: 10px;
+      color: #667eea;
+      background: #667eea10;
+      padding: 4px 7px;
+      border-radius: 3px;
+      line-height: 1.4;
+    }
+
+    /* ── Edit Tab ────────────────────────────────────────────────────────── */
+    .upload-area {
+      display: block;
+      width: 100%;
+      border: 2px dashed #ccc;
+      border-radius: 6px;
+      padding: 16px;
+      text-align: center;
       cursor: pointer;
-      width: 14px;
-      height: 14px;
-      accent-color: #667eea;
+      transition: all 0.2s;
+      background: #fafafa;
+      box-sizing: border-box;
     }
 
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
+    .upload-area:hover {
+      border-color: #667eea;
+      background: #667eea08;
     }
 
-    ::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 10px;
+    .upload-area input[type="file"] {
+      display: none;
     }
 
-    ::-webkit-scrollbar-thumb {
-      background: #888;
-      border-radius: 10px;
+    .upload-icon {
+      font-size: 24px;
+      margin-bottom: 6px;
     }
 
-    ::-webkit-scrollbar-thumb:hover {
-      background: #555;
+    .upload-text {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .upload-hint {
+      font-size: 10px;
+      color: #aaa;
+    }
+
+    .rules-file-info {
+      display: none;
+      width: 100%;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      margin-top: 8px;
+      background: #667eea10;
+      border: 1px solid #667eea30;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    .rules-file-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: #667eea;
+      flex: 1;
+    }
+
+    .rules-file-summary {
+      font-size: 10px;
+      color: #888;
+    }
+
+    /* Preview / Apply results */
+    .preview-summary {
+      padding: 8px 10px;
+      background: #667eea15;
+      border-radius: 4px;
+      font-size: 11px;
+      color: #333;
+      margin-bottom: 4px;
+    }
+
+    .apply-summary {
+      padding: 8px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .apply-summary.all-success {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .apply-summary.has-errors {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .preview-section {
+      border: 1px solid #eee;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+
+    .preview-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 6px 10px;
+      background: #f5f5f5;
+      color: #555;
+      border-bottom: 1px solid #eee;
+    }
+
+    .preview-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 7px 10px;
+      border-bottom: 1px solid #f5f5f5;
+      font-size: 11px;
+    }
+
+    .preview-row:last-child {
+      border-bottom: none;
+    }
+
+    .preview-row-error {
+      background: #fff5f5;
+    }
+
+    .preview-icon {
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .preview-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .preview-name {
+      font-weight: 600;
+      color: #333;
+      word-break: break-all;
+    }
+
+    .preview-detail {
+      color: #666;
+      font-size: 10px;
+      word-break: break-all;
+    }
+
+    .preview-detail em {
+      color: #aaa;
+      font-style: normal;
+    }
+
+    /* ── Scrollbar ───────────────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #999; }
+
+    /* ── Edit results scrollable ─────────────────────────────────────────── */
+    .edit-results {
+      max-height: 260px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: #fafafa;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      padding: 8px;
+    }
+
+    .edit-results .analyze-empty {
+      padding: 16px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="main-wrapper">
-      <div class="main-content">
 
-        <!-- ==================== Export ==================== -->
-        <div class="export-section">
+    <!-- ==================== Tab Bar ==================== -->
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="export" onclick="switchTab('export')">📦 Export</button>
+      <button class="tab-btn" data-tab="analyze" onclick="switchTab('analyze')">🔍 Analyze</button>
+      <button class="tab-btn" data-tab="edit" onclick="switchTab('edit')">⚙️ Edit</button>
+    </div>
+
+    <div class="main-wrapper">
+
+      <!-- ==================== TAB: Export ==================== -->
+      <div class="tab-panel active-panel" id="tab-export" style="display:flex;">
+
+        <div class="section-card">
           <h3>📦 Page JSON Export</h3>
-          <p style="font-size: 11px; color: #666; margin-bottom: 12px; line-height: 1.5;">
-            Scans the Figma page and generates JSON output similar to REST API format.
-            You can export directly from the plugin without needing the API.
+          <p class="section-desc">
+            Scans the Figma page and generates JSON output compatible with the REST API format.
           </p>
 
-          <div class="modules-controls" style="grid-template-columns: 1fr;">
-            <label class="module-toggle">
-              <input type="radio" name="exportScope" value="current" checked style="width:14px; height:14px; accent-color:#667eea;">
+          <div class="scope-group">
+            <label class="scope-label">
+              <input type="radio" name="exportScope" value="current" checked>
               <span>📄 Current Page Only</span>
             </label>
-            <label class="module-toggle">
-              <input type="radio" name="exportScope" value="all" style="width:14px; height:14px; accent-color:#667eea;">
+            <label class="scope-label">
+              <input type="radio" name="exportScope" value="all">
               <span>📚 All Pages</span>
             </label>
-            <label class="module-toggle">
-              <input type="checkbox" id="exportGeometry" style="width:14px; height:14px; accent-color:#667eea;">
-              <span>📐 Include Geometry Data (fillGeometry, strokeGeometry - increases file size)</span>
+            <label class="scope-label">
+              <input type="checkbox" id="exportGeometry">
+              <span>📐 Include Geometry Data (fillGeometry, strokeGeometry)</span>
             </label>
           </div>
 
-          <div class="controls" style="margin-top: 12px;">
-            <button class="btn-apply" onclick="exportPageJSON()" id="exportBtn">
-              📦 Export JSON
+          <div class="controls">
+            <button class="btn-primary" onclick="exportPageJSON()" id="exportBtn">
+              📦 Download JSON
             </button>
           </div>
         </div>
 
-        <div class="export-section">
+        <div class="section-card">
           <h3>📊 Export Status</h3>
-          <div id="exportStats" class="export-grid">
-            <div class="export-stat">
+          <div class="stats-grid">
+            <div class="stat-card">
               <div class="label">Total Nodes</div>
               <div class="value" id="exportNodeCount">-</div>
             </div>
-            <div class="export-stat">
+            <div class="stat-card">
               <div class="label">Pages</div>
               <div class="value" id="exportPageCount">-</div>
             </div>
-            <div class="export-stat">
+            <div class="stat-card">
               <div class="label">Components</div>
               <div class="value" id="exportCompCount">-</div>
             </div>
-            <div class="export-stat">
+            <div class="stat-card">
               <div class="label">File Size</div>
               <div class="value" id="exportFileSize">-</div>
             </div>
           </div>
-          <div class="export-results empty" id="exportStatus" style="margin-top: 12px;">
-            Click the Export button to download your page in JSON format.
+          <div class="log-box empty" id="exportStatus">
+            Click the Export button to download the page as JSON.
           </div>
         </div>
 
       </div>
+
+      <!-- ==================== TAB: Analyze ==================== -->
+      <div class="tab-panel" id="tab-analyze" style="display:none;">
+
+        <div class="section-card">
+          <h3>🔍 Page Analysis</h3>
+          <p class="section-desc">
+            Scans nodes in the selected scope to detect naming issues, component candidates, and missing safe areas.
+          </p>
+
+          <div class="scope-group">
+            <label class="scope-label">
+              <input type="radio" name="analyzeScope" value="current" checked>
+              <span>📄 Current Page Only</span>
+            </label>
+            <label class="scope-label">
+              <input type="radio" name="analyzeScope" value="all">
+              <span>📚 All Pages</span>
+            </label>
+          </div>
+
+          <div class="controls" style="gap:8px;">
+            <button class="btn-primary" onclick="runAnalysis()" id="analyzeBtn" style="flex:2;">
+              🔍 Scan
+            </button>
+            <button class="btn-secondary" onclick="downloadAnalysisReport()" id="downloadReportBtn" disabled style="flex:1;">
+              ⬇️ Download Report
+            </button>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <h3>📊 Scan Summary</h3>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="label">Scanned Nodes</div>
+              <div class="value" id="analyzedNodes">-</div>
+            </div>
+            <div class="stat-card warn">
+              <div class="label">Total Issues</div>
+              <div class="value" id="analyzedIssues">-</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Naming</div>
+              <div class="value" id="analyzedNaming">-</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Components</div>
+              <div class="value" id="analyzedComponents">-</div>
+            </div>
+          </div>
+          <div class="stats-grid" style="margin-bottom:0; grid-template-columns: 1fr;">
+            <div class="stat-card warn">
+              <div class="label">Safe Area Issues</div>
+              <div class="value" id="analyzedSafeArea">-</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card" style="flex:1; min-height:0; display:flex; flex-direction:column;">
+          <h3>🔎 Detected Issues</h3>
+          <div class="analyze-results" id="analyzeResults" style="flex:1; overflow-y:auto; margin-top:8px;">
+            <div class="analyze-empty">
+              Click Scan to start the analysis.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ==================== TAB: Edit ==================== -->
+      <div class="tab-panel" id="tab-edit" style="display:none;">
+
+        <div class="section-card">
+          <h3>⚙️ Rule-Based Editing</h3>
+          <p class="section-desc">
+            Load a <code>rules.json</code> file. Preview the changes first, then apply them to Figma.
+          </p>
+
+          <!-- Upload Area -->
+          <label class="upload-area" for="rulesFileInput">
+            <input type="file" id="rulesFileInput" accept=".json">
+            <div class="upload-icon">📂</div>
+            <div class="upload-text">Select or drop your rules.json file here</div>
+            <div class="upload-hint">Format: { "rename": [...], "makeComponent": [...], "addSafeArea": [...] }</div>
+          </label>
+
+          <!-- File Info (visible after load) -->
+          <div class="rules-file-info" id="rulesFileInfo">
+            <span>📄</span>
+            <div style="flex:1; min-width:0;">
+              <div class="rules-file-name" id="rulesFileName">-</div>
+              <div class="rules-file-summary" id="rulesFileSummary">-</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="controls" style="gap:8px;">
+            <button class="btn-secondary" onclick="previewRulesUI()" id="previewBtn" disabled style="flex:1;">
+              👁 Preview
+            </button>
+            <button class="btn-danger" onclick="applyRulesUI()" id="applyBtn" disabled style="flex:1;">
+              ✅ Apply to Figma
+            </button>
+          </div>
+        </div>
+
+        <div class="section-card" style="flex:1; min-height:0; display:flex; flex-direction:column;">
+          <h3>📋 Change List</h3>
+          <div class="edit-results" id="editResults" style="flex:1; margin-top:8px; max-height:none;">
+            <div class="analyze-empty">
+              Load a rules file and click Preview.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
     </div>
   </div>
 
@@ -355,13 +832,378 @@
     URL.revokeObjectURL(url);
   }
 
+  // src/ui/analyze.ts
+  var lastAnalysisData = null;
+  function downloadAnalysisReport() {
+    if (!lastAnalysisData) return;
+    const jsonStr = JSON.stringify(lastAnalysisData, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "figma-analysis-" + (/* @__PURE__ */ new Date()).toISOString().split("T")[0] + ".json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+  function runAnalysis() {
+    const scopeInput = document.querySelector(
+      'input[name="analyzeScope"]:checked'
+    );
+    const scope = scopeInput ? scopeInput.value : "current";
+    const btn = document.getElementById("analyzeBtn");
+    btn.disabled = true;
+    btn.textContent = "\u23F3 Scanning...";
+    const resultsEl = document.getElementById("analyzeResults");
+    resultsEl.innerHTML = '<div class="analyze-empty">\u23F3 Scanning page...</div>';
+    parent.postMessage(
+      { pluginMessage: { type: "analyzeDocument", scope } },
+      "*"
+    );
+  }
+  function handleAnalyzeResult(response) {
+    const btn = document.getElementById("analyzeBtn");
+    btn.disabled = false;
+    btn.textContent = "\u{1F50D} Scan";
+    const resultsEl = document.getElementById("analyzeResults");
+    if (!response.success) {
+      resultsEl.innerHTML = `<div class="analyze-empty">\u274C Error: ${response.error || "Unknown error"}</div>`;
+      return;
+    }
+    const data = response.data;
+    const { namingIssues, componentCandidates, safeAreaIssues, totalIssues, scannedNodes } = data;
+    lastAnalysisData = data;
+    const downloadBtn = document.getElementById("downloadReportBtn");
+    if (downloadBtn) downloadBtn.disabled = false;
+    document.getElementById("analyzedNodes").textContent = String(scannedNodes);
+    document.getElementById("analyzedIssues").textContent = String(totalIssues);
+    document.getElementById("analyzedNaming").textContent = String(namingIssues.length);
+    document.getElementById("analyzedComponents").textContent = String(componentCandidates.length);
+    document.getElementById("analyzedSafeArea").textContent = String(safeAreaIssues.length);
+    if (totalIssues === 0) {
+      resultsEl.innerHTML = '<div class="analyze-empty">\u2705 No issues found! Your page looks clean.</div>';
+      return;
+    }
+    let html = "";
+    if (namingIssues.length > 0) {
+      html += buildAccordion(
+        "naming",
+        `\u270F\uFE0F Naming Issues`,
+        namingIssues.length,
+        namingIssues.map((issue) => buildIssueCard(
+          getIssueIcon(issue.issue),
+          issue.nodeName,
+          issue.nodeType,
+          issue.nodeId,
+          issue.description,
+          issue.suggestion
+        )).join("")
+      );
+    }
+    if (componentCandidates.length > 0) {
+      html += buildAccordion(
+        "components",
+        `\u{1F9E9} Component Candidates`,
+        componentCandidates.length,
+        componentCandidates.map((c) => buildIssueCard(
+          "\u{1F501}",
+          c.groupName,
+          `${c.nodeIds.length} node`,
+          c.nodeIds[0],
+          c.reason,
+          `Nodes: ${c.nodeNames.slice(0, 3).join(", ")}${c.nodeNames.length > 3 ? "..." : ""}`
+        )).join("")
+      );
+    }
+    if (safeAreaIssues.length > 0) {
+      html += buildAccordion(
+        "safearea",
+        `\u{1F4F1} Safe Area Issues`,
+        safeAreaIssues.length,
+        safeAreaIssues.map((issue) => buildIssueCard(
+          getSafeAreaIcon(issue.issue),
+          issue.nodeName,
+          `${issue.nodeType} \xB7 ${issue.width}\xD7${issue.height}`,
+          issue.nodeId,
+          issue.description,
+          issue.suggestion
+        )).join("")
+      );
+    }
+    resultsEl.innerHTML = html;
+    resultsEl.querySelectorAll(".accordion-header").forEach((header) => {
+      header.addEventListener("click", () => {
+        const body = header.nextElementSibling;
+        const isOpen = body.style.display !== "none";
+        body.style.display = isOpen ? "none" : "block";
+        const chevron = header.querySelector(".chevron");
+        if (chevron) chevron.textContent = isOpen ? "\u25B6" : "\u25BC";
+      });
+    });
+  }
+  function getIssueIcon(issue) {
+    switch (issue) {
+      case "default_name":
+        return "\u{1F3F7}\uFE0F";
+      case "turkish_chars":
+        return "\u{1F1F9}\u{1F1F7}";
+      case "case_inconsistency":
+        return "\u{1F500}";
+      default:
+        return "\u26A0\uFE0F";
+    }
+  }
+  function getSafeAreaIcon(_issue) {
+    return "\u{1F4F1}";
+  }
+  function buildAccordion(id, title, count, content) {
+    return `
+    <div class="accordion">
+      <div class="accordion-header">
+        <span>${title} <span class="badge">${count}</span></span>
+        <span class="chevron">\u25BC</span>
+      </div>
+      <div class="accordion-body" id="accordion-${id}">
+        ${content}
+      </div>
+    </div>
+  `;
+  }
+  function buildIssueCard(icon, name, type, id, description, suggestion) {
+    return `
+    <div class="issue-card">
+      <div class="issue-header">
+        <span class="issue-icon">${icon}</span>
+        <div class="issue-meta">
+          <span class="issue-name">${escapeHtml(name)}</span>
+          <span class="issue-type">${escapeHtml(type)} \xB7 ${escapeHtml(id)}</span>
+        </div>
+      </div>
+      <div class="issue-desc">${escapeHtml(description)}</div>
+      ${suggestion ? `<div class="issue-suggestion">\u{1F4A1} ${escapeHtml(suggestion)}</div>` : ""}
+    </div>
+  `;
+  }
+  function escapeHtml(str) {
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  // src/ui/edit.ts
+  var loadedRules = null;
+  function handleRulesUpload(event) {
+    var _a;
+    const input = event.target;
+    const file = (_a = input.files) == null ? void 0 : _a[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      var _a2;
+      try {
+        const text = (_a2 = e.target) == null ? void 0 : _a2.result;
+        const rules = JSON.parse(text);
+        loadedRules = rules;
+        document.getElementById("rulesFileName").textContent = file.name;
+        document.getElementById("rulesFileInfo").style.display = "flex";
+        const renameCount = (rules.rename || []).length;
+        const componentCount = (rules.makeComponent || []).length;
+        const safeAreaCount = (rules.addSafeArea || []).length;
+        const total = renameCount + componentCount + safeAreaCount;
+        document.getElementById("rulesFileSummary").textContent = `${total} rules: ${renameCount} rename, ${componentCount} component, ${safeAreaCount} safe area`;
+        const previewBtn = document.getElementById("previewBtn");
+        previewBtn.disabled = false;
+        const applyBtn = document.getElementById("applyBtn");
+        applyBtn.disabled = true;
+        document.getElementById("editResults").innerHTML = '<div class="analyze-empty">\u{1F4CB} Rules file loaded. Click Preview to inspect changes.</div>';
+      } catch (err) {
+        document.getElementById("editResults").innerHTML = `<div class="analyze-empty">\u274C JSON parse error: ${err.message}</div>`;
+        loadedRules = null;
+      }
+    };
+    reader.readAsText(file);
+  }
+  function previewRulesUI() {
+    if (!loadedRules) return;
+    const previewBtn = document.getElementById("previewBtn");
+    previewBtn.disabled = true;
+    previewBtn.textContent = "\u23F3 Loading...";
+    document.getElementById("editResults").innerHTML = '<div class="analyze-empty">\u23F3 Calculating preview...</div>';
+    parent.postMessage(
+      { pluginMessage: { type: "previewRules", rules: loadedRules } },
+      "*"
+    );
+  }
+  function applyRulesUI() {
+    if (!loadedRules) return;
+    const applyBtn = document.getElementById("applyBtn");
+    applyBtn.disabled = true;
+    applyBtn.textContent = "\u23F3 Applying...";
+    parent.postMessage(
+      { pluginMessage: { type: "applyRules", rules: loadedRules } },
+      "*"
+    );
+  }
+  function handlePreviewResult(response) {
+    const previewBtn = document.getElementById("previewBtn");
+    previewBtn.disabled = false;
+    previewBtn.textContent = "\u{1F441} Preview";
+    const resultsEl = document.getElementById("editResults");
+    if (!response.success) {
+      resultsEl.innerHTML = `<div class="analyze-empty">\u274C Preview error: ${response.error || "Unknown error"}</div>`;
+      return;
+    }
+    const data = response.data;
+    const { renames, makeComponents, safeAreas, totalChanges } = data;
+    if (totalChanges === 0) {
+      resultsEl.innerHTML = '<div class="analyze-empty">\u2139\uFE0F No changes to apply.</div>';
+      return;
+    }
+    let html = `<div class="preview-summary">\u{1F4CB} <strong>${totalChanges}</strong> changes will be applied</div>`;
+    if (renames.length > 0) {
+      html += buildPreviewSection("\u270F\uFE0F Rename", renames.map((r) => {
+        if (!r.found) {
+          return buildPreviewRow("\u274C", r.nodeId, `Node not found`, "", true);
+        }
+        return buildPreviewRow("\u270F\uFE0F", r.oldName, `\u2192 <strong>${escapeHtml2(r.newName)}</strong>`, r.nodeType);
+      }).join(""));
+    }
+    if (makeComponents.length > 0) {
+      html += buildPreviewSection("\u{1F9E9} Make Component", makeComponents.map((c) => {
+        if (!c.found || !c.convertible) {
+          return buildPreviewRow("\u274C", c.nodeName || c.nodeId, c.reason || "Cannot convert", c.nodeType, true);
+        }
+        return buildPreviewRow("\u{1F9E9}", c.nodeName, `${c.nodeType} \u2192 COMPONENT`, c.reason || "");
+      }).join(""));
+    }
+    if (safeAreas.length > 0) {
+      html += buildPreviewSection("\u{1F4F1} Safe Area", safeAreas.map((s) => {
+        if (!s.found || !s.applicable) {
+          return buildPreviewRow("\u274C", s.nodeName || s.nodeId, s.reason || "Not applicable", s.nodeType, true);
+        }
+        return buildPreviewRow("\u{1F4F1}", s.nodeName, s.reason, s.nodeType);
+      }).join(""));
+    }
+    resultsEl.innerHTML = html;
+    const applyBtn = document.getElementById("applyBtn");
+    applyBtn.disabled = false;
+  }
+  function handleApplyResult(response) {
+    var _a, _b, _c;
+    const applyBtn = document.getElementById("applyBtn");
+    applyBtn.disabled = false;
+    applyBtn.textContent = "\u2705 Apply to Figma";
+    const resultsEl = document.getElementById("editResults");
+    if (!response.success) {
+      resultsEl.innerHTML = `<div class="analyze-empty">\u274C Apply error: ${response.error || "Unknown error"}</div>`;
+      return;
+    }
+    const data = response.data;
+    const { successCount, failCount } = data;
+    let html = `
+    <div class="apply-summary ${failCount > 0 ? "has-errors" : "all-success"}">
+      \u2705 ${successCount} succeeded${failCount > 0 ? `, \u274C ${failCount} failed` : ""}
+    </div>
+  `;
+    if (((_a = data.renames) == null ? void 0 : _a.length) > 0) {
+      html += buildApplySection("\u270F\uFE0F Rename", data.renames.map(
+        (r) => buildApplyRow(r.success, r.oldName, r.success ? `\u2192 ${r.newName}` : r.error || "Error")
+      ).join(""));
+    }
+    if (((_b = data.makeComponents) == null ? void 0 : _b.length) > 0) {
+      html += buildApplySection("\u{1F9E9} Make Component", data.makeComponents.map(
+        (c) => buildApplyRow(c.success, c.nodeName, c.success ? `Component created (${c.newComponentId})` : c.error || "Error")
+      ).join(""));
+    }
+    if (((_c = data.safeAreas) == null ? void 0 : _c.length) > 0) {
+      html += buildApplySection("\u{1F4F1} Safe Area", data.safeAreas.map(
+        (s) => buildApplyRow(s.success, s.nodeName, s.success ? s.changes || "Updated" : s.error || "Error")
+      ).join(""));
+    }
+    resultsEl.innerHTML = html;
+    const applyBtn2 = document.getElementById("applyBtn");
+    applyBtn2.disabled = true;
+  }
+  function buildPreviewSection(title, rows) {
+    return `
+    <div class="preview-section">
+      <div class="preview-section-title">${title}</div>
+      ${rows}
+    </div>
+  `;
+  }
+  function buildPreviewRow(icon, name, detail, type, isError = false) {
+    return `
+    <div class="preview-row ${isError ? "preview-row-error" : ""}">
+      <span class="preview-icon">${icon}</span>
+      <div class="preview-info">
+        <span class="preview-name">${escapeHtml2(name)}</span>
+        <span class="preview-detail">${detail}${type ? ` <em>${escapeHtml2(type)}</em>` : ""}</span>
+      </div>
+    </div>
+  `;
+  }
+  function buildApplySection(title, rows) {
+    return `
+    <div class="preview-section">
+      <div class="preview-section-title">${title}</div>
+      ${rows}
+    </div>
+  `;
+  }
+  function buildApplyRow(success, name, detail) {
+    return `
+    <div class="preview-row ${success ? "" : "preview-row-error"}">
+      <span class="preview-icon">${success ? "\u2705" : "\u274C"}</span>
+      <div class="preview-info">
+        <span class="preview-name">${escapeHtml2(name)}</span>
+        <span class="preview-detail">${escapeHtml2(detail)}</span>
+      </div>
+    </div>
+  `;
+  }
+  function escapeHtml2(str) {
+    return String(str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
   // src/ui/main.ts
   window.exportPageJSON = exportPageJSON;
+  window.runAnalysis = runAnalysis;
+  window.downloadAnalysisReport = downloadAnalysisReport;
+  window.previewRulesUI = previewRulesUI;
+  window.applyRulesUI = applyRulesUI;
+  function switchTab(tabName) {
+    document.querySelectorAll(".tab-btn").forEach((btn) => {
+      btn.classList.remove("active");
+    });
+    document.querySelectorAll(".tab-panel").forEach((panel) => {
+      panel.style.display = "none";
+    });
+    const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
+    const activePanel = document.getElementById(`tab-${tabName}`);
+    if (activeBtn) activeBtn.classList.add("active");
+    if (activePanel) activePanel.style.display = "block";
+  }
+  window.switchTab = switchTab;
+  var rulesInput = document.getElementById("rulesFileInput");
+  if (rulesInput) {
+    rulesInput.addEventListener("change", handleRulesUpload);
+  }
   window.onmessage = (event) => {
     const response = event.data.pluginMessage;
     if (!response) return;
-    if (response.type === "exportResult") {
-      handleExportResult(response);
+    switch (response.type) {
+      case "exportResult":
+        handleExportResult(response);
+        break;
+      case "analyzeResult":
+        handleAnalyzeResult(response);
+        break;
+      case "previewResult":
+        handlePreviewResult(response);
+        break;
+      case "applyResult":
+        handleApplyResult(response);
+        break;
     }
   };
 })();
