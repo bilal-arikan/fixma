@@ -60,7 +60,7 @@ export function handleAnalyzeResult(response: any): void {
   }
 
   const data = response.data;
-  const { namingIssues, componentCandidates, safeAreaIssues, totalIssues, scannedNodes } = data;
+  const { namingIssues, safeAreaIssues, totalIssues, scannedNodes } = data;
 
   // Store for download and enable button
   lastAnalysisData = data;
@@ -71,7 +71,6 @@ export function handleAnalyzeResult(response: any): void {
   document.getElementById("analyzedNodes")!.textContent = String(scannedNodes);
   document.getElementById("analyzedIssues")!.textContent = String(totalIssues);
   document.getElementById("analyzedNaming")!.textContent = String(namingIssues.length);
-  document.getElementById("analyzedComponents")!.textContent = String(componentCandidates.length);
   document.getElementById("analyzedSafeArea")!.textContent = String(safeAreaIssues.length);
 
   if (totalIssues === 0) {
@@ -100,25 +99,6 @@ export function handleAnalyzeResult(response: any): void {
     );
   }
 
-  // ── Component Candidates ───────────────────────────────────────────────
-  if (componentCandidates.length > 0) {
-    html += buildAccordion(
-      "components",
-      `🧩 Component Candidates`,
-      componentCandidates.length,
-      componentCandidates
-        .map((c: any) => buildIssueCard(
-          "🔁",
-          c.groupName,
-          `${c.nodeIds.length} node`,
-          c.nodeIds[0],
-          c.reason,
-          `Nodes: ${c.nodeNames.slice(0, 3).join(", ")}${c.nodeNames.length > 3 ? "..." : ""}`
-        ))
-        .join("")
-    );
-  }
-
   // ── Safe Area Issues ───────────────────────────────────────────────────
   if (safeAreaIssues.length > 0) {
     html += buildAccordion(
@@ -127,7 +107,7 @@ export function handleAnalyzeResult(response: any): void {
       safeAreaIssues.length,
       safeAreaIssues
         .map((issue: any) => buildIssueCard(
-          getSafeAreaIcon(issue.issue),
+          "📱",
           issue.nodeName,
           `${issue.nodeType} · ${issue.width}×${issue.height}`,
           issue.nodeId,
@@ -159,10 +139,6 @@ function getIssueIcon(issue: string): string {
     case "case_inconsistency": return "🔀";
     default: return "⚠️";
   }
-}
-
-function getSafeAreaIcon(_issue: string): string {
-  return "📱";
 }
 
 function buildAccordion(id: string, title: string, count: number, content: string): string {

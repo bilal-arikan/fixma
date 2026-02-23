@@ -682,12 +682,6 @@
               <div class="label">Naming</div>
               <div class="value" id="analyzedNaming">-</div>
             </div>
-            <div class="stat-card">
-              <div class="label">Components</div>
-              <div class="value" id="analyzedComponents">-</div>
-            </div>
-          </div>
-          <div class="stats-grid" style="margin-bottom:0; grid-template-columns: 1fr;">
             <div class="stat-card warn">
               <div class="label">Safe Area Issues</div>
               <div class="value" id="analyzedSafeArea">-</div>
@@ -720,7 +714,7 @@
             <input type="file" id="rulesFileInput" accept=".json">
             <div class="upload-icon">📂</div>
             <div class="upload-text">Select or drop your rules.json file here</div>
-            <div class="upload-hint">Format: { "rename": [...], "makeComponent": [...], "addSafeArea": [...] }</div>
+            <div class="upload-hint">Format: { "rename": [...], "addSafeArea": [...] }</div>
           </label>
 
           <!-- File Info (visible after load) -->
@@ -872,14 +866,13 @@
       return;
     }
     const data = response.data;
-    const { namingIssues, componentCandidates, safeAreaIssues, totalIssues, scannedNodes } = data;
+    const { namingIssues, safeAreaIssues, totalIssues, scannedNodes } = data;
     lastAnalysisData = data;
     const downloadBtn = document.getElementById("downloadReportBtn");
     if (downloadBtn) downloadBtn.disabled = false;
     document.getElementById("analyzedNodes").textContent = String(scannedNodes);
     document.getElementById("analyzedIssues").textContent = String(totalIssues);
     document.getElementById("analyzedNaming").textContent = String(namingIssues.length);
-    document.getElementById("analyzedComponents").textContent = String(componentCandidates.length);
     document.getElementById("analyzedSafeArea").textContent = String(safeAreaIssues.length);
     if (totalIssues === 0) {
       resultsEl.innerHTML = '<div class="analyze-empty">\u2705 No issues found! Your page looks clean.</div>';
@@ -901,28 +894,13 @@
         )).join("")
       );
     }
-    if (componentCandidates.length > 0) {
-      html += buildAccordion(
-        "components",
-        `\u{1F9E9} Component Candidates`,
-        componentCandidates.length,
-        componentCandidates.map((c) => buildIssueCard(
-          "\u{1F501}",
-          c.groupName,
-          `${c.nodeIds.length} node`,
-          c.nodeIds[0],
-          c.reason,
-          `Nodes: ${c.nodeNames.slice(0, 3).join(", ")}${c.nodeNames.length > 3 ? "..." : ""}`
-        )).join("")
-      );
-    }
     if (safeAreaIssues.length > 0) {
       html += buildAccordion(
         "safearea",
         `\u{1F4F1} Safe Area Issues`,
         safeAreaIssues.length,
         safeAreaIssues.map((issue) => buildIssueCard(
-          getSafeAreaIcon(issue.issue),
+          "\u{1F4F1}",
           issue.nodeName,
           `${issue.nodeType} \xB7 ${issue.width}\xD7${issue.height}`,
           issue.nodeId,
@@ -953,9 +931,6 @@
       default:
         return "\u26A0\uFE0F";
     }
-  }
-  function getSafeAreaIcon(_issue) {
-    return "\u{1F4F1}";
   }
   function buildAccordion(id, title, count, content) {
     return `
@@ -1006,10 +981,9 @@
         document.getElementById("rulesFileName").textContent = file.name;
         document.getElementById("rulesFileInfo").style.display = "flex";
         const renameCount = (rules.rename || []).length;
-        const componentCount = (rules.makeComponent || []).length;
         const safeAreaCount = (rules.addSafeArea || []).length;
-        const total = renameCount + componentCount + safeAreaCount;
-        document.getElementById("rulesFileSummary").textContent = `${total} rules: ${renameCount} rename, ${componentCount} component, ${safeAreaCount} safe area`;
+        const total = renameCount + safeAreaCount;
+        document.getElementById("rulesFileSummary").textContent = `${total} rules: ${renameCount} rename, ${safeAreaCount} safe area`;
         const previewBtn = document.getElementById("previewBtn");
         previewBtn.disabled = false;
         const applyBtn = document.getElementById("applyBtn");
@@ -1053,7 +1027,7 @@
       return;
     }
     const data = response.data;
-    const { renames, makeComponents, safeAreas, totalChanges } = data;
+    const { renames, safeAreas, totalChanges } = data;
     if (totalChanges === 0) {
       resultsEl.innerHTML = '<div class="analyze-empty">\u2139\uFE0F No changes to apply.</div>';
       return;
@@ -1065,14 +1039,6 @@
           return buildPreviewRow("\u274C", r.nodeId, `Node not found`, "", true);
         }
         return buildPreviewRow("\u270F\uFE0F", r.oldName, `\u2192 <strong>${escapeHtml2(r.newName)}</strong>`, r.nodeType);
-      }).join(""));
-    }
-    if (makeComponents.length > 0) {
-      html += buildPreviewSection("\u{1F9E9} Make Component", makeComponents.map((c) => {
-        if (!c.found || !c.convertible) {
-          return buildPreviewRow("\u274C", c.nodeName || c.nodeId, c.reason || "Cannot convert", c.nodeType, true);
-        }
-        return buildPreviewRow("\u{1F9E9}", c.nodeName, `${c.nodeType} \u2192 COMPONENT`, c.reason || "");
       }).join(""));
     }
     if (safeAreas.length > 0) {
@@ -1088,7 +1054,7 @@
     applyBtn.disabled = false;
   }
   function handleApplyResult(response) {
-    var _a, _b, _c;
+    var _a, _b;
     const applyBtn = document.getElementById("applyBtn");
     applyBtn.disabled = false;
     applyBtn.textContent = "\u2705 Apply to Figma";
@@ -1109,12 +1075,7 @@
         (r) => buildApplyRow(r.success, r.oldName, r.success ? `\u2192 ${r.newName}` : r.error || "Error")
       ).join(""));
     }
-    if (((_b = data.makeComponents) == null ? void 0 : _b.length) > 0) {
-      html += buildApplySection("\u{1F9E9} Make Component", data.makeComponents.map(
-        (c) => buildApplyRow(c.success, c.nodeName, c.success ? `Component created (${c.newComponentId})` : c.error || "Error")
-      ).join(""));
-    }
-    if (((_c = data.safeAreas) == null ? void 0 : _c.length) > 0) {
+    if (((_b = data.safeAreas) == null ? void 0 : _b.length) > 0) {
       html += buildApplySection("\u{1F4F1} Safe Area", data.safeAreas.map(
         (s) => buildApplyRow(s.success, s.nodeName, s.success ? s.changes || "Updated" : s.error || "Error")
       ).join(""));

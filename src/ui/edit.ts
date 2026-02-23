@@ -25,12 +25,11 @@ export function handleRulesUpload(event: Event): void {
 
       // Count rules
       const renameCount = (rules.rename || []).length;
-      const componentCount = (rules.makeComponent || []).length;
       const safeAreaCount = (rules.addSafeArea || []).length;
-      const total = renameCount + componentCount + safeAreaCount;
+      const total = renameCount + safeAreaCount;
 
       document.getElementById("rulesFileSummary")!.textContent =
-        `${total} rules: ${renameCount} rename, ${componentCount} component, ${safeAreaCount} safe area`;
+        `${total} rules: ${renameCount} rename, ${safeAreaCount} safe area`;
 
       // Enable preview button
       const previewBtn = document.getElementById("previewBtn") as HTMLButtonElement;
@@ -102,7 +101,7 @@ export function handlePreviewResult(response: any): void {
   }
 
   const data = response.data;
-  const { renames, makeComponents, safeAreas, totalChanges } = data;
+  const { renames, safeAreas, totalChanges } = data;
 
   if (totalChanges === 0) {
     resultsEl.innerHTML = '<div class="analyze-empty">ℹ️ No changes to apply.</div>';
@@ -118,16 +117,6 @@ export function handlePreviewResult(response: any): void {
         return buildPreviewRow("❌", r.nodeId, `Node not found`, "", true);
       }
       return buildPreviewRow("✏️", r.oldName, `→ <strong>${escapeHtml(r.newName)}</strong>`, r.nodeType);
-    }).join(""));
-  }
-
-  // Make component preview
-  if (makeComponents.length > 0) {
-    html += buildPreviewSection("🧩 Make Component", makeComponents.map((c: any) => {
-      if (!c.found || !c.convertible) {
-        return buildPreviewRow("❌", c.nodeName || c.nodeId, c.reason || "Cannot convert", c.nodeType, true);
-      }
-      return buildPreviewRow("🧩", c.nodeName, `${c.nodeType} → COMPONENT`, c.reason || "");
     }).join(""));
   }
 
@@ -176,13 +165,6 @@ export function handleApplyResult(response: any): void {
   if (data.renames?.length > 0) {
     html += buildApplySection("✏️ Rename", data.renames.map((r: any) =>
       buildApplyRow(r.success, r.oldName, r.success ? `→ ${r.newName}` : r.error || "Error")
-    ).join(""));
-  }
-
-  // Show component results
-  if (data.makeComponents?.length > 0) {
-    html += buildApplySection("🧩 Make Component", data.makeComponents.map((c: any) =>
-      buildApplyRow(c.success, c.nodeName, c.success ? `Component created (${c.newComponentId})` : c.error || "Error")
     ).join(""));
   }
 
