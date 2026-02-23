@@ -6,6 +6,7 @@
 import { exportDocumentJSON } from "./export";
 import { analyzeDocument } from "./analyze";
 import { previewRules, applyRules } from "./apply";
+import { scanComponentCandidates, convertGroups } from "./components";
 
 // Show the plugin UI
 figma.showUI(__html__, {
@@ -88,6 +89,58 @@ figma.ui.onmessage = (msg: any) => {
         success: false,
         error: error.message || String(error),
       });
+    }
+  }
+
+  // ── Scan Component Candidates ────────────────────────────────────────────
+  if (msg.type === "scanComponents") {
+    try {
+      const scope = msg.scope || "current";
+      const pages: readonly PageNode[] =
+        scope === "all" ? figma.root.children : [figma.currentPage];
+      const groups = scanComponentCandidates(pages);
+      figma.ui.postMessage({
+        type: "scanComponentsResult",
+        success: true,
+        data: groups,
+      });
+    } catch (error: any) {
+      figma.ui.postMessage({
+        type: "scanComponentsResult",
+        success: false,
+        error: error.message || String(error),
+      });
+    }
+  }
+
+  // ── Convert Components ───────────────────────────────────────────────────
+  if (msg.type === "convertComponents") {
+    try {
+      const results = convertGroups(msg.requests || []);
+      figma.ui.postMessage({
+        type: "convertComponentsResult",
+        success: true,
+        data: results,
+      });
+    } catch (error: any) {
+      figma.ui.postMessage({
+        type: "convertComponentsResult",
+        success: false,
+        error: error.message || String(error),
+      });
+    }
+  }
+
+  // ── Focus Node ───────────────────────────────────────────────────────────
+  if (msg.type === "focusNode") {
+    try {
+      const node = figma.getNodeById(msg.nodeId) as SceneNode | null;
+      if (node) {
+        figma.viewport.scrollAndZoomIntoView([node]);
+        figma.currentPage.selection = [node];
+      }
+    } catch (_) {
+      // silently ignore — node may have been deleted
     }
   }
 };

@@ -12,6 +12,12 @@ import {
   handlePreviewResult,
   handleApplyResult,
 } from "./edit";
+import {
+  runComponentScan,
+  handleScanResult,
+  runConvert,
+  handleConvertResult,
+} from "./components";
 
 // ── Expose functions to global scope for inline onclick handlers ──────────
 (window as any).exportPageJSON = exportPageJSON;
@@ -19,10 +25,11 @@ import {
 (window as any).downloadAnalysisReport = downloadAnalysisReport;
 (window as any).previewRulesUI = previewRulesUI;
 (window as any).applyRulesUI = applyRulesUI;
+(window as any).runComponentScan = runComponentScan;
+(window as any).runConvert = runConvert;
 
 // ── Tab switching ─────────────────────────────────────────────────────────
 function switchTab(tabName: string): void {
-  // Deactivate all tabs
   document.querySelectorAll(".tab-btn").forEach((btn) => {
     btn.classList.remove("active");
   });
@@ -30,7 +37,6 @@ function switchTab(tabName: string): void {
     (panel as HTMLElement).style.display = "none";
   });
 
-  // Activate selected tab
   const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
   const activePanel = document.getElementById(`tab-${tabName}`);
   if (activeBtn) activeBtn.classList.add("active");
@@ -62,6 +68,12 @@ window.onmessage = (event: MessageEvent) => {
       break;
     case "applyResult":
       handleApplyResult(response);
+      break;
+    case "scanComponentsResult":
+      handleScanResult(response);
+      break;
+    case "convertComponentsResult":
+      handleConvertResult(response);
       break;
   }
 };

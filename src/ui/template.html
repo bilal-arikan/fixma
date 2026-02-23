@@ -565,6 +565,141 @@
     .edit-results .analyze-empty {
       padding: 16px;
     }
+
+    /* ── Components Tab ──────────────────────────────────────────────────── */
+    .comp-group-card {
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      overflow: hidden;
+      background: white;
+    }
+
+    .comp-group-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: #f7f7f7;
+      border-bottom: 1px solid #e8e8e8;
+      gap: 8px;
+    }
+
+    .comp-group-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      color: #333;
+      flex: 1;
+      user-select: none;
+    }
+
+    .comp-group-label input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: #667eea;
+      flex-shrink: 0;
+    }
+
+    .comp-group-title {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .comp-pages {
+      font-size: 10px;
+      color: #aaa;
+      white-space: nowrap;
+    }
+
+    .comp-group-body {
+      padding: 6px 10px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .comp-legend {
+      font-size: 10px;
+      color: #aaa;
+      margin-bottom: 4px;
+      padding: 3px 6px;
+      background: #fafafa;
+      border-radius: 3px;
+    }
+
+    .comp-node-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .comp-node-focusable {
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .comp-node-focusable:hover {
+      background: #667eea18 !important;
+      border-color: #667eea50 !important;
+    }
+
+    .comp-node-focusable:hover .comp-focus-hint {
+      opacity: 1;
+    }
+
+    .comp-focus-hint {
+      font-size: 11px;
+      opacity: 0;
+      transition: opacity 0.15s;
+      flex-shrink: 0;
+    }
+
+    .comp-master-row {
+      background: #667eea10;
+      border: 1px solid #667eea25;
+    }
+
+    .comp-node-icon {
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .comp-node-name {
+      font-weight: 600;
+      color: #333;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .comp-node-meta {
+      font-size: 10px;
+      color: #999;
+      white-space: nowrap;
+    }
+
+    .comp-node-meta em {
+      font-style: normal;
+      color: #bbb;
+    }
+
+    .comp-results-wrap {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 8px;
+    }
   </style>
 </head>
 <body>
@@ -574,6 +709,7 @@
     <div class="tab-bar">
       <button class="tab-btn active" data-tab="export" onclick="switchTab('export')">📦 Export</button>
       <button class="tab-btn" data-tab="analyze" onclick="switchTab('analyze')">🔍 Analyze</button>
+      <button class="tab-btn" data-tab="components" onclick="switchTab('components')">🧩 Components</button>
       <button class="tab-btn" data-tab="edit" onclick="switchTab('edit')">⚙️ Edit</button>
     </div>
 
@@ -695,6 +831,63 @@
             <div class="analyze-empty">
               Click Scan to start the analysis.
             </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ==================== TAB: Components ==================== -->
+      <div class="tab-panel" id="tab-components" style="display:none;">
+
+        <div class="section-card">
+          <h3>🧩 Component Candidates</h3>
+          <p class="section-desc">
+            Scans for structurally similar frames and groups. Select the ones you want to convert — the first node in each group becomes the master component, the rest become instances.
+          </p>
+
+          <div class="scope-group">
+            <label class="scope-label">
+              <input type="radio" name="compScope" value="current" checked>
+              <span>📄 Current Page Only</span>
+            </label>
+            <label class="scope-label">
+              <input type="radio" name="compScope" value="all">
+              <span>📚 All Pages</span>
+            </label>
+          </div>
+
+          <div class="controls">
+            <button class="btn-primary" onclick="runComponentScan()" id="compScanBtn">
+              🔍 Scan
+            </button>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <h3>📊 Scan Summary</h3>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="label">Similar Groups</div>
+              <div class="value" id="compGroupCount">-</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Total Nodes</div>
+              <div class="value" id="compNodeCount">-</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card" style="flex:1; min-height:0; display:flex; flex-direction:column;">
+          <h3>🔎 Similar Groups</h3>
+          <div class="comp-results-wrap" id="compResults">
+            <div class="analyze-empty">
+              Click Scan to find similar structures.
+            </div>
+          </div>
+          <div style="margin-top:10px;">
+            <button class="btn-danger" onclick="runConvert()" id="compConvertBtn" disabled style="width:100%;">
+              🧩 Create Components
+            </button>
           </div>
         </div>
 

@@ -565,6 +565,141 @@
     .edit-results .analyze-empty {
       padding: 16px;
     }
+
+    /* ── Components Tab ──────────────────────────────────────────────────── */
+    .comp-group-card {
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      overflow: hidden;
+      background: white;
+    }
+
+    .comp-group-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: #f7f7f7;
+      border-bottom: 1px solid #e8e8e8;
+      gap: 8px;
+    }
+
+    .comp-group-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      color: #333;
+      flex: 1;
+      user-select: none;
+    }
+
+    .comp-group-label input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: #667eea;
+      flex-shrink: 0;
+    }
+
+    .comp-group-title {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .comp-pages {
+      font-size: 10px;
+      color: #aaa;
+      white-space: nowrap;
+    }
+
+    .comp-group-body {
+      padding: 6px 10px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .comp-legend {
+      font-size: 10px;
+      color: #aaa;
+      margin-bottom: 4px;
+      padding: 3px 6px;
+      background: #fafafa;
+      border-radius: 3px;
+    }
+
+    .comp-node-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .comp-node-focusable {
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .comp-node-focusable:hover {
+      background: #667eea18 !important;
+      border-color: #667eea50 !important;
+    }
+
+    .comp-node-focusable:hover .comp-focus-hint {
+      opacity: 1;
+    }
+
+    .comp-focus-hint {
+      font-size: 11px;
+      opacity: 0;
+      transition: opacity 0.15s;
+      flex-shrink: 0;
+    }
+
+    .comp-master-row {
+      background: #667eea10;
+      border: 1px solid #667eea25;
+    }
+
+    .comp-node-icon {
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .comp-node-name {
+      font-weight: 600;
+      color: #333;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .comp-node-meta {
+      font-size: 10px;
+      color: #999;
+      white-space: nowrap;
+    }
+
+    .comp-node-meta em {
+      font-style: normal;
+      color: #bbb;
+    }
+
+    .comp-results-wrap {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 8px;
+    }
   </style>
 </head>
 <body>
@@ -574,6 +709,7 @@
     <div class="tab-bar">
       <button class="tab-btn active" data-tab="export" onclick="switchTab('export')">📦 Export</button>
       <button class="tab-btn" data-tab="analyze" onclick="switchTab('analyze')">🔍 Analyze</button>
+      <button class="tab-btn" data-tab="components" onclick="switchTab('components')">🧩 Components</button>
       <button class="tab-btn" data-tab="edit" onclick="switchTab('edit')">⚙️ Edit</button>
     </div>
 
@@ -695,6 +831,63 @@
             <div class="analyze-empty">
               Click Scan to start the analysis.
             </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ==================== TAB: Components ==================== -->
+      <div class="tab-panel" id="tab-components" style="display:none;">
+
+        <div class="section-card">
+          <h3>🧩 Component Candidates</h3>
+          <p class="section-desc">
+            Scans for structurally similar frames and groups. Select the ones you want to convert — the first node in each group becomes the master component, the rest become instances.
+          </p>
+
+          <div class="scope-group">
+            <label class="scope-label">
+              <input type="radio" name="compScope" value="current" checked>
+              <span>📄 Current Page Only</span>
+            </label>
+            <label class="scope-label">
+              <input type="radio" name="compScope" value="all">
+              <span>📚 All Pages</span>
+            </label>
+          </div>
+
+          <div class="controls">
+            <button class="btn-primary" onclick="runComponentScan()" id="compScanBtn">
+              🔍 Scan
+            </button>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <h3>📊 Scan Summary</h3>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="label">Similar Groups</div>
+              <div class="value" id="compGroupCount">-</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Total Nodes</div>
+              <div class="value" id="compNodeCount">-</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card" style="flex:1; min-height:0; display:flex; flex-direction:column;">
+          <h3>🔎 Similar Groups</h3>
+          <div class="comp-results-wrap" id="compResults">
+            <div class="analyze-empty">
+              Click Scan to find similar structures.
+            </div>
+          </div>
+          <div style="margin-top:10px;">
+            <button class="btn-danger" onclick="runConvert()" id="compConvertBtn" disabled style="width:100%;">
+              🧩 Create Components
+            </button>
           </div>
         </div>
 
@@ -1126,12 +1319,172 @@
     return String(str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
+  // src/ui/components.ts
+  var lastScanGroups = [];
+  function runComponentScan() {
+    const scopeInput = document.querySelector(
+      'input[name="compScope"]:checked'
+    );
+    const scope = scopeInput ? scopeInput.value : "current";
+    const scanBtn = document.getElementById("compScanBtn");
+    scanBtn.disabled = true;
+    scanBtn.textContent = "\u23F3 Scanning...";
+    const convertBtn = document.getElementById("compConvertBtn");
+    convertBtn.disabled = true;
+    const resultsEl = document.getElementById("compResults");
+    resultsEl.innerHTML = '<div class="analyze-empty">\u23F3 Scanning for similar structures...</div>';
+    parent.postMessage(
+      { pluginMessage: { type: "scanComponents", scope } },
+      "*"
+    );
+  }
+  function handleScanResult(response) {
+    const scanBtn = document.getElementById("compScanBtn");
+    scanBtn.disabled = false;
+    scanBtn.textContent = "\u{1F50D} Scan";
+    const resultsEl = document.getElementById("compResults");
+    if (!response.success) {
+      resultsEl.innerHTML = `<div class="analyze-empty">\u274C Error: ${response.error || "Unknown error"}</div>`;
+      return;
+    }
+    const groups = response.data || [];
+    lastScanGroups = groups;
+    document.getElementById("compGroupCount").textContent = String(groups.length);
+    document.getElementById("compNodeCount").textContent = String(
+      groups.reduce((s, g) => s + g.nodes.length, 0)
+    );
+    if (groups.length === 0) {
+      resultsEl.innerHTML = '<div class="analyze-empty">\u2705 No repeating structures found.</div>';
+      return;
+    }
+    const html = groups.map((group, idx) => buildGroupCard(group, idx)).join("");
+    resultsEl.innerHTML = html;
+    resultsEl.querySelectorAll('input[type="checkbox"].group-check').forEach((cb) => {
+      cb.addEventListener("change", updateConvertButton);
+    });
+    resultsEl.querySelectorAll(".comp-node-focusable").forEach((row) => {
+      row.addEventListener("click", (e) => {
+        const nodeId = row.dataset.nodeId;
+        if (!nodeId) return;
+        parent.postMessage({ pluginMessage: { type: "focusNode", nodeId } }, "*");
+      });
+    });
+    updateConvertButton();
+  }
+  function buildGroupCard(group, idx) {
+    const nodeRows = group.nodes.map((n, ni) => `
+      <div class="comp-node-row ${ni === 0 ? "comp-master-row" : ""} comp-node-focusable"
+           data-node-id="${escapeHtml3(n.id)}"
+           title="Click to focus in Figma">
+        <span class="comp-node-icon">${ni === 0 ? "\u2B50" : "\u{1F517}"}</span>
+        <span class="comp-node-name">${escapeHtml3(n.name)}</span>
+        <span class="comp-node-meta">${escapeHtml3(n.type)} \xB7 ${Math.round(n.width)}\xD7${Math.round(n.height)} \xB7 <em>${escapeHtml3(n.parentName)}</em></span>
+        <span class="comp-focus-hint">\u{1F3AF}</span>
+      </div>
+    `).join("");
+    return `
+    <div class="comp-group-card" data-idx="${idx}">
+      <div class="comp-group-header">
+        <label class="comp-group-label">
+          <input type="checkbox" class="group-check" data-idx="${idx}">
+          <span class="comp-group-title">${escapeHtml3(group.label)}</span>
+          <span class="badge">${group.nodes.length} nodes</span>
+        </label>
+        <span class="comp-pages">${group.pages.map((p) => escapeHtml3(p)).join(", ")}</span>
+      </div>
+      <div class="comp-group-body">
+        <div class="comp-legend">\u2B50 = will become master component &nbsp;\xB7&nbsp; \u{1F517} = will become instance &nbsp;\xB7&nbsp; click row to focus</div>
+        ${nodeRows}
+      </div>
+    </div>
+  `;
+  }
+  function updateConvertButton() {
+    const checked = document.querySelectorAll('input[type="checkbox"].group-check:checked').length;
+    const convertBtn = document.getElementById("compConvertBtn");
+    convertBtn.disabled = checked === 0;
+    convertBtn.textContent = checked > 0 ? `\u{1F9E9} Create Components (${checked} group${checked > 1 ? "s" : ""})` : "\u{1F9E9} Create Components";
+  }
+  function runConvert() {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"].group-check:checked');
+    if (checkboxes.length === 0) return;
+    const selected = [];
+    checkboxes.forEach((cb) => {
+      const idx = parseInt(cb.dataset.idx, 10);
+      const group = lastScanGroups[idx];
+      if (group) {
+        selected.push({
+          fingerprint: group.fingerprint,
+          label: group.label,
+          nodeIds: group.nodes.map((n) => n.id)
+        });
+      }
+    });
+    const convertBtn = document.getElementById("compConvertBtn");
+    convertBtn.disabled = true;
+    convertBtn.textContent = "\u23F3 Converting...";
+    parent.postMessage(
+      { pluginMessage: { type: "convertComponents", requests: selected } },
+      "*"
+    );
+  }
+  function handleConvertResult(response) {
+    const convertBtn = document.getElementById("compConvertBtn");
+    convertBtn.disabled = false;
+    convertBtn.textContent = "\u{1F9E9} Create Components";
+    const resultsEl = document.getElementById("compResults");
+    if (!response.success) {
+      resultsEl.innerHTML = `<div class="analyze-empty">\u274C Error: ${response.error || "Unknown error"}</div>`;
+      return;
+    }
+    const results = response.data || [];
+    const totalSuccess = results.reduce((s, r) => s + r.successCount, 0);
+    const totalErrors = results.reduce((s, r) => s + r.errors.length, 0);
+    let html = `
+    <div class="apply-summary ${totalErrors > 0 ? "has-errors" : "all-success"}">
+      \u2705 ${totalSuccess} node${totalSuccess !== 1 ? "s" : ""} converted${totalErrors > 0 ? ` \xB7 \u274C ${totalErrors} error${totalErrors !== 1 ? "s" : ""}` : ""}
+    </div>
+  `;
+    for (const result of results) {
+      const statusIcon = result.errors.length === 0 ? "\u{1F9E9}" : "\u26A0\uFE0F";
+      html += `
+      <div class="preview-section">
+        <div class="preview-section-title">${statusIcon} ${escapeHtml3(result.label)}</div>
+        <div class="preview-row">
+          <span class="preview-icon">\u2B50</span>
+          <div class="preview-info">
+            <span class="preview-name">Master: ${escapeHtml3(result.componentName)}</span>
+            <span class="preview-detail">ID: ${escapeHtml3(result.componentId || "?")} \xB7 ${result.instanceCount} instance${result.instanceCount !== 1 ? "s" : ""} created</span>
+          </div>
+        </div>
+        ${result.errors.map((e) => `
+          <div class="preview-row preview-row-error">
+            <span class="preview-icon">\u274C</span>
+            <div class="preview-info">
+              <span class="preview-detail">${escapeHtml3(e)}</span>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    `;
+    }
+    lastScanGroups = [];
+    resultsEl.innerHTML = html;
+    document.getElementById("compGroupCount").textContent = "-";
+    document.getElementById("compNodeCount").textContent = "-";
+  }
+  function escapeHtml3(str) {
+    return String(str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
   // src/ui/main.ts
   window.exportPageJSON = exportPageJSON;
   window.runAnalysis = runAnalysis;
   window.downloadAnalysisReport = downloadAnalysisReport;
   window.previewRulesUI = previewRulesUI;
   window.applyRulesUI = applyRulesUI;
+  window.runComponentScan = runComponentScan;
+  window.runConvert = runConvert;
   function switchTab(tabName) {
     document.querySelectorAll(".tab-btn").forEach((btn) => {
       btn.classList.remove("active");
@@ -1164,6 +1517,12 @@
         break;
       case "applyResult":
         handleApplyResult(response);
+        break;
+      case "scanComponentsResult":
+        handleScanResult(response);
+        break;
+      case "convertComponentsResult":
+        handleConvertResult(response);
         break;
     }
   };
