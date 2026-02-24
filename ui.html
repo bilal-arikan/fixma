@@ -672,10 +672,17 @@
       flex-shrink: 0;
     }
 
+    .comp-node-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
     .comp-node-name {
       font-weight: 600;
       color: #333;
-      flex: 1;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -690,6 +697,29 @@
     .comp-node-meta em {
       font-style: normal;
       color: #bbb;
+    }
+
+    .comp-diff-hint {
+      font-size: 10px;
+      color: #f5a623;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .comp-color-swatch {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      border: 1px solid rgba(0,0,0,0.15);
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+
+    .badge-warn {
+      background: #f5a623 !important;
     }
 
     .comp-results-wrap {
@@ -1363,7 +1393,7 @@
       cb.addEventListener("change", updateConvertButton);
     });
     resultsEl.querySelectorAll(".comp-node-focusable").forEach((row) => {
-      row.addEventListener("click", (e) => {
+      row.addEventListener("click", () => {
         const nodeId = row.dataset.nodeId;
         if (!nodeId) return;
         parent.postMessage({ pluginMessage: { type: "focusNode", nodeId } }, "*");
@@ -1372,16 +1402,36 @@
     updateConvertButton();
   }
   function buildGroupCard(group, idx) {
-    const nodeRows = group.nodes.map((n, ni) => `
-      <div class="comp-node-row ${ni === 0 ? "comp-master-row" : ""} comp-node-focusable"
-           data-node-id="${escapeHtml3(n.id)}"
-           title="Click to focus in Figma">
-        <span class="comp-node-icon">${ni === 0 ? "\u2B50" : "\u{1F517}"}</span>
-        <span class="comp-node-name">${escapeHtml3(n.name)}</span>
-        <span class="comp-node-meta">${escapeHtml3(n.type)} \xB7 ${Math.round(n.width)}\xD7${Math.round(n.height)} \xB7 <em>${escapeHtml3(n.parentName)}</em></span>
-        <span class="comp-focus-hint">\u{1F3AF}</span>
-      </div>
-    `).join("");
+    const hasDiffs = !!group.hasDiffs;
+    const nodeRows = group.nodes.map((n, ni) => {
+      var _a;
+      const diff = ni > 0 ? (_a = group.diffs) == null ? void 0 : _a[ni - 1] : null;
+      const hasTextDiff = diff && diff.textDiffs && diff.textDiffs.length > 0;
+      const hasFillDiff = diff && diff.fillDiffs && diff.fillDiffs.length > 0;
+      let diffHtml = "";
+      if (hasTextDiff) {
+        const texts = diff.textDiffs.map((td) => `<em>${escapeHtml3(td.childName)}</em>: "${escapeHtml3(td.value)}"`).join(", ");
+        diffHtml += `<span class="comp-diff-hint">\u270F\uFE0F ${texts}</span>`;
+      }
+      if (hasFillDiff) {
+        const swatches = diff.fillDiffs.map((fd) => `<span class="comp-color-swatch" style="background:${escapeHtml3(fd.hex)}" title="${escapeHtml3(fd.hex)}"></span>`).join(" ");
+        diffHtml += `<span class="comp-diff-hint">\u{1F3A8} ${swatches} ${diff.fillDiffs.map((fd) => escapeHtml3(fd.hex)).join(", ")}</span>`;
+      }
+      return `
+        <div class="comp-node-row ${ni === 0 ? "comp-master-row" : ""} comp-node-focusable"
+             data-node-id="${escapeHtml3(n.id)}"
+             title="Click to focus in Figma">
+          <span class="comp-node-icon">${ni === 0 ? "\u2B50" : "\u{1F517}"}</span>
+          <div class="comp-node-info">
+            <span class="comp-node-name">${escapeHtml3(n.name)}</span>
+            <span class="comp-node-meta">${escapeHtml3(n.type)} \xB7 ${Math.round(n.width)}\xD7${Math.round(n.height)} \xB7 <em>${escapeHtml3(n.parentName)}</em></span>
+            ${diffHtml}
+          </div>
+          <span class="comp-focus-hint">\u{1F3AF}</span>
+        </div>
+      `;
+    }).join("");
+    const diffBadge = hasDiffs ? `<span class="badge badge-warn" title="Text or fill differences detected \u2014 overrides will be applied">\u26A0\uFE0F diffs</span>` : "";
     return `
     <div class="comp-group-card" data-idx="${idx}">
       <div class="comp-group-header">
@@ -1389,11 +1439,12 @@
           <input type="checkbox" class="group-check" data-idx="${idx}">
           <span class="comp-group-title">${escapeHtml3(group.label)}</span>
           <span class="badge">${group.nodes.length} nodes</span>
+          ${diffBadge}
         </label>
         <span class="comp-pages">${group.pages.map((p) => escapeHtml3(p)).join(", ")}</span>
       </div>
       <div class="comp-group-body">
-        <div class="comp-legend">\u2B50 = will become master component &nbsp;\xB7&nbsp; \u{1F517} = will become instance &nbsp;\xB7&nbsp; click row to focus</div>
+        <div class="comp-legend">\u2B50 = master &nbsp;\xB7&nbsp; \u{1F517} = instance &nbsp;\xB7&nbsp; click row to focus${hasDiffs ? " &nbsp;\xB7&nbsp; \u26A0\uFE0F overrides will restore differing values" : ""}</div>
         ${nodeRows}
       </div>
     </div>
@@ -1416,7 +1467,9 @@
         selected.push({
           fingerprint: group.fingerprint,
           label: group.label,
-          nodeIds: group.nodes.map((n) => n.id)
+          nodeIds: group.nodes.map((n) => n.id),
+          diffs: group.diffs || []
+          // pass diffs so converter can apply overrides
         });
       }
     });
@@ -1439,14 +1492,17 @@
     }
     const results = response.data || [];
     const totalSuccess = results.reduce((s, r) => s + r.successCount, 0);
+    const totalOverrides = results.reduce((s, r) => s + (r.overridesApplied || 0), 0);
     const totalErrors = results.reduce((s, r) => s + r.errors.length, 0);
+    let summaryExtra = totalOverrides > 0 ? ` \xB7 \u{1F504} ${totalOverrides} override${totalOverrides !== 1 ? "s" : ""} applied` : "";
     let html = `
     <div class="apply-summary ${totalErrors > 0 ? "has-errors" : "all-success"}">
-      \u2705 ${totalSuccess} node${totalSuccess !== 1 ? "s" : ""} converted${totalErrors > 0 ? ` \xB7 \u274C ${totalErrors} error${totalErrors !== 1 ? "s" : ""}` : ""}
+      \u2705 ${totalSuccess} node${totalSuccess !== 1 ? "s" : ""} converted${summaryExtra}${totalErrors > 0 ? ` \xB7 \u274C ${totalErrors} error${totalErrors !== 1 ? "s" : ""}` : ""}
     </div>
   `;
     for (const result of results) {
       const statusIcon = result.errors.length === 0 ? "\u{1F9E9}" : "\u26A0\uFE0F";
+      const overrideInfo = result.overridesApplied > 0 ? ` \xB7 ${result.overridesApplied} override${result.overridesApplied !== 1 ? "s" : ""} applied` : "";
       html += `
       <div class="preview-section">
         <div class="preview-section-title">${statusIcon} ${escapeHtml3(result.label)}</div>
@@ -1454,7 +1510,7 @@
           <span class="preview-icon">\u2B50</span>
           <div class="preview-info">
             <span class="preview-name">Master: ${escapeHtml3(result.componentName)}</span>
-            <span class="preview-detail">ID: ${escapeHtml3(result.componentId || "?")} \xB7 ${result.instanceCount} instance${result.instanceCount !== 1 ? "s" : ""} created</span>
+            <span class="preview-detail">${result.instanceCount} instance${result.instanceCount !== 1 ? "s" : ""} created${overrideInfo}</span>
           </div>
         </div>
         ${result.errors.map((e) => `

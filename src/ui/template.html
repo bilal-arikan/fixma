@@ -672,10 +672,17 @@
       flex-shrink: 0;
     }
 
+    .comp-node-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
     .comp-node-name {
       font-weight: 600;
       color: #333;
-      flex: 1;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -690,6 +697,29 @@
     .comp-node-meta em {
       font-style: normal;
       color: #bbb;
+    }
+
+    .comp-diff-hint {
+      font-size: 10px;
+      color: #f5a623;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .comp-color-swatch {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      border: 1px solid rgba(0,0,0,0.15);
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+
+    .badge-warn {
+      background: #f5a623 !important;
     }
 
     .comp-results-wrap {

@@ -68,8 +68,7 @@ export function handleScanResult(response: any): void {
 
   // Wire up node row clicks → focus in Figma
   resultsEl.querySelectorAll(".comp-node-focusable").forEach((row) => {
-    row.addEventListener("click", (e) => {
-      // Don't interfere with checkbox clicks inside the header
+    row.addEventListener("click", () => {
       const nodeId = (row as HTMLElement).dataset.nodeId;
       if (!nodeId) return;
       parent.postMessage({ pluginMessage: { type: "focusNode", nodeId } }, "*");
@@ -79,19 +78,52 @@ export function handleScanResult(response: any): void {
   updateConvertButton();
 }
 
+// ── Group card builder ────────────────────────────────────────────────────────
+
 function buildGroupCard(group: any, idx: number): string {
+  const hasDiffs = !!group.hasDiffs;
+
   const nodeRows = group.nodes
-    .map((n: any, ni: number) => `
-      <div class="comp-node-row ${ni === 0 ? "comp-master-row" : ""} comp-node-focusable"
-           data-node-id="${escapeHtml(n.id)}"
-           title="Click to focus in Figma">
-        <span class="comp-node-icon">${ni === 0 ? "⭐" : "🔗"}</span>
-        <span class="comp-node-name">${escapeHtml(n.name)}</span>
-        <span class="comp-node-meta">${escapeHtml(n.type)} · ${Math.round(n.width)}×${Math.round(n.height)} · <em>${escapeHtml(n.parentName)}</em></span>
-        <span class="comp-focus-hint">🎯</span>
-      </div>
-    `)
+    .map((n: any, ni: number) => {
+      // Diff entry for this node (master = index 0 has no diff entry)
+      const diff = ni > 0 ? group.diffs?.[ni - 1] : null;
+      const hasTextDiff = diff && diff.textDiffs && diff.textDiffs.length > 0;
+      const hasFillDiff = diff && diff.fillDiffs && diff.fillDiffs.length > 0;
+
+      // Build diff hint line
+      let diffHtml = "";
+      if (hasTextDiff) {
+        const texts = diff.textDiffs
+          .map((td: any) => `<em>${escapeHtml(td.childName)}</em>: "${escapeHtml(td.value)}"`)
+          .join(", ");
+        diffHtml += `<span class="comp-diff-hint">✏️ ${texts}</span>`;
+      }
+      if (hasFillDiff) {
+        const swatches = diff.fillDiffs
+          .map((fd: any) => `<span class="comp-color-swatch" style="background:${escapeHtml(fd.hex)}" title="${escapeHtml(fd.hex)}"></span>`)
+          .join(" ");
+        diffHtml += `<span class="comp-diff-hint">🎨 ${swatches} ${diff.fillDiffs.map((fd: any) => escapeHtml(fd.hex)).join(", ")}</span>`;
+      }
+
+      return `
+        <div class="comp-node-row ${ni === 0 ? "comp-master-row" : ""} comp-node-focusable"
+             data-node-id="${escapeHtml(n.id)}"
+             title="Click to focus in Figma">
+          <span class="comp-node-icon">${ni === 0 ? "⭐" : "🔗"}</span>
+          <div class="comp-node-info">
+            <span class="comp-node-name">${escapeHtml(n.name)}</span>
+            <span class="comp-node-meta">${escapeHtml(n.type)} · ${Math.round(n.width)}×${Math.round(n.height)} · <em>${escapeHtml(n.parentName)}</em></span>
+            ${diffHtml}
+          </div>
+          <span class="comp-focus-hint">🎯</span>
+        </div>
+      `;
+    })
     .join("");
+
+  const diffBadge = hasDiffs
+    ? `<span class="badge badge-warn" title="Text or fill differences detected — overrides will be applied">⚠️ diffs</span>`
+    : "";
 
   return `
     <div class="comp-group-card" data-idx="${idx}">
@@ -100,11 +132,12 @@ function buildGroupCard(group: any, idx: number): string {
           <input type="checkbox" class="group-check" data-idx="${idx}">
           <span class="comp-group-title">${escapeHtml(group.label)}</span>
           <span class="badge">${group.nodes.length} nodes</span>
+          ${diffBadge}
         </label>
         <span class="comp-pages">${group.pages.map((p: string) => escapeHtml(p)).join(", ")}</span>
       </div>
       <div class="comp-group-body">
-        <div class="comp-legend">⭐ = will become master component &nbsp;·&nbsp; 🔗 = will become instance &nbsp;·&nbsp; click row to focus</div>
+        <div class="comp-legend">⭐ = master &nbsp;·&nbsp; 🔗 = instance &nbsp;·&nbsp; click row to focus${hasDiffs ? " &nbsp;·&nbsp; ⚠️ overrides will restore differing values" : ""}</div>
         ${nodeRows}
       </div>
     </div>
@@ -135,6 +168,7 @@ export function runConvert(): void {
         fingerprint: group.fingerprint,
         label: group.label,
         nodeIds: group.nodes.map((n: any) => n.id),
+        diffs: group.diffs || [],   // pass diffs so converter can apply overrides
       });
     }
   });
@@ -165,16 +199,21 @@ export function handleConvertResult(response: any): void {
 
   const results: any[] = response.data || [];
   const totalSuccess = results.reduce((s, r) => s + r.successCount, 0);
+  const totalOverrides = results.reduce((s, r) => s + (r.overridesApplied || 0), 0);
   const totalErrors = results.reduce((s, r) => s + r.errors.length, 0);
 
+  let summaryExtra = totalOverrides > 0 ? ` · 🔄 ${totalOverrides} override${totalOverrides !== 1 ? "s" : ""} applied` : "";
   let html = `
     <div class="apply-summary ${totalErrors > 0 ? "has-errors" : "all-success"}">
-      ✅ ${totalSuccess} node${totalSuccess !== 1 ? "s" : ""} converted${totalErrors > 0 ? ` · ❌ ${totalErrors} error${totalErrors !== 1 ? "s" : ""}` : ""}
+      ✅ ${totalSuccess} node${totalSuccess !== 1 ? "s" : ""} converted${summaryExtra}${totalErrors > 0 ? ` · ❌ ${totalErrors} error${totalErrors !== 1 ? "s" : ""}` : ""}
     </div>
   `;
 
   for (const result of results) {
     const statusIcon = result.errors.length === 0 ? "🧩" : "⚠️";
+    const overrideInfo = result.overridesApplied > 0
+      ? ` · ${result.overridesApplied} override${result.overridesApplied !== 1 ? "s" : ""} applied`
+      : "";
     html += `
       <div class="preview-section">
         <div class="preview-section-title">${statusIcon} ${escapeHtml(result.label)}</div>
@@ -182,7 +221,7 @@ export function handleConvertResult(response: any): void {
           <span class="preview-icon">⭐</span>
           <div class="preview-info">
             <span class="preview-name">Master: ${escapeHtml(result.componentName)}</span>
-            <span class="preview-detail">ID: ${escapeHtml(result.componentId || "?")} · ${result.instanceCount} instance${result.instanceCount !== 1 ? "s" : ""} created</span>
+            <span class="preview-detail">${result.instanceCount} instance${result.instanceCount !== 1 ? "s" : ""} created${overrideInfo}</span>
           </div>
         </div>
         ${result.errors.map((e: string) => `
@@ -197,11 +236,9 @@ export function handleConvertResult(response: any): void {
     `;
   }
 
-  // After convert, reset scan data so user re-scans
   lastScanGroups = [];
   resultsEl.innerHTML = html;
 
-  // Reset scan stats
   document.getElementById("compGroupCount")!.textContent = "-";
   document.getElementById("compNodeCount")!.textContent = "-";
 }
