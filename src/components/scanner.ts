@@ -221,11 +221,16 @@ export function scanComponentCandidates(pages: readonly PageNode[]): ComponentGr
   return groups;
 }
 
+// Node types whose children we must NOT descend into for candidate scanning.
+// COMPONENT/INSTANCE internals are read-only / non-removable by the plugin.
+const SKIP_DESCENT_TYPES = new Set(["COMPONENT", "INSTANCE"]);
+
 function scanNode(node: any, pageName: string, fpMap: Map<string, ComponentNode_[]>): void {
   // Only fingerprint candidate types (FRAME / GROUP) that have at least 1 child
+  // AND are NOT themselves inside a COMPONENT or INSTANCE (those cannot be removed/moved).
   if (CANDIDATE_TYPES.has(node.type)) {
     const hasChildren = node.children && node.children.length > 0;
-    if (hasChildren) {
+    if (hasChildren && !isInsideProtected(node)) {
       const fp = buildFingerprint(node);
       if (!fpMap.has(fp)) fpMap.set(fp, []);
       fpMap.get(fp)!.push({
@@ -245,11 +250,24 @@ function scanNode(node: any, pageName: string, fpMap: Map<string, ComponentNode_
     }
   }
 
+  // Do NOT recurse into COMPONENT or INSTANCE nodes — their children are protected.
+  if (SKIP_DESCENT_TYPES.has(node.type)) return;
+
   if (node.children) {
     for (const child of node.children) {
       scanNode(child, pageName, fpMap);
     }
   }
+}
+
+/** Returns true if the node has a COMPONENT or INSTANCE ancestor. */
+function isInsideProtected(node: any): boolean {
+  let current = node.parent;
+  while (current) {
+    if (SKIP_DESCENT_TYPES.has(current.type)) return true;
+    current = current.parent;
+  }
+  return false;
 }
 
 // ── Label derivation ──────────────────────────────────────────────────────────

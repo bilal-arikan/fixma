@@ -50,10 +50,32 @@ const CONVERTIBLE_TYPES = new Set(["FRAME", "GROUP", "RECTANGLE", "ELLIPSE", "VE
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+/** Returns true if the node has a COMPONENT or INSTANCE ancestor. */
+function isInsideProtected(node: BaseNode): boolean {
+  let current = node.parent;
+  while (current) {
+    if (current.type === "INSTANCE" || current.type === "COMPONENT") return true;
+    current = (current as any).parent;
+  }
+  return false;
+}
+
+/** Returns true if the node is directly or indirectly inside an instance. */
+function isInsideInstance(node: BaseNode): boolean {
+  let current = node.parent;
+  while (current) {
+    if (current.type === "INSTANCE") return true;
+    current = (current as any).parent;
+  }
+  return false;
+}
+
 /**
  * Creates a ComponentNode from an existing SceneNode.
- * Moves all children into the component. Does NOT insert into any parent —
- * caller is responsible for appending and positioning.
+ * - If the node is NOT inside an instance: moves children directly (no clone needed).
+ * - If the node IS inside an instance: clones each child (direct move is forbidden
+ *   by Figma API — "Cannot move node. Node is inside of an instance").
+ * Does NOT insert into any parent — caller is responsible for appending and positioning.
  * The original node is removed.
  */
 function extractToComponent(node: SceneNode): ComponentNode {
@@ -61,23 +83,109 @@ function extractToComponent(node: SceneNode): ComponentNode {
     throw new Error(`Cannot convert ${node.type} to COMPONENT`);
   }
 
-  const name = (node as any).name || "Component";
-  const w = (node as any).width ?? 100;
-  const h = (node as any).height ?? 100;
+  // Figma does not allow removing or moving nodes inside COMPONENT/INSTANCE trees
+  if (isInsideProtected(node)) {
+    throw new Error(
+      `"${(node as any).name || node.id}" is inside a component or instance and cannot be converted. ` +
+      `Detach the containing instance first.`
+    );
+  }
+
+  const n = node as any;
+  const name = n.name || "Component";
+  const w = n.width ?? 100;
+  const h = n.height ?? 100;
 
   const comp = figma.createComponent();
   comp.name = name;
+
+  // ── Copy Frame-specific layout properties BEFORE adding children ──────────
+  // This ensures auto-layout and sizing modes are in place when children arrive,
+  // preventing the component from resizing itself based on its own rules.
+  if (node.type === "FRAME") {
+    // Auto-layout
+    if (n.layoutMode && n.layoutMode !== "NONE") {
+      comp.layoutMode = n.layoutMode;
+      if (n.primaryAxisSizingMode) comp.primaryAxisSizingMode = n.primaryAxisSizingMode;
+      if (n.counterAxisSizingMode) comp.counterAxisSizingMode = n.counterAxisSizingMode;
+      if (n.primaryAxisAlignItems) comp.primaryAxisAlignItems = n.primaryAxisAlignItems;
+      if (n.counterAxisAlignItems) comp.counterAxisAlignItems = n.counterAxisAlignItems;
+      if (typeof n.itemSpacing === "number") comp.itemSpacing = n.itemSpacing;
+      if (typeof n.paddingLeft === "number") comp.paddingLeft = n.paddingLeft;
+      if (typeof n.paddingRight === "number") comp.paddingRight = n.paddingRight;
+      if (typeof n.paddingTop === "number") comp.paddingTop = n.paddingTop;
+      if (typeof n.paddingBottom === "number") comp.paddingBottom = n.paddingBottom;
+      if (typeof n.itemReverseZIndex === "boolean") comp.itemReverseZIndex = n.itemReverseZIndex;
+    }
+    // Clip content
+    if (typeof n.clipsContent === "boolean") comp.clipsContent = n.clipsContent;
+    // Corner radius
+    if (typeof n.cornerRadius === "number") {
+      try { comp.cornerRadius = n.cornerRadius; } catch (_) {}
+    }
+    if (n.topLeftRadius !== undefined) {
+      try {
+        comp.topLeftRadius = n.topLeftRadius;
+        comp.topRightRadius = n.topRightRadius;
+        comp.bottomLeftRadius = n.bottomLeftRadius;
+        comp.bottomRightRadius = n.bottomRightRadius;
+      } catch (_) {}
+    }
+    // Fills, strokes, effects
+    if (n.fills) try { comp.fills = n.fills; } catch (_) {}
+    if (n.strokes) try { comp.strokes = n.strokes; } catch (_) {}
+    if (n.strokeWeight !== undefined) try { comp.strokeWeight = n.strokeWeight; } catch (_) {}
+    if (n.effects) try { comp.effects = n.effects; } catch (_) {}
+  }
+
+  // Set size BEFORE adding children so auto-layout sees the target size
   comp.resize(w, h);
 
-  // Move children
+  // ── Move children ──────────────────────────────────────────────────────────
+  const isAutoLayout = node.type === "FRAME" && n.layoutMode && n.layoutMode !== "NONE";
+
   if ("children" in node) {
-    const children = [...(node as any).children];
-    for (const child of children) {
-      comp.appendChild(child);
+    const children = [...n.children];
+
+    if (isAutoLayout) {
+      // Auto-layout manages child positions — just move them, don't touch x/y
+      for (const child of children) {
+        comp.appendChild(child);
+      }
+    } else {
+      // Non-auto-layout: snapshot each child's x/y BEFORE move, restore AFTER.
+      // appendChild can shift coordinates when the component's origin differs.
+      const positions = children.map((c: any) => ({ x: c.x, y: c.y }));
+      for (let i = 0; i < children.length; i++) {
+        comp.appendChild(children[i]);
+        try {
+          children[i].x = positions[i].x;
+          children[i].y = positions[i].y;
+        } catch (_) {}
+      }
     }
   }
 
-  node.remove();
+  // ── Re-lock size after children are moved ─────────────────────────────────
+  if (isAutoLayout) {
+    const hFixed = n.primaryAxisSizingMode === "FIXED";
+    const vFixed = n.counterAxisSizingMode === "FIXED";
+    if (hFixed || vFixed) {
+      comp.resize(hFixed ? w : comp.width, vFixed ? h : comp.height);
+    }
+  } else {
+    comp.resize(w, h);
+  }
+
+  // ── Remove original node ───────────────────────────────────────────────────
+  // After moving all children, the original node may have been implicitly invalidated
+  // (e.g. auto-layout frames can self-destruct when emptied).
+  try {
+    const stillExists = figma.getNodeById(node.id);
+    if (stillExists) node.remove();
+  } catch (_) {
+    // Already gone — that's fine, continue
+  }
   return comp;
 }
 
@@ -191,13 +299,16 @@ export function convertGroups(requests: ConvertRequest[]): ConvertResult[] {
 
       const firstInst = masterComponent.createInstance();
 
-      if (firstParent && typeof firstParent.appendChild === "function") {
+      const firstParentIsInstance =
+        firstParent?.type === "INSTANCE" || (firstParent && isInsideInstance(firstParent));
+
+      if (firstParent && typeof firstParent.appendChild === "function" && !firstParentIsInstance) {
         // Insert into original parent; use relative x/y from metadata
         firstParent.appendChild(firstInst);
         firstInst.x = masterMeta.relativeX ?? masterMeta.absoluteX;
         firstInst.y = masterMeta.relativeY ?? masterMeta.absoluteY;
       } else {
-        // Fallback: page root with absolute coords
+        // Parent is an instance or not found — use absolute canvas coords
         page.appendChild(firstInst);
         firstInst.x = masterMeta.absoluteX;
         firstInst.y = masterMeta.absoluteY;
@@ -219,6 +330,13 @@ export function convertGroups(requests: ConvertRequest[]): ConvertResult[] {
         const node = figma.getNodeById(nodeId) as SceneNode | null;
         if (!node) throw new Error(`Node ${nodeId} not found`);
 
+        // Guard: cannot remove nodes inside a COMPONENT or INSTANCE
+        if (isInsideProtected(node)) {
+          throw new Error(
+            `"${(node as any).name || nodeId}" is inside a component or instance. Detach it first.`
+          );
+        }
+
         // Snapshot parent and relative position BEFORE removal
         const nodeParent = node.parent as any;
         const relX = (node as any).x ?? 0;
@@ -226,12 +344,19 @@ export function convertGroups(requests: ConvertRequest[]): ConvertResult[] {
         const zIndex = nodeParent && nodeParent.children
           ? nodeParent.children.indexOf(node)
           : -1;
+        // Check if parent is an instance (cannot appendChild into an instance)
+        const parentIsInstance = nodeParent?.type === "INSTANCE" || isInsideInstance(nodeParent);
 
         node.remove();
 
         const instance = masterComponent!.createInstance();
 
-        if (nodeParent && typeof nodeParent.appendChild === "function") {
+        const canInsertIntoParent =
+          nodeParent &&
+          typeof nodeParent.appendChild === "function" &&
+          !parentIsInstance;
+
+        if (canInsertIntoParent) {
           // Re-insert at same z-index within original parent
           nodeParent.appendChild(instance);
           if (zIndex >= 0 && typeof nodeParent.insertChild === "function") {
@@ -240,10 +365,10 @@ export function convertGroups(requests: ConvertRequest[]): ConvertResult[] {
           instance.x = relX;
           instance.y = relY;
         } else {
-          // Fallback: page root with absolute coords from metadata
+          // Parent is an instance or page root — use absolute canvas coords
           page.appendChild(instance);
-          instance.x = nodeMeta?.absoluteX ?? 0;
-          instance.y = nodeMeta?.absoluteY ?? 0;
+          instance.x = nodeMeta?.absoluteX ?? relX;
+          instance.y = nodeMeta?.absoluteY ?? relY;
         }
 
         if (diff) overridesApplied += applyOverrides(instance, diff);
