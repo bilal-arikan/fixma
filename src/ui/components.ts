@@ -168,7 +168,8 @@ export function runConvert(): void {
         fingerprint: group.fingerprint,
         label: group.label,
         nodeIds: group.nodes.map((n: any) => n.id),
-        diffs: group.diffs || [],   // pass diffs so converter can apply overrides
+        nodes: group.nodes,         // full metadata (absoluteX/Y for placement)
+        diffs: group.diffs || [],   // diffs for override restoration
       });
     }
   });

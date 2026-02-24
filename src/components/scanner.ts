@@ -22,6 +22,14 @@ export interface ComponentNode_ {
   type: string;
   width: number;
   height: number;
+  /** Absolute canvas X (from absoluteTransform matrix) */
+  absoluteX: number;
+  /** Absolute canvas Y (from absoluteTransform matrix) */
+  absoluteY: number;
+  /** X relative to parent (node.x) — used for placement inside parent frame */
+  relativeX: number;
+  /** Y relative to parent (node.y) — used for placement inside parent frame */
+  relativeY: number;
   parentId: string;
   parentName: string;
   pageName: string;
@@ -226,6 +234,10 @@ function scanNode(node: any, pageName: string, fpMap: Map<string, ComponentNode_
         type: node.type,
         width: node.width ?? 0,
         height: node.height ?? 0,
+        absoluteX: node.absoluteTransform?.[0]?.[2] ?? 0,
+        absoluteY: node.absoluteTransform?.[1]?.[2] ?? 0,
+        relativeX: node.x ?? 0,
+        relativeY: node.y ?? 0,
         parentId: node.parent?.id ?? "",
         parentName: node.parent?.name ?? "",
         pageName,
