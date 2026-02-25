@@ -35,8 +35,12 @@ export function runAnalysis(): void {
   // Read which checks to run
   const checkNamingEl = document.getElementById("analyzeCheckNaming") as HTMLInputElement | null;
   const checkSafeAreaEl = document.getElementById("analyzeCheckSafeArea") as HTMLInputElement | null;
+  const checkEmptyFramesEl = document.getElementById("analyzeCheckEmptyFrames") as HTMLInputElement | null;
+  const checkZeroSizeEl = document.getElementById("analyzeCheckZeroSize") as HTMLInputElement | null;
   const checkNaming = checkNamingEl ? checkNamingEl.checked : true;
   const checkSafeArea = checkSafeAreaEl ? checkSafeAreaEl.checked : true;
+  const checkEmptyFrames = checkEmptyFramesEl ? checkEmptyFramesEl.checked : true;
+  const checkZeroSize = checkZeroSizeEl ? checkZeroSizeEl.checked : true;
 
   const btn = document.getElementById("analyzeBtn") as HTMLButtonElement;
   btn.disabled = true;
@@ -50,7 +54,7 @@ export function runAnalysis(): void {
       pluginMessage: {
         type: "analyzeDocument",
         scope,
-        checks: { naming: checkNaming, safeArea: checkSafeArea },
+        checks: { naming: checkNaming, safeArea: checkSafeArea, emptyFrames: checkEmptyFrames, zeroSize: checkZeroSize },
       },
     },
     "*"
@@ -73,7 +77,11 @@ export function handleAnalyzeResult(response: any): void {
   }
 
   const data = response.data;
-  const { namingIssues, safeAreaIssues, totalIssues, scannedNodes } = data;
+  const { namingIssues, safeAreaIssues, cleanupIssues = [], totalIssues, scannedNodes } = data;
+
+  // Split cleanup issues into two categories
+  const emptyFrameIssues = cleanupIssues.filter((i: any) => i.kind === "empty_frame");
+  const zeroSizeIssues = cleanupIssues.filter((i: any) => i.kind === "zero_size");
 
   // Store for download and enable button
   lastAnalysisData = data;
@@ -85,6 +93,8 @@ export function handleAnalyzeResult(response: any): void {
   document.getElementById("analyzedIssues")!.textContent = String(totalIssues);
   document.getElementById("analyzedNaming")!.textContent = String(namingIssues.length);
   document.getElementById("analyzedSafeArea")!.textContent = String(safeAreaIssues.length);
+  document.getElementById("analyzedEmptyFrames")!.textContent = String(emptyFrameIssues.length);
+  document.getElementById("analyzedZeroSize")!.textContent = String(zeroSizeIssues.length);
 
   if (totalIssues === 0) {
     resultsEl.innerHTML = '<div class="analyze-empty">✅ No issues found! Your page looks clean.</div>';
@@ -121,6 +131,44 @@ export function handleAnalyzeResult(response: any): void {
       safeAreaIssues
         .map((issue: any) => buildIssueCard(
           "📱",
+          issue.nodeName,
+          `${issue.nodeType} · ${issue.width}×${issue.height}`,
+          issue.nodeId,
+          issue.description,
+          issue.suggestion
+        ))
+        .join("")
+    );
+  }
+
+  // ── Empty Frame Issues ──────────────────────────────────────────────
+  if (emptyFrameIssues.length > 0) {
+    html += buildAccordion(
+      "emptyframes",
+      `📭 Empty Frames`,
+      emptyFrameIssues.length,
+      emptyFrameIssues
+        .map((issue: any) => buildIssueCard(
+          "📭",
+          issue.nodeName,
+          `${issue.nodeType} · ${issue.width}×${issue.height}`,
+          issue.nodeId,
+          issue.description,
+          issue.suggestion
+        ))
+        .join("")
+    );
+  }
+
+  // ── Zero-Size Issues ──────────────────────────────────────────────
+  if (zeroSizeIssues.length > 0) {
+    html += buildAccordion(
+      "zerosize",
+      `🔍 Zero-Size Objects`,
+      zeroSizeIssues.length,
+      zeroSizeIssues
+        .map((issue: any) => buildIssueCard(
+          "🔍",
           issue.nodeName,
           `${issue.nodeType} · ${issue.width}×${issue.height}`,
           issue.nodeId,

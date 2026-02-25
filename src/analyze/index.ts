@@ -5,13 +5,15 @@
 import { checkNaming, NamingIssue } from "./naming";
 import { checkSafeArea, SafeAreaIssue } from "./safeArea";
 import { checkLayout, LayoutIssue } from "./layout";
+import { checkCleanup, CleanupIssue, CleanupChecks } from "./cleanup";
 
-export { NamingIssue, SafeAreaIssue, LayoutIssue };
+export { NamingIssue, SafeAreaIssue, LayoutIssue, CleanupIssue };
 
 export interface AnalysisResult {
   namingIssues: NamingIssue[];
   safeAreaIssues: SafeAreaIssue[];
   layoutIssues: LayoutIssue[];
+  cleanupIssues: CleanupIssue[];
   totalIssues: number;
   scannedNodes: number;
 }
@@ -21,6 +23,8 @@ export interface AnalysisChecks {
   naming: boolean;
   safeArea: boolean;
   layout: boolean;
+  emptyFrames: boolean;
+  zeroSize: boolean;
 }
 
 /**
@@ -49,7 +53,7 @@ function countAllNodes(pages: readonly PageNode[]): number {
  */
 export function analyzeDocument(
   scope: "current" | "all",
-  checks: AnalysisChecks = { naming: true, safeArea: true, layout: true }
+  checks: AnalysisChecks = { naming: true, safeArea: true, layout: true, emptyFrames: true, zeroSize: true }
 ): AnalysisResult {
   const pages: readonly PageNode[] =
     scope === "all" ? figma.root.children : [figma.currentPage];
@@ -61,15 +65,25 @@ export function analyzeDocument(
     }
   }
 
-  const safeAreaIssues = checks.safeArea ? checkSafeArea(pages) : [];
-  const layoutIssues   = checks.layout   ? checkLayout(pages)   : [];
-  const scannedNodes   = countAllNodes(pages);
+  const safeAreaIssues  = checks.safeArea ? checkSafeArea(pages) : [];
+  const layoutIssues    = checks.layout   ? checkLayout(pages)   : [];
+
+  const cleanupChecks: CleanupChecks = {
+    emptyFrames: checks.emptyFrames,
+    zeroSize: checks.zeroSize,
+  };
+  const cleanupIssues = (checks.emptyFrames || checks.zeroSize)
+    ? checkCleanup(pages, cleanupChecks)
+    : [];
+
+  const scannedNodes = countAllNodes(pages);
 
   return {
     namingIssues,
     safeAreaIssues,
     layoutIssues,
-    totalIssues: namingIssues.length + safeAreaIssues.length + layoutIssues.length,
+    cleanupIssues,
+    totalIssues: namingIssues.length + safeAreaIssues.length + layoutIssues.length + cleanupIssues.length,
     scannedNodes,
   };
 }

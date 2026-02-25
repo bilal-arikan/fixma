@@ -49,9 +49,11 @@ figma.ui.onmessage = (msg: any) => {
     try {
       const scope = msg.scope || "current";
       const checks = {
-        naming:   msg.checks?.naming   !== false,
-        safeArea: msg.checks?.safeArea !== false,
-        layout:   msg.checks?.layout   !== false,
+        naming:      msg.checks?.naming      !== false,
+        safeArea:    msg.checks?.safeArea    !== false,
+        layout:      msg.checks?.layout      !== false,
+        emptyFrames: msg.checks?.emptyFrames !== false,
+        zeroSize:    msg.checks?.zeroSize    !== false,
       };
       const result = analyzeDocument(scope, checks);
       figma.ui.postMessage({

@@ -34,12 +34,14 @@ function isCandidate(node: FrameNode | ComponentNode): boolean {
 }
 
 /**
- * Returns true if the node already contains a direct child frame named "safearea"
+ * Returns true if the node already contains a direct child whose name
+ * includes "safearea" or "safe" (case-insensitive).
  */
 function hasSafeAreaFrame(node: FrameNode | ComponentNode): boolean {
-  return node.children.some(
-    (c) => c.name === "safearea" && c.type === "FRAME"
-  );
+  return node.children.some((c) => {
+    const lower = c.name.toLowerCase();
+    return lower.includes("safearea") || lower.includes("safe");
+  });
 }
 
 /**

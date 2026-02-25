@@ -1049,6 +1049,14 @@
               <input type="checkbox" id="analyzeCheckSafeArea" checked>
               <span>📱 Safe Area Issues</span>
             </label>
+            <label class="scope-label">
+              <input type="checkbox" id="analyzeCheckEmptyFrames" checked>
+              <span>📭 Empty Frames</span>
+            </label>
+            <label class="scope-label">
+              <input type="checkbox" id="analyzeCheckZeroSize" checked>
+              <span>🔍 Zero-Size Objects</span>
+            </label>
           </div>
 
           <div class="controls" style="gap:8px;">
@@ -1077,8 +1085,16 @@
               <div class="value" id="analyzedNaming">-</div>
             </div>
             <div class="stat-card warn">
-              <div class="label">Safe Area Issues</div>
+              <div class="label">Safe Area</div>
               <div class="value" id="analyzedSafeArea">-</div>
+            </div>
+            <div class="stat-card warn">
+              <div class="label">Empty Frames</div>
+              <div class="value" id="analyzedEmptyFrames">-</div>
+            </div>
+            <div class="stat-card warn">
+              <div class="label">Zero-Size</div>
+              <div class="value" id="analyzedZeroSize">-</div>
             </div>
           </div>
         </div>

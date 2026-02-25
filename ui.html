@@ -1049,6 +1049,14 @@
               <input type="checkbox" id="analyzeCheckSafeArea" checked>
               <span>📱 Safe Area Issues</span>
             </label>
+            <label class="scope-label">
+              <input type="checkbox" id="analyzeCheckEmptyFrames" checked>
+              <span>📭 Empty Frames</span>
+            </label>
+            <label class="scope-label">
+              <input type="checkbox" id="analyzeCheckZeroSize" checked>
+              <span>🔍 Zero-Size Objects</span>
+            </label>
           </div>
 
           <div class="controls" style="gap:8px;">
@@ -1077,8 +1085,16 @@
               <div class="value" id="analyzedNaming">-</div>
             </div>
             <div class="stat-card warn">
-              <div class="label">Safe Area Issues</div>
+              <div class="label">Safe Area</div>
               <div class="value" id="analyzedSafeArea">-</div>
+            </div>
+            <div class="stat-card warn">
+              <div class="label">Empty Frames</div>
+              <div class="value" id="analyzedEmptyFrames">-</div>
+            </div>
+            <div class="stat-card warn">
+              <div class="label">Zero-Size</div>
+              <div class="value" id="analyzedZeroSize">-</div>
             </div>
           </div>
         </div>
@@ -1446,8 +1462,12 @@
     const scope = scopeInput ? scopeInput.value : "current";
     const checkNamingEl = document.getElementById("analyzeCheckNaming");
     const checkSafeAreaEl = document.getElementById("analyzeCheckSafeArea");
+    const checkEmptyFramesEl = document.getElementById("analyzeCheckEmptyFrames");
+    const checkZeroSizeEl = document.getElementById("analyzeCheckZeroSize");
     const checkNaming = checkNamingEl ? checkNamingEl.checked : true;
     const checkSafeArea = checkSafeAreaEl ? checkSafeAreaEl.checked : true;
+    const checkEmptyFrames = checkEmptyFramesEl ? checkEmptyFramesEl.checked : true;
+    const checkZeroSize = checkZeroSizeEl ? checkZeroSizeEl.checked : true;
     const btn = document.getElementById("analyzeBtn");
     btn.disabled = true;
     btn.textContent = "\u23F3 Scanning...";
@@ -1458,7 +1478,7 @@
         pluginMessage: {
           type: "analyzeDocument",
           scope,
-          checks: { naming: checkNaming, safeArea: checkSafeArea }
+          checks: { naming: checkNaming, safeArea: checkSafeArea, emptyFrames: checkEmptyFrames, zeroSize: checkZeroSize }
         }
       },
       "*"
@@ -1474,7 +1494,9 @@
       return;
     }
     const data = response.data;
-    const { namingIssues, safeAreaIssues, totalIssues, scannedNodes } = data;
+    const { namingIssues, safeAreaIssues, cleanupIssues = [], totalIssues, scannedNodes } = data;
+    const emptyFrameIssues = cleanupIssues.filter((i) => i.kind === "empty_frame");
+    const zeroSizeIssues = cleanupIssues.filter((i) => i.kind === "zero_size");
     lastAnalysisData = data;
     const downloadBtn = document.getElementById("downloadReportBtn");
     if (downloadBtn) downloadBtn.disabled = false;
@@ -1482,6 +1504,8 @@
     document.getElementById("analyzedIssues").textContent = String(totalIssues);
     document.getElementById("analyzedNaming").textContent = String(namingIssues.length);
     document.getElementById("analyzedSafeArea").textContent = String(safeAreaIssues.length);
+    document.getElementById("analyzedEmptyFrames").textContent = String(emptyFrameIssues.length);
+    document.getElementById("analyzedZeroSize").textContent = String(zeroSizeIssues.length);
     if (totalIssues === 0) {
       resultsEl.innerHTML = '<div class="analyze-empty">\u2705 No issues found! Your page looks clean.</div>';
       return;
@@ -1509,6 +1533,36 @@
         safeAreaIssues.length,
         safeAreaIssues.map((issue) => buildIssueCard(
           "\u{1F4F1}",
+          issue.nodeName,
+          `${issue.nodeType} \xB7 ${issue.width}\xD7${issue.height}`,
+          issue.nodeId,
+          issue.description,
+          issue.suggestion
+        )).join("")
+      );
+    }
+    if (emptyFrameIssues.length > 0) {
+      html += buildAccordion(
+        "emptyframes",
+        `\u{1F4ED} Empty Frames`,
+        emptyFrameIssues.length,
+        emptyFrameIssues.map((issue) => buildIssueCard(
+          "\u{1F4ED}",
+          issue.nodeName,
+          `${issue.nodeType} \xB7 ${issue.width}\xD7${issue.height}`,
+          issue.nodeId,
+          issue.description,
+          issue.suggestion
+        )).join("")
+      );
+    }
+    if (zeroSizeIssues.length > 0) {
+      html += buildAccordion(
+        "zerosize",
+        `\u{1F50D} Zero-Size Objects`,
+        zeroSizeIssues.length,
+        zeroSizeIssues.map((issue) => buildIssueCard(
+          "\u{1F50D}",
           issue.nodeName,
           `${issue.nodeType} \xB7 ${issue.width}\xD7${issue.height}`,
           issue.nodeId,
