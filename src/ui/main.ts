@@ -17,6 +17,9 @@ import {
   handleScanResult,
   runConvert,
   handleConvertResult,
+  runCombineAsVariants,
+  handleGetSelectionResult,
+  handleCombineAsVariantsResult,
 } from "./components";
 
 // ── Expose functions to global scope for inline onclick handlers ──────────
@@ -27,6 +30,7 @@ import {
 (window as any).applyRulesUI = applyRulesUI;
 (window as any).runComponentScan = runComponentScan;
 (window as any).runConvert = runConvert;
+(window as any).runCombineAsVariants = runCombineAsVariants;
 
 // ── Tab switching ─────────────────────────────────────────────────────────
 function switchTab(tabName: string): void {
@@ -74,6 +78,12 @@ window.onmessage = (event: MessageEvent) => {
       break;
     case "convertComponentsResult":
       handleConvertResult(response);
+      break;
+    case "getSelectionResult":
+      handleGetSelectionResult(response);
+      break;
+    case "combineAsVariantsResult":
+      handleCombineAsVariantsResult(response);
       break;
   }
 };

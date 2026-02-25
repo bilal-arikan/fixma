@@ -6,7 +6,7 @@
 import { exportDocumentJSON } from "./export";
 import { analyzeDocument } from "./analyze";
 import { previewRules, applyRules } from "./apply";
-import { scanComponentCandidates, convertGroups } from "./components";
+import { scanComponentCandidates, convertGroups, combineAsVariants } from "./components";
 
 // Show the plugin UI
 figma.showUI(__html__, {
@@ -117,6 +117,20 @@ figma.ui.onmessage = (msg: any) => {
   if (msg.type === "convertComponents") {
     try {
       const results = convertGroups(msg.requests || []);
+
+      // Focus all successfully created master components
+      const createdNodes: SceneNode[] = [];
+      for (const r of results) {
+        if (r.componentId) {
+          const node = figma.getNodeById(r.componentId) as SceneNode | null;
+          if (node) createdNodes.push(node);
+        }
+      }
+      if (createdNodes.length > 0) {
+        figma.currentPage.selection = createdNodes;
+        figma.viewport.scrollAndZoomIntoView(createdNodes);
+      }
+
       figma.ui.postMessage({
         type: "convertComponentsResult",
         success: true,
@@ -125,6 +139,58 @@ figma.ui.onmessage = (msg: any) => {
     } catch (error: any) {
       figma.ui.postMessage({
         type: "convertComponentsResult",
+        success: false,
+        error: error.message || String(error),
+      });
+    }
+  }
+
+  // ── Get Current Selection ─────────────────────────────────────────────────
+  if (msg.type === "getSelection") {
+    try {
+      const selection = figma.currentPage.selection;
+      const nodeIds = selection.map((n) => n.id);
+      figma.ui.postMessage({
+        type: "getSelectionResult",
+        success: true,
+        nodeIds,
+      });
+    } catch (error: any) {
+      figma.ui.postMessage({
+        type: "getSelectionResult",
+        success: false,
+        nodeIds: [],
+        error: error.message || String(error),
+      });
+    }
+  }
+
+  // ── Combine Selected as Variants ─────────────────────────────────────────
+  if (msg.type === "combineAsVariants") {
+    try {
+      const result = combineAsVariants({
+        nodeIds: msg.nodeIds || [],
+        componentSetName: msg.componentSetName,
+        propertyName: msg.propertyName,
+      });
+
+      // Focus the created ComponentSet
+      if (result.success && result.componentSetId) {
+        const node = figma.getNodeById(result.componentSetId) as SceneNode | null;
+        if (node) {
+          figma.currentPage.selection = [node];
+          figma.viewport.scrollAndZoomIntoView([node]);
+        }
+      }
+
+      figma.ui.postMessage({
+        type: "combineAsVariantsResult",
+        success: result.success,
+        data: result,
+      });
+    } catch (error: any) {
+      figma.ui.postMessage({
+        type: "combineAsVariantsResult",
         success: false,
         error: error.message || String(error),
       });

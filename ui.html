@@ -738,8 +738,9 @@
     <!-- ==================== Tab Bar ==================== -->
     <div class="tab-bar">
       <button class="tab-btn active" data-tab="export" onclick="switchTab('export')">📦 Export</button>
-      <button class="tab-btn" data-tab="analyze" onclick="switchTab('analyze')">🔍 Analyze</button>
       <button class="tab-btn" data-tab="components" onclick="switchTab('components')">🧩 Components</button>
+      <button class="tab-btn" data-tab="variants" onclick="switchTab('variants')">🔀 Variants</button>
+      <button class="tab-btn" data-tab="analyze" onclick="switchTab('analyze')">🔍 Analyze</button>
       <button class="tab-btn" data-tab="edit" onclick="switchTab('edit')">⚙️ Edit</button>
     </div>
 
@@ -918,6 +919,32 @@
             <button class="btn-danger" onclick="runConvert()" id="compConvertBtn" disabled style="width:100%;">
               🧩 Create Components
             </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ==================== TAB: Variants ==================== -->
+      <div class="tab-panel" id="tab-variants" style="display:none;">
+
+        <div class="section-card">
+          <h3>🔀 Combine Selection as Variants</h3>
+          <p class="section-desc">
+            Select 2 or more objects in Figma, then click the button below to combine them into a single Component Set (Variants). Each object becomes a variant (State=Default, State=Variant2, …) and is replaced by its instance on canvas.
+          </p>
+          <div class="controls">
+            <button class="btn-primary" onclick="runCombineAsVariants()" id="combineVariantsBtn" style="width:100%;">
+              🔀 Combine Selection as Variants
+            </button>
+          </div>
+        </div>
+
+        <div class="section-card" style="flex:1; min-height:0; display:flex; flex-direction:column;">
+          <h3>📋 Result</h3>
+          <div class="comp-results-wrap" id="variantsResults">
+            <div class="analyze-empty">
+              Select objects in Figma and click the button above.
+            </div>
           </div>
         </div>
 
@@ -1351,6 +1378,73 @@
 
   // src/ui/components.ts
   var lastScanGroups = [];
+  function runCombineAsVariants() {
+    const btn = document.getElementById("combineVariantsBtn");
+    btn.disabled = true;
+    btn.textContent = "\u23F3 Combining...";
+    parent.postMessage({ pluginMessage: { type: "getSelection" } }, "*");
+  }
+  function handleGetSelectionResult(response) {
+    const btn = document.getElementById("combineVariantsBtn");
+    if (!response.success || !response.nodeIds || response.nodeIds.length < 2) {
+      btn.disabled = false;
+      btn.textContent = "\u{1F500} Combine Selection as Variants";
+      const resultsEl = document.getElementById("variantsResults");
+      resultsEl.innerHTML = `<div class="analyze-empty">\u26A0\uFE0F Please select at least 2 objects in Figma before combining.</div>`;
+      return;
+    }
+    parent.postMessage(
+      {
+        pluginMessage: {
+          type: "combineAsVariants",
+          nodeIds: response.nodeIds,
+          componentSetName: response.nodeIds.length > 0 ? void 0 : "Component",
+          propertyName: "State"
+        }
+      },
+      "*"
+    );
+  }
+  function handleCombineAsVariantsResult(response) {
+    var _a, _b;
+    const btn = document.getElementById("combineVariantsBtn");
+    btn.disabled = false;
+    btn.textContent = "\u{1F500} Combine Selection as Variants";
+    const resultsEl = document.getElementById("variantsResults");
+    if (!response.success) {
+      const data2 = response.data;
+      const errList = ((_a = data2 == null ? void 0 : data2.errors) == null ? void 0 : _a.length) ? data2.errors.map((e) => `<div class="preview-row preview-row-error"><span class="preview-icon">\u274C</span><div class="preview-info"><span class="preview-detail">${escapeHtml3(e)}</span></div></div>`).join("") : "";
+      resultsEl.innerHTML = `
+      <div class="apply-summary has-errors">
+        \u274C ${escapeHtml3(response.error || "Combine as Variants failed")}
+      </div>
+      ${errList}
+    `;
+      return;
+    }
+    const data = response.data;
+    const warningHtml = ((_b = data.errors) == null ? void 0 : _b.length) ? data.errors.map((e) => `
+        <div class="preview-row preview-row-error">
+          <span class="preview-icon">\u26A0\uFE0F</span>
+          <div class="preview-info"><span class="preview-detail">${escapeHtml3(e)}</span></div>
+        </div>`).join("") : "";
+    resultsEl.innerHTML = `
+    <div class="apply-summary all-success">
+      \u2705 Combined ${data.variantCount} variant${data.variantCount !== 1 ? "s" : ""} into <strong>${escapeHtml3(data.componentSetName)}</strong>
+    </div>
+    <div class="preview-section">
+      <div class="preview-section-title">\u{1F500} Component Set Created</div>
+      <div class="preview-row">
+        <span class="preview-icon">\u{1F9E9}</span>
+        <div class="preview-info">
+          <span class="preview-name">${escapeHtml3(data.componentSetName)}</span>
+          <span class="preview-detail">${data.variantCount} variants \xB7 instances placed back on canvas</span>
+        </div>
+      </div>
+      ${warningHtml}
+    </div>
+  `;
+  }
   function runComponentScan() {
     const scopeInput = document.querySelector(
       'input[name="compScope"]:checked'
@@ -1543,6 +1637,7 @@
   window.applyRulesUI = applyRulesUI;
   window.runComponentScan = runComponentScan;
   window.runConvert = runConvert;
+  window.runCombineAsVariants = runCombineAsVariants;
   function switchTab(tabName) {
     document.querySelectorAll(".tab-btn").forEach((btn) => {
       btn.classList.remove("active");
@@ -1581,6 +1676,12 @@
         break;
       case "convertComponentsResult":
         handleConvertResult(response);
+        break;
+      case "getSelectionResult":
+        handleGetSelectionResult(response);
+        break;
+      case "combineAsVariantsResult":
+        handleCombineAsVariantsResult(response);
         break;
     }
   };

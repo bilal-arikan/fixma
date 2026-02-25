@@ -5,6 +5,94 @@
 // Last scan results stored for convert step
 let lastScanGroups: any[] = [];
 
+// ── Combine Selected as Variants ──────────────────────────────────────────────
+
+/**
+ * Reads the current Figma selection (via a plugin message round-trip),
+ * then sends "combineAsVariants" to the plugin backend.
+ */
+export function runCombineAsVariants(): void {
+  const btn = document.getElementById("combineVariantsBtn") as HTMLButtonElement;
+  btn.disabled = true;
+  btn.textContent = "⏳ Combining...";
+
+  // Ask the plugin for the current selection IDs
+  parent.postMessage({ pluginMessage: { type: "getSelection" } }, "*");
+}
+
+export function handleGetSelectionResult(response: any): void {
+  const btn = document.getElementById("combineVariantsBtn") as HTMLButtonElement;
+
+  if (!response.success || !response.nodeIds || response.nodeIds.length < 2) {
+    btn.disabled = false;
+    btn.textContent = "🔀 Combine Selection as Variants";
+
+    const resultsEl = document.getElementById("variantsResults")!;
+    resultsEl.innerHTML = `<div class="analyze-empty">⚠️ Please select at least 2 objects in Figma before combining.</div>`;
+    return;
+  }
+
+  parent.postMessage(
+    {
+      pluginMessage: {
+        type: "combineAsVariants",
+        nodeIds: response.nodeIds,
+        componentSetName: response.nodeIds.length > 0 ? undefined : "Component",
+        propertyName: "State",
+      },
+    },
+    "*"
+  );
+}
+
+export function handleCombineAsVariantsResult(response: any): void {
+  const btn = document.getElementById("combineVariantsBtn") as HTMLButtonElement;
+  btn.disabled = false;
+  btn.textContent = "🔀 Combine Selection as Variants";
+
+  const resultsEl = document.getElementById("variantsResults")!;
+
+  if (!response.success) {
+    const data = response.data;
+    const errList = data?.errors?.length
+      ? data.errors.map((e: string) => `<div class="preview-row preview-row-error"><span class="preview-icon">❌</span><div class="preview-info"><span class="preview-detail">${escapeHtml(e)}</span></div></div>`).join("")
+      : "";
+    resultsEl.innerHTML = `
+      <div class="apply-summary has-errors">
+        ❌ ${escapeHtml(response.error || "Combine as Variants failed")}
+      </div>
+      ${errList}
+    `;
+    return;
+  }
+
+  const data = response.data;
+  const warningHtml = data.errors?.length
+    ? data.errors.map((e: string) => `
+        <div class="preview-row preview-row-error">
+          <span class="preview-icon">⚠️</span>
+          <div class="preview-info"><span class="preview-detail">${escapeHtml(e)}</span></div>
+        </div>`).join("")
+    : "";
+
+  resultsEl.innerHTML = `
+    <div class="apply-summary all-success">
+      ✅ Combined ${data.variantCount} variant${data.variantCount !== 1 ? "s" : ""} into <strong>${escapeHtml(data.componentSetName)}</strong>
+    </div>
+    <div class="preview-section">
+      <div class="preview-section-title">🔀 Component Set Created</div>
+      <div class="preview-row">
+        <span class="preview-icon">🧩</span>
+        <div class="preview-info">
+          <span class="preview-name">${escapeHtml(data.componentSetName)}</span>
+          <span class="preview-detail">${data.variantCount} variants · instances placed back on canvas</span>
+        </div>
+      </div>
+      ${warningHtml}
+    </div>
+  `;
+}
+
 // ── Scan ──────────────────────────────────────────────────────────────────────
 
 export function runComponentScan(): void {
