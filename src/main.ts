@@ -5,7 +5,14 @@
 
 import { exportDocumentJSON } from "./export";
 import { analyzeDocument } from "./analyze";
+import { checkLayout } from "./analyze/layout";
+import {
+  DEFAULT_LAYOUT_CONFIG,
+  LAYOUT_CONFIG_STORAGE_KEY,
+  mergeWithDefaults,
+} from "./analyze/layoutConfig";
 import { previewRules, applyRules } from "./apply";
+import { fixLayoutIssue, fixAllLayoutIssues } from "./apply/layoutFix";
 import { scanComponentCandidates, convertGroups, combineAsVariants } from "./components";
 
 // Show the plugin UI
@@ -41,7 +48,12 @@ figma.ui.onmessage = (msg: any) => {
   if (msg.type === "analyzeDocument") {
     try {
       const scope = msg.scope || "current";
-      const result = analyzeDocument(scope);
+      const checks = {
+        naming:   msg.checks?.naming   !== false,
+        safeArea: msg.checks?.safeArea !== false,
+        layout:   msg.checks?.layout   !== false,
+      };
+      const result = analyzeDocument(scope, checks);
       figma.ui.postMessage({
         type: "analyzeResult",
         success: true,
@@ -96,9 +108,10 @@ figma.ui.onmessage = (msg: any) => {
   if (msg.type === "scanComponents") {
     try {
       const scope = msg.scope || "current";
+      const includeProtected = msg.includeProtected === true;
       const pages: readonly PageNode[] =
         scope === "all" ? figma.root.children : [figma.currentPage];
-      const groups = scanComponentCandidates(pages);
+      const groups = scanComponentCandidates(pages, includeProtected);
       figma.ui.postMessage({
         type: "scanComponentsResult",
         success: true,
@@ -192,6 +205,124 @@ figma.ui.onmessage = (msg: any) => {
       figma.ui.postMessage({
         type: "combineAsVariantsResult",
         success: false,
+        error: error.message || String(error),
+      });
+    }
+  }
+
+  // ── Analyze Layout ───────────────────────────────────────────────────────
+  if (msg.type === "analyzeLayout") {
+    (async () => {
+      try {
+        const scope = msg.scope || "current";
+        const pages: readonly PageNode[] =
+          scope === "all" ? figma.root.children : [figma.currentPage];
+
+        // Load stored config and merge with defaults
+        const stored = await figma.clientStorage.getAsync(LAYOUT_CONFIG_STORAGE_KEY);
+        const config = stored ? mergeWithDefaults(stored) : DEFAULT_LAYOUT_CONFIG;
+
+        const issues = checkLayout(pages, config);
+        figma.ui.postMessage({
+          type: "analyzeLayoutResult",
+          success: true,
+          data: issues,
+          config,          // send active config back so UI can show it
+        });
+      } catch (error: any) {
+        figma.ui.postMessage({
+          type: "analyzeLayoutResult",
+          success: false,
+          error: error.message || String(error),
+        });
+      }
+    })();
+  }
+
+  // ── Load Layout Config ───────────────────────────────────────────────────
+  if (msg.type === "loadLayoutConfig") {
+    (async () => {
+      try {
+        const stored = await figma.clientStorage.getAsync(LAYOUT_CONFIG_STORAGE_KEY);
+        const config = stored ? mergeWithDefaults(stored) : DEFAULT_LAYOUT_CONFIG;
+        figma.ui.postMessage({ type: "loadLayoutConfigResult", success: true, config });
+      } catch (error: any) {
+        figma.ui.postMessage({
+          type: "loadLayoutConfigResult",
+          success: false,
+          config: DEFAULT_LAYOUT_CONFIG,
+          error: error.message || String(error),
+        });
+      }
+    })();
+  }
+
+  // ── Save Layout Config ───────────────────────────────────────────────────
+  if (msg.type === "saveLayoutConfig") {
+    (async () => {
+      try {
+        const config = mergeWithDefaults(msg.config ?? {});
+        await figma.clientStorage.setAsync(LAYOUT_CONFIG_STORAGE_KEY, config);
+        figma.ui.postMessage({ type: "saveLayoutConfigResult", success: true, config });
+      } catch (error: any) {
+        figma.ui.postMessage({
+          type: "saveLayoutConfigResult",
+          success: false,
+          error: error.message || String(error),
+        });
+      }
+    })();
+  }
+
+  // ── Reset Layout Config ──────────────────────────────────────────────────
+  if (msg.type === "resetLayoutConfig") {
+    (async () => {
+      try {
+        await figma.clientStorage.setAsync(LAYOUT_CONFIG_STORAGE_KEY, DEFAULT_LAYOUT_CONFIG);
+        figma.ui.postMessage({
+          type: "saveLayoutConfigResult",
+          success: true,
+          config: DEFAULT_LAYOUT_CONFIG,
+        });
+      } catch (error: any) {
+        figma.ui.postMessage({
+          type: "saveLayoutConfigResult",
+          success: false,
+          error: error.message || String(error),
+        });
+      }
+    })();
+  }
+
+  // ── Fix Layout Issue (single) ────────────────────────────────────────────
+  if (msg.type === "fixLayoutIssue") {
+    try {
+      const result = fixLayoutIssue(msg.issue);
+      figma.ui.postMessage({ type: "fixLayoutIssueResult", result });
+    } catch (error: any) {
+      figma.ui.postMessage({
+        type: "fixLayoutIssueResult",
+        result: {
+          nodeId: msg.issue?.nodeId ?? "",
+          nodeName: msg.issue?.nodeName ?? "",
+          kind: msg.issue?.kind ?? "",
+          success: false,
+          error: error.message || String(error),
+          detail: "",
+        },
+      });
+    }
+  }
+
+  // ── Fix All Layout Issues ──────────────────────────────────────────────
+  if (msg.type === "fixAllLayoutIssues") {
+    try {
+      const results = fixAllLayoutIssues(msg.issues);
+      figma.ui.postMessage({ type: "fixAllLayoutIssuesResult", results });
+    } catch (error: any) {
+      figma.ui.postMessage({
+        type: "fixAllLayoutIssuesResult",
+        results: [],
         error: error.message || String(error),
       });
     }

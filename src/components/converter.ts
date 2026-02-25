@@ -71,24 +71,140 @@ function isInsideInstance(node: BaseNode): boolean {
 }
 
 /**
+ * Handles conversion of a node that lives inside a COMPONENT or INSTANCE tree.
+ *
+ * Strategy:
+ *  1. Clone the node to the page root (clone escapes the protected tree).
+ *  2. Build a new ComponentNode from the clone (children can be freely moved).
+ *  3. Replace the original node inside its parent component/instance with an
+ *     instance of the new master component (so the containing component still
+ *     shows the correct visual at that position).
+ *
+ * Returns the new ComponentNode (NOT yet appended to any parent — caller does that).
+ */
+function extractFromProtected(node: SceneNode): ComponentNode {
+  const page = figma.currentPage;
+  const n = node as any;
+  const w = n.width ?? 100;
+  const h = n.height ?? 100;
+  const relX = n.x ?? 0;
+  const relY = n.y ?? 0;
+  const originalParent = node.parent as any;
+  const zIndex = originalParent?.children ? originalParent.children.indexOf(node) : -1;
+
+  // Step 1: Clone to page root so we can freely move its children
+  const cloned = node.clone() as any;
+  page.appendChild(cloned);
+
+  // Step 2: Build component from the clone
+  const comp = figma.createComponent();
+  comp.name = n.name || "Component";
+
+  // Copy visual properties
+  if (typeof cloned.opacity === "number") try { comp.opacity = cloned.opacity; } catch (_) {}
+  if (cloned.blendMode) try { comp.blendMode = cloned.blendMode; } catch (_) {}
+  if (cloned.effects?.length) try { comp.effects = cloned.effects; } catch (_) {}
+
+  if (cloned.type === "FRAME") {
+    if (cloned.layoutMode && cloned.layoutMode !== "NONE") {
+      comp.layoutMode = cloned.layoutMode;
+      if (cloned.primaryAxisSizingMode) comp.primaryAxisSizingMode = cloned.primaryAxisSizingMode;
+      if (cloned.counterAxisSizingMode) comp.counterAxisSizingMode = cloned.counterAxisSizingMode;
+      if (cloned.primaryAxisAlignItems) comp.primaryAxisAlignItems = cloned.primaryAxisAlignItems;
+      if (cloned.counterAxisAlignItems) comp.counterAxisAlignItems = cloned.counterAxisAlignItems;
+      if (typeof cloned.itemSpacing === "number") comp.itemSpacing = cloned.itemSpacing;
+      if (typeof cloned.paddingLeft === "number") comp.paddingLeft = cloned.paddingLeft;
+      if (typeof cloned.paddingRight === "number") comp.paddingRight = cloned.paddingRight;
+      if (typeof cloned.paddingTop === "number") comp.paddingTop = cloned.paddingTop;
+      if (typeof cloned.paddingBottom === "number") comp.paddingBottom = cloned.paddingBottom;
+      if (typeof cloned.itemReverseZIndex === "boolean") comp.itemReverseZIndex = cloned.itemReverseZIndex;
+    }
+    if (typeof cloned.clipsContent === "boolean") comp.clipsContent = cloned.clipsContent;
+    if (typeof cloned.cornerRadius === "number") try { comp.cornerRadius = cloned.cornerRadius; } catch (_) {}
+    if (cloned.topLeftRadius !== undefined) {
+      try {
+        comp.topLeftRadius = cloned.topLeftRadius;
+        comp.topRightRadius = cloned.topRightRadius;
+        comp.bottomLeftRadius = cloned.bottomLeftRadius;
+        comp.bottomRightRadius = cloned.bottomRightRadius;
+      } catch (_) {}
+    }
+    if (cloned.fills) try { comp.fills = cloned.fills; } catch (_) {}
+    if (cloned.strokes) try { comp.strokes = cloned.strokes; } catch (_) {}
+    if (cloned.strokeWeight !== undefined) try { comp.strokeWeight = cloned.strokeWeight; } catch (_) {}
+  }
+
+  comp.resize(w, h);
+
+  // Move children from clone into component
+  if (cloned.children?.length) {
+    const isAutoLayout = cloned.type === "FRAME" && cloned.layoutMode && cloned.layoutMode !== "NONE";
+    if (isAutoLayout) {
+      for (const child of [...cloned.children]) comp.appendChild(child);
+    } else {
+      const children = [...cloned.children];
+      const positions = children.map((c: any) => ({ x: c.x, y: c.y }));
+      for (let i = 0; i < children.length; i++) {
+        comp.appendChild(children[i]);
+        try { children[i].x = positions[i].x; children[i].y = positions[i].y; } catch (_) {}
+      }
+    }
+    if (cloned.type === "FRAME" && cloned.layoutMode && cloned.layoutMode !== "NONE") {
+      const hFixed = cloned.primaryAxisSizingMode === "FIXED";
+      const vFixed = cloned.counterAxisSizingMode === "FIXED";
+      if (hFixed || vFixed) comp.resize(hFixed ? w : comp.width, vFixed ? h : comp.height);
+    } else {
+      comp.resize(w, h);
+    }
+  }
+
+  // Remove the temporary clone
+  try { cloned.remove(); } catch (_) {}
+
+  // Step 3: Replace original node inside the protected parent with an instance
+  // (so the containing component still looks correct)
+  try {
+    if (originalParent && typeof originalParent.appendChild === "function") {
+      const instance = comp.createInstance();
+      if (zIndex >= 0 && typeof originalParent.insertChild === "function") {
+        originalParent.insertChild(zIndex, instance);
+      } else {
+        originalParent.appendChild(instance);
+      }
+      instance.x = relX;
+      instance.y = relY;
+    }
+    node.remove();
+  } catch (_) {
+    // If removal fails the component is still valid — continue
+  }
+
+  return comp;
+}
+
+/**
  * Creates a ComponentNode from an existing SceneNode.
- * - If the node is NOT inside an instance: moves children directly (no clone needed).
- * - If the node IS inside an instance: clones each child (direct move is forbidden
- *   by Figma API — "Cannot move node. Node is inside of an instance").
+ *
+ * Two strategies depending on whether the node lives inside a COMPONENT/INSTANCE:
+ *
+ * A) Free node (not inside protected):
+ *    - Move children directly into new component, remove original.
+ *
+ * B) Protected node (inside COMPONENT or INSTANCE):
+ *    - Clone the entire node to page root first (escapes the protected tree).
+ *    - Build component from the clone (children can be moved freely).
+ *    - Replace the original inside the component with an instance of the new master.
+ *
  * Does NOT insert into any parent — caller is responsible for appending and positioning.
- * The original node is removed.
  */
 function extractToComponent(node: SceneNode): ComponentNode {
   if (!CONVERTIBLE_TYPES.has(node.type)) {
     throw new Error(`Cannot convert ${node.type} to COMPONENT`);
   }
 
-  // Figma does not allow removing or moving nodes inside COMPONENT/INSTANCE trees
+  // ── Protected path: node lives inside a COMPONENT or INSTANCE ────────────
   if (isInsideProtected(node)) {
-    throw new Error(
-      `"${(node as any).name || node.id}" is inside a component or instance and cannot be converted. ` +
-      `Detach the containing instance first.`
-    );
+    return extractFromProtected(node);
   }
 
   const n = node as any;
@@ -291,24 +407,27 @@ export function convertGroups(requests: ConvertRequest[]): ConvertResult[] {
     }
 
     // ── 2b: Create instance for the FIRST node and place in original parent
+    // Note: extractFromProtected already placed an instance inside protected
+    // parents, so here we only need to handle the case where the parent is
+    // a free (non-instance, non-component) container.
     try {
-      // Recover the first node's original parent via parentId from metadata
       const firstParent = masterMeta.parentId
         ? (figma.getNodeById(masterMeta.parentId) as any)
         : null;
 
       const firstInst = masterComponent.createInstance();
 
-      const firstParentIsInstance =
-        firstParent?.type === "INSTANCE" || (firstParent && isInsideInstance(firstParent));
+      // INSTANCE parents cannot receive appendChild — skip them.
+      // COMPONENT parents CAN receive appendChild (protected path already
+      // placed the instance inside via extractFromProtected, so this branch
+      // only runs for free nodes whose parent is a regular FRAME/GROUP/page).
+      const firstParentIsInstance = firstParent ? isInsideInstance(firstParent) : false;
 
       if (firstParent && typeof firstParent.appendChild === "function" && !firstParentIsInstance) {
-        // Insert into original parent; use relative x/y from metadata
         firstParent.appendChild(firstInst);
         firstInst.x = masterMeta.relativeX ?? masterMeta.absoluteX;
         firstInst.y = masterMeta.relativeY ?? masterMeta.absoluteY;
       } else {
-        // Parent is an instance or not found — use absolute canvas coords
         page.appendChild(firstInst);
         firstInst.x = masterMeta.absoluteX;
         firstInst.y = masterMeta.absoluteY;
@@ -330,23 +449,27 @@ export function convertGroups(requests: ConvertRequest[]): ConvertResult[] {
         const node = figma.getNodeById(nodeId) as SceneNode | null;
         if (!node) throw new Error(`Node ${nodeId} not found`);
 
-        // Guard: cannot remove nodes inside a COMPONENT or INSTANCE
-        if (isInsideProtected(node)) {
-          throw new Error(
-            `"${(node as any).name || nodeId}" is inside a component or instance. Detach it first.`
-          );
-        }
-
-        // Snapshot parent and relative position BEFORE removal
+        // Snapshot parent and relative position BEFORE any removal
         const nodeParent = node.parent as any;
         const relX = (node as any).x ?? 0;
         const relY = (node as any).y ?? 0;
         const zIndex = nodeParent && nodeParent.children
           ? nodeParent.children.indexOf(node)
           : -1;
-        // Check if parent is an instance (cannot appendChild into an instance)
-        const parentIsInstance = nodeParent?.type === "INSTANCE" || isInsideInstance(nodeParent);
 
+        if (isInsideProtected(node)) {
+          // Protected node: extractToComponent → extractFromProtected already
+          // clones it out and replaces it with an instance inside the parent.
+          // We still need to track it as a converted instance.
+          extractToComponent(node);
+          // The instance was placed by extractFromProtected — count it.
+          instanceCount++;
+          successCount++;
+          continue;
+        }
+
+        // Free node: remove and replace with instance of master
+        const parentIsInstance = isInsideInstance(nodeParent);
         node.remove();
 
         const instance = masterComponent!.createInstance();
@@ -357,7 +480,6 @@ export function convertGroups(requests: ConvertRequest[]): ConvertResult[] {
           !parentIsInstance;
 
         if (canInsertIntoParent) {
-          // Re-insert at same z-index within original parent
           nodeParent.appendChild(instance);
           if (zIndex >= 0 && typeof nodeParent.insertChild === "function") {
             nodeParent.insertChild(zIndex, instance);
@@ -365,7 +487,6 @@ export function convertGroups(requests: ConvertRequest[]): ConvertResult[] {
           instance.x = relX;
           instance.y = relY;
         } else {
-          // Parent is an instance or page root — use absolute canvas coords
           page.appendChild(instance);
           instance.x = nodeMeta?.absoluteX ?? relX;
           instance.y = nodeMeta?.absoluteY ?? relY;

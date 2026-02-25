@@ -101,6 +101,9 @@ export function runComponentScan(): void {
   ) as HTMLInputElement;
   const scope = scopeInput ? scopeInput.value : "current";
 
+  const includeProtectedInput = document.getElementById("compIncludeProtected") as HTMLInputElement | null;
+  const includeProtected = includeProtectedInput?.checked === true;
+
   const scanBtn = document.getElementById("compScanBtn") as HTMLButtonElement;
   scanBtn.disabled = true;
   scanBtn.textContent = "⏳ Scanning...";
@@ -112,7 +115,7 @@ export function runComponentScan(): void {
   resultsEl.innerHTML = '<div class="analyze-empty">⏳ Scanning for similar structures...</div>';
 
   parent.postMessage(
-    { pluginMessage: { type: "scanComponents", scope } },
+    { pluginMessage: { type: "scanComponents", scope, includeProtected } },
     "*"
   );
 }
@@ -193,13 +196,17 @@ function buildGroupCard(group: any, idx: number): string {
         diffHtml += `<span class="comp-diff-hint">🎨 ${swatches} ${diff.fillDiffs.map((fd: any) => escapeHtml(fd.hex)).join(", ")}</span>`;
       }
 
+      const protectedBadge = n.insideProtected
+        ? `<span class="badge badge-protected" title="Inside a Component or Instance — will be cloned out">🔓 inside component</span>`
+        : "";
+
       return `
         <div class="comp-node-row ${ni === 0 ? "comp-master-row" : ""} comp-node-focusable"
              data-node-id="${escapeHtml(n.id)}"
              title="Click to focus in Figma">
           <span class="comp-node-icon">${ni === 0 ? "⭐" : "🔗"}</span>
           <div class="comp-node-info">
-            <span class="comp-node-name">${escapeHtml(n.name)}</span>
+            <span class="comp-node-name">${escapeHtml(n.name)} ${protectedBadge}</span>
             <span class="comp-node-meta">${escapeHtml(n.type)} · ${Math.round(n.width)}×${Math.round(n.height)} · <em>${escapeHtml(n.parentName)}</em></span>
             ${diffHtml}
           </div>

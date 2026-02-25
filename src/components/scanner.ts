@@ -33,6 +33,8 @@ export interface ComponentNode_ {
   parentId: string;
   parentName: string;
   pageName: string;
+  /** True if the node lives inside a COMPONENT or INSTANCE */
+  insideProtected?: boolean;
 }
 
 /** Text content difference for a single node vs the master */
@@ -195,11 +197,14 @@ function computeDiffs(nodes: ComponentNode_[]): DiffEntry[] {
 
 // ── Scan ─────────────────────────────────────────────────────────────────────
 
-export function scanComponentCandidates(pages: readonly PageNode[]): ComponentGroup[] {
+export function scanComponentCandidates(
+  pages: readonly PageNode[],
+  includeProtected = false
+): ComponentGroup[] {
   const fpMap = new Map<string, ComponentNode_[]>();
 
   for (const page of pages) {
-    scanNode(page, page.name, fpMap);
+    scanNode(page, page.name, fpMap, includeProtected);
   }
 
   const groups: ComponentGroup[] = [];
@@ -221,16 +226,24 @@ export function scanComponentCandidates(pages: readonly PageNode[]): ComponentGr
   return groups;
 }
 
-// Node types whose children we must NOT descend into for candidate scanning.
-// COMPONENT/INSTANCE internals are read-only / non-removable by the plugin.
-const SKIP_DESCENT_TYPES = new Set(["COMPONENT", "INSTANCE"]);
+// Node types whose children we must NOT descend into in default (safe) mode.
+const PROTECTED_TYPES = new Set(["COMPONENT", "INSTANCE"]);
 
-function scanNode(node: any, pageName: string, fpMap: Map<string, ComponentNode_[]>): void {
-  // Only fingerprint candidate types (FRAME / GROUP) that have at least 1 child
-  // AND are NOT themselves inside a COMPONENT or INSTANCE (those cannot be removed/moved).
+function scanNode(
+  node: any,
+  pageName: string,
+  fpMap: Map<string, ComponentNode_[]>,
+  includeProtected: boolean
+): void {
+  // Candidate types: FRAME or GROUP with at least 1 child
   if (CANDIDATE_TYPES.has(node.type)) {
     const hasChildren = node.children && node.children.length > 0;
-    if (hasChildren && !isInsideProtected(node)) {
+    const inside = isInsideProtected(node);
+
+    // Include node if:
+    //  - it is NOT inside a protected ancestor, OR
+    //  - includeProtected is true (user opted in to scan inside components)
+    if (hasChildren && (!inside || includeProtected)) {
       const fp = buildFingerprint(node);
       if (!fpMap.has(fp)) fpMap.set(fp, []);
       fpMap.get(fp)!.push({
@@ -246,16 +259,18 @@ function scanNode(node: any, pageName: string, fpMap: Map<string, ComponentNode_
         parentId: node.parent?.id ?? "",
         parentName: node.parent?.name ?? "",
         pageName,
+        insideProtected: inside,
       });
     }
   }
 
-  // Do NOT recurse into COMPONENT or INSTANCE nodes — their children are protected.
-  if (SKIP_DESCENT_TYPES.has(node.type)) return;
+  // In default mode: do NOT recurse into COMPONENT or INSTANCE nodes.
+  // In includeProtected mode: recurse everywhere.
+  if (!includeProtected && PROTECTED_TYPES.has(node.type)) return;
 
   if (node.children) {
     for (const child of node.children) {
-      scanNode(child, pageName, fpMap);
+      scanNode(child, pageName, fpMap, includeProtected);
     }
   }
 }
@@ -264,7 +279,7 @@ function scanNode(node: any, pageName: string, fpMap: Map<string, ComponentNode_
 function isInsideProtected(node: any): boolean {
   let current = node.parent;
   while (current) {
-    if (SKIP_DESCENT_TYPES.has(current.type)) return true;
+    if (PROTECTED_TYPES.has(current.type)) return true;
     current = current.parent;
   }
   return false;

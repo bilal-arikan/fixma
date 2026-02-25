@@ -23,13 +23,20 @@ export function downloadAnalysisReport(): void {
 }
 
 /**
- * Initiates document analysis
+ * Initiates document analysis.
+ * Reads scope radio and check-type checkboxes from the UI.
  */
 export function runAnalysis(): void {
   const scopeInput = document.querySelector(
     'input[name="analyzeScope"]:checked'
   ) as HTMLInputElement;
   const scope = scopeInput ? scopeInput.value : "current";
+
+  // Read which checks to run
+  const checkNamingEl = document.getElementById("analyzeCheckNaming") as HTMLInputElement | null;
+  const checkSafeAreaEl = document.getElementById("analyzeCheckSafeArea") as HTMLInputElement | null;
+  const checkNaming = checkNamingEl ? checkNamingEl.checked : true;
+  const checkSafeArea = checkSafeAreaEl ? checkSafeAreaEl.checked : true;
 
   const btn = document.getElementById("analyzeBtn") as HTMLButtonElement;
   btn.disabled = true;
@@ -39,7 +46,13 @@ export function runAnalysis(): void {
   resultsEl.innerHTML = '<div class="analyze-empty">⏳ Scanning page...</div>';
 
   parent.postMessage(
-    { pluginMessage: { type: "analyzeDocument", scope } },
+    {
+      pluginMessage: {
+        type: "analyzeDocument",
+        scope,
+        checks: { naming: checkNaming, safeArea: checkSafeArea },
+      },
+    },
     "*"
   );
 }
@@ -130,6 +143,16 @@ export function handleAnalyzeResult(response: any): void {
       if (chevron) chevron.textContent = isOpen ? "▶" : "▼";
     });
   });
+
+  // Issue card focus — clicking a card focuses the node in Figma
+  resultsEl.querySelectorAll(".issue-card[data-node-id]").forEach((card) => {
+    card.addEventListener("click", () => {
+      const nodeId = (card as HTMLElement).dataset.nodeId;
+      if (nodeId) {
+        parent.postMessage({ pluginMessage: { type: "focusNode", nodeId } }, "*");
+      }
+    });
+  });
 }
 
 function getIssueIcon(issue: string): string {
@@ -159,18 +182,19 @@ function buildIssueCard(
   icon: string,
   name: string,
   type: string,
-  id: string,
+  nodeId: string,
   description: string,
   suggestion?: string
 ): string {
   return `
-    <div class="issue-card">
+    <div class="issue-card" data-node-id="${escapeHtml(nodeId)}" title="Click to focus in Figma">
       <div class="issue-header">
         <span class="issue-icon">${icon}</span>
         <div class="issue-meta">
           <span class="issue-name">${escapeHtml(name)}</span>
-          <span class="issue-type">${escapeHtml(type)} · ${escapeHtml(id)}</span>
+          <span class="issue-type">${escapeHtml(type)}</span>
         </div>
+        <span class="issue-focus-hint">🎯</span>
       </div>
       <div class="issue-desc">${escapeHtml(description)}</div>
       ${suggestion ? `<div class="issue-suggestion">💡 ${escapeHtml(suggestion)}</div>` : ""}

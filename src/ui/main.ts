@@ -6,6 +6,19 @@
 import { exportPageJSON, handleExportResult } from "./export";
 import { runAnalysis, handleAnalyzeResult, downloadAnalysisReport } from "./analyze";
 import {
+  runLayoutScan,
+  handleLayoutResult,
+  handleLoadLayoutConfig,
+  handleSaveLayoutConfig,
+  saveLayoutConfig,
+  resetLayoutConfig,
+  toggleLayoutConfig,
+  initLayoutTab,
+  handleFixLayoutIssueResult,
+  handleFixAllLayoutIssuesResult,
+  fixAllLayoutIssues,
+} from "./layout";
+import {
   handleRulesUpload,
   previewRulesUI,
   applyRulesUI,
@@ -26,6 +39,11 @@ import {
 (window as any).exportPageJSON = exportPageJSON;
 (window as any).runAnalysis = runAnalysis;
 (window as any).downloadAnalysisReport = downloadAnalysisReport;
+(window as any).runLayoutScan         = runLayoutScan;
+(window as any).toggleLayoutConfig    = toggleLayoutConfig;
+(window as any).saveLayoutConfig      = saveLayoutConfig;
+(window as any).resetLayoutConfig     = resetLayoutConfig;
+(window as any).fixAllLayoutIssues    = fixAllLayoutIssues;
 (window as any).previewRulesUI = previewRulesUI;
 (window as any).applyRulesUI = applyRulesUI;
 (window as any).runComponentScan = runComponentScan;
@@ -33,6 +51,8 @@ import {
 (window as any).runCombineAsVariants = runCombineAsVariants;
 
 // ── Tab switching ─────────────────────────────────────────────────────────
+let layoutTabInitialized = false;
+
 function switchTab(tabName: string): void {
   document.querySelectorAll(".tab-btn").forEach((btn) => {
     btn.classList.remove("active");
@@ -45,6 +65,12 @@ function switchTab(tabName: string): void {
   const activePanel = document.getElementById(`tab-${tabName}`);
   if (activeBtn) activeBtn.classList.add("active");
   if (activePanel) activePanel.style.display = "block";
+
+  // Load config from storage on first visit to Layout tab
+  if (tabName === "layout" && !layoutTabInitialized) {
+    layoutTabInitialized = true;
+    initLayoutTab();
+  }
 }
 
 (window as any).switchTab = switchTab;
@@ -66,6 +92,21 @@ window.onmessage = (event: MessageEvent) => {
       break;
     case "analyzeResult":
       handleAnalyzeResult(response);
+      break;
+    case "analyzeLayoutResult":
+      handleLayoutResult(response);
+      break;
+    case "loadLayoutConfigResult":
+      handleLoadLayoutConfig(response);
+      break;
+    case "saveLayoutConfigResult":
+      handleSaveLayoutConfig(response);
+      break;
+    case "fixLayoutIssueResult":
+      handleFixLayoutIssueResult(response);
+      break;
+    case "fixAllLayoutIssuesResult":
+      handleFixAllLayoutIssuesResult(response);
       break;
     case "previewResult":
       handlePreviewResult(response);

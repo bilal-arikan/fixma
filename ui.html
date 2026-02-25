@@ -339,6 +339,17 @@
       border: 1px solid #eee;
       border-radius: 5px;
       padding: 8px 10px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .issue-card:hover {
+      background: #eef0ff;
+      border-color: #667eea55;
+    }
+
+    .issue-card:hover .issue-focus-hint {
+      opacity: 1;
     }
 
     .issue-header {
@@ -358,6 +369,7 @@
       display: flex;
       flex-direction: column;
       gap: 2px;
+      flex: 1;
     }
 
     .issue-name {
@@ -371,6 +383,14 @@
       font-size: 10px;
       color: #888;
       font-family: monospace;
+    }
+
+    .issue-focus-hint {
+      font-size: 12px;
+      opacity: 0;
+      transition: opacity 0.15s;
+      flex-shrink: 0;
+      align-self: center;
     }
 
     .issue-desc {
@@ -387,6 +407,195 @@
       padding: 4px 7px;
       border-radius: 3px;
       line-height: 1.4;
+    }
+
+    /* ── Layout Tab ──────────────────────────────────────────────────────── */
+    .layout-stat-high {
+      border-left-color: #e53e3e;
+      background: linear-gradient(135deg, #e53e3e15 0%, #e53e3e05 100%);
+    }
+    .layout-stat-high .value { color: #e53e3e; }
+
+    .layout-stat-medium {
+      border-left-color: #d69e2e;
+      background: linear-gradient(135deg, #d69e2e15 0%, #d69e2e05 100%);
+    }
+    .layout-stat-medium .value { color: #d69e2e; }
+
+    /* High severity card gets a subtle red left border */
+    .layout-card-high {
+      border-left: 3px solid #e53e3e55;
+    }
+    .layout-card-high:hover {
+      border-color: #e53e3e99;
+    }
+
+    /* Medium severity card gets a subtle amber left border */
+    .layout-card-medium {
+      border-left: 3px solid #d69e2e55;
+    }
+    .layout-card-medium:hover {
+      border-color: #d69e2e99;
+    }
+
+    /* Actual → Expected diff row */
+    .layout-diff-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin: 4px 0;
+      flex-wrap: wrap;
+    }
+    .layout-diff-label {
+      font-size: 10px;
+      color: #aaa;
+      font-weight: 600;
+    }
+    .layout-diff-actual {
+      font-size: 10px;
+      font-family: monospace;
+      background: #ffeaea;
+      color: #c0392b;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+    .layout-diff-expected {
+      font-size: 10px;
+      font-family: monospace;
+      background: #eafff0;
+      color: #27ae60;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+
+    /* Layout Config Panel */
+    .layout-config-box {
+      background: #f9f9f9;
+      border: 1px solid #e0e0e0;
+      border-radius: 5px;
+      padding: 10px;
+    }
+    .layout-config-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .layout-config-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .layout-config-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      color: #444;
+      padding: 4px 6px;
+      background: white;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      cursor: default;
+    }
+    .layout-config-input {
+      width: 60px;
+      padding: 3px 5px;
+      font-size: 11px;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      text-align: right;
+      font-family: monospace;
+    }
+    .layout-config-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 2px #667eea22;
+    }
+    .layout-config-checks {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+    }
+    .layout-only-defaults-label {
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      border-radius: 4px;
+      padding: 6px 8px !important;
+      margin-bottom: 4px;
+    }
+
+    /* ── Layout Fix Buttons ─────────────────────────────────────────────── */
+    .layout-fix-btn {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 4px 10px;
+      font-size: 10px;
+      font-weight: 600;
+      border: 1px solid #667eea55;
+      border-radius: 4px;
+      background: #667eea12;
+      color: #667eea;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .layout-fix-btn:hover:not(:disabled) {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    .layout-fix-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .layout-fix-btn.layout-fix-done {
+      background: #d4edda;
+      color: #155724;
+      border-color: #c3e6cb;
+    }
+
+    .layout-fix-error {
+      margin-top: 4px;
+      padding: 4px 8px;
+      font-size: 10px;
+      color: #c0392b;
+      background: #fdecea;
+      border: 1px solid #f5c6cb;
+      border-radius: 3px;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .btn-fix-all {
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      border: none;
+      border-radius: 4px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .btn-fix-all:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-fix-all:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
     }
 
     /* ── Edit Tab ────────────────────────────────────────────────────────── */
@@ -722,6 +931,11 @@
       background: #f5a623 !important;
     }
 
+    .badge-protected {
+      background: #7c5cbf !important;
+      font-size: 9px;
+    }
+
     .comp-results-wrap {
       flex: 1;
       overflow-y: auto;
@@ -741,6 +955,7 @@
       <button class="tab-btn" data-tab="components" onclick="switchTab('components')">🧩 Components</button>
       <button class="tab-btn" data-tab="variants" onclick="switchTab('variants')">🔀 Variants</button>
       <button class="tab-btn" data-tab="analyze" onclick="switchTab('analyze')">🔍 Analyze</button>
+      <button class="tab-btn" data-tab="layout" onclick="switchTab('layout')">📐 Layout</button>
       <button class="tab-btn" data-tab="edit" onclick="switchTab('edit')">⚙️ Edit</button>
     </div>
 
@@ -824,6 +1039,18 @@
             </label>
           </div>
 
+          <div class="scope-group" style="margin-top:6px; border-top:1px solid #eee; padding-top:6px;">
+            <div style="font-size:10px; font-weight:600; color:#888; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Include Checks</div>
+            <label class="scope-label">
+              <input type="checkbox" id="analyzeCheckNaming" checked>
+              <span>✏️ Naming Issues</span>
+            </label>
+            <label class="scope-label">
+              <input type="checkbox" id="analyzeCheckSafeArea" checked>
+              <span>📱 Safe Area Issues</span>
+            </label>
+          </div>
+
           <div class="controls" style="gap:8px;">
             <button class="btn-primary" onclick="runAnalysis()" id="analyzeBtn" style="flex:2;">
               🔍 Scan
@@ -885,6 +1112,10 @@
               <input type="radio" name="compScope" value="all">
               <span>📚 All Pages</span>
             </label>
+            <label class="scope-label">
+              <input type="checkbox" id="compIncludeProtected">
+              <span>🔓 Include nodes inside Components &amp; Instances</span>
+            </label>
           </div>
 
           <div class="controls">
@@ -944,6 +1175,123 @@
           <div class="comp-results-wrap" id="variantsResults">
             <div class="analyze-empty">
               Select objects in Figma and click the button above.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ==================== TAB: Layout ==================== -->
+      <div class="tab-panel" id="tab-layout" style="display:none;">
+
+        <div class="section-card">
+          <h3>📐 Layout Intent Analysis</h3>
+          <p class="section-desc">
+            Detects mismatches between where a node sits visually and how its constraints or Auto-Layout sizing are set — e.g. a node glued to the bottom-right corner with no corresponding constraint, or the widest item in a row that should grow but is Fixed.
+          </p>
+
+          <div class="scope-group">
+            <label class="scope-label">
+              <input type="radio" name="layoutScope" value="current" checked>
+              <span>📄 Current Page Only</span>
+            </label>
+            <label class="scope-label">
+              <input type="radio" name="layoutScope" value="all">
+              <span>📚 All Pages</span>
+            </label>
+          </div>
+
+          <div class="controls" style="gap:8px;">
+            <button class="btn-primary" onclick="runLayoutScan()" id="layoutScanBtn" style="flex:2;">
+              📐 Scan Layout
+            </button>
+            <button class="btn-secondary" onclick="toggleLayoutConfig()" id="layoutConfigToggle" style="flex:1;">
+              ⚙️ Config
+            </button>
+          </div>
+
+          <!-- ── Collapsible Config Panel ── -->
+          <div id="layoutConfigPanel" style="display:none; margin-top:10px;">
+            <div class="layout-config-box">
+
+              <div class="layout-config-title">Filter</div>
+              <label class="scope-label layout-only-defaults-label" title="When enabled, only reports nodes whose constraints are still at Figma's factory defaults (H: LEFT, V: TOP / layoutGrow: 0). Nodes that were already configured by the designer are skipped.">
+                <input type="checkbox" id="cfgOnlyDefaults">
+                <span>🔒 Only Defaults — scan only nodes with untouched constraints</span>
+              </label>
+
+              <div class="layout-config-title" style="margin-top:8px;">Thresholds</div>
+
+              <div class="layout-config-grid">
+                <label class="layout-config-label" title="A node is &quot;near&quot; an edge when its gap &lt; parent size × this ratio">
+                  <span>Edge Proximity</span>
+                  <input type="number" id="cfgEdgeProximity" min="0.05" max="0.40" step="0.01" class="layout-config-input">
+                </label>
+                <label class="layout-config-label" title="Fill candidate when node covers at least this fraction of parent">
+                  <span>Fill Ratio</span>
+                  <input type="number" id="cfgFillRatio" min="0.40" max="0.95" step="0.05" class="layout-config-input">
+                </label>
+                <label class="layout-config-label" title="Full-bleed: node covers this fraction on both axes">
+                  <span>Full Bleed Ratio</span>
+                  <input type="number" id="cfgFullBleedRatio" min="0.50" max="0.99" step="0.05" class="layout-config-input">
+                </label>
+                <label class="layout-config-label" title="Max px offset from centre to count as centred">
+                  <span>Centre Tolerance (px)</span>
+                  <input type="number" id="cfgCenterTolerance" min="1" max="32" step="1" class="layout-config-input">
+                </label>
+              </div>
+
+              <div class="layout-config-title" style="margin-top:8px;">Enabled Checks</div>
+
+              <div class="layout-config-checks">
+                <label class="scope-label"><input type="checkbox" id="cfgCheckCorner"><span>📌 Corner Constraint</span></label>
+                <label class="scope-label"><input type="checkbox" id="cfgCheckEdge"><span>📌 Edge Constraint</span></label>
+                <label class="scope-label"><input type="checkbox" id="cfgCheckSibling"><span>🔲 Sibling Fill</span></label>
+                <label class="scope-label"><input type="checkbox" id="cfgCheckWideTall"><span>↔️ Wide / Tall Not Fill</span></label>
+                <label class="scope-label"><input type="checkbox" id="cfgCheckFullBleed"><span>⬜ Full Bleed Not Stretch</span></label>
+                <label class="scope-label"><input type="checkbox" id="cfgCheckCentered"><span>⬌ Centred Not CENTER</span></label>
+              </div>
+
+              <div class="controls" style="margin-top:8px; gap:8px;">
+                <button class="btn-primary" onclick="saveLayoutConfig()" id="layoutConfigSaveBtn" style="flex:2;">
+                  💾 Save
+                </button>
+                <button class="btn-secondary" onclick="resetLayoutConfig()" style="flex:1;">
+                  ↩️ Reset
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <h3>📊 Scan Summary</h3>
+          <div class="stats-grid" style="grid-template-columns:1fr 1fr 1fr;">
+            <div class="stat-card warn">
+              <div class="label">Total Issues</div>
+              <div class="value" id="layoutTotal">-</div>
+            </div>
+            <div class="stat-card layout-stat-high">
+              <div class="label">🔴 High</div>
+              <div class="value" id="layoutHigh">-</div>
+            </div>
+            <div class="stat-card layout-stat-medium">
+              <div class="label">🟡 Medium</div>
+              <div class="value" id="layoutMedium">-</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card" style="flex:1; min-height:0; display:flex; flex-direction:column;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+            <h3>🔎 Detected Issues <span style="font-size:10px;font-weight:400;color:#888;">· click any card to focus in Figma</span></h3>
+            <button class="btn-fix-all" id="layoutFixAllBtn" onclick="fixAllLayoutIssues()" style="display:none;">
+              🔧 Fix All
+            </button>
+          </div>
+          <div class="analyze-results" id="layoutResults" style="flex:1; overflow-y:auto; margin-top:8px;">
+            <div class="analyze-empty">
+              Click Scan to detect layout intent issues.
             </div>
           </div>
         </div>
@@ -1096,13 +1444,23 @@
       'input[name="analyzeScope"]:checked'
     );
     const scope = scopeInput ? scopeInput.value : "current";
+    const checkNamingEl = document.getElementById("analyzeCheckNaming");
+    const checkSafeAreaEl = document.getElementById("analyzeCheckSafeArea");
+    const checkNaming = checkNamingEl ? checkNamingEl.checked : true;
+    const checkSafeArea = checkSafeAreaEl ? checkSafeAreaEl.checked : true;
     const btn = document.getElementById("analyzeBtn");
     btn.disabled = true;
     btn.textContent = "\u23F3 Scanning...";
     const resultsEl = document.getElementById("analyzeResults");
     resultsEl.innerHTML = '<div class="analyze-empty">\u23F3 Scanning page...</div>';
     parent.postMessage(
-      { pluginMessage: { type: "analyzeDocument", scope } },
+      {
+        pluginMessage: {
+          type: "analyzeDocument",
+          scope,
+          checks: { naming: checkNaming, safeArea: checkSafeArea }
+        }
+      },
       "*"
     );
   }
@@ -1169,6 +1527,14 @@
         if (chevron) chevron.textContent = isOpen ? "\u25B6" : "\u25BC";
       });
     });
+    resultsEl.querySelectorAll(".issue-card[data-node-id]").forEach((card) => {
+      card.addEventListener("click", () => {
+        const nodeId = card.dataset.nodeId;
+        if (nodeId) {
+          parent.postMessage({ pluginMessage: { type: "focusNode", nodeId } }, "*");
+        }
+      });
+    });
   }
   function getIssueIcon(issue) {
     switch (issue) {
@@ -1195,15 +1561,16 @@
     </div>
   `;
   }
-  function buildIssueCard(icon, name, type, id, description, suggestion) {
+  function buildIssueCard(icon, name, type, nodeId, description, suggestion) {
     return `
-    <div class="issue-card">
+    <div class="issue-card" data-node-id="${escapeHtml(nodeId)}" title="Click to focus in Figma">
       <div class="issue-header">
         <span class="issue-icon">${icon}</span>
         <div class="issue-meta">
           <span class="issue-name">${escapeHtml(name)}</span>
-          <span class="issue-type">${escapeHtml(type)} \xB7 ${escapeHtml(id)}</span>
+          <span class="issue-type">${escapeHtml(type)}</span>
         </div>
+        <span class="issue-focus-hint">\u{1F3AF}</span>
       </div>
       <div class="issue-desc">${escapeHtml(description)}</div>
       ${suggestion ? `<div class="issue-suggestion">\u{1F4A1} ${escapeHtml(suggestion)}</div>` : ""}
@@ -1211,6 +1578,364 @@
   `;
   }
   function escapeHtml(str) {
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  // src/analyze/layoutConfig.ts
+  var DEFAULT_LAYOUT_CONFIG = {
+    edgeProximityRatio: 0.15,
+    fillRatio: 0.7,
+    fullBleedRatio: 0.8,
+    centerTolerancePx: 6,
+    onlyDefaults: false,
+    checks: {
+      cornerConstraint: true,
+      edgeConstraint: true,
+      siblingFill: true,
+      wideTall: true,
+      fullBleed: true,
+      centeredNotCenter: true
+    }
+  };
+
+  // src/ui/layout.ts
+  var lastLayoutData = null;
+  var currentConfig = DEFAULT_LAYOUT_CONFIG;
+  var SEVERITY_ICON = {
+    high: "\u{1F534}",
+    medium: "\u{1F7E1}"
+  };
+  var KIND_ICON = {
+    corner_constraint_mismatch: "\u{1F4CC}",
+    edge_constraint_mismatch: "\u{1F4CC}",
+    both_edges_not_stretch: "\u2194\uFE0F",
+    wide_not_fill: "\u2194\uFE0F",
+    tall_not_fill: "\u2195\uFE0F",
+    centered_h_not_center: "\u2B0C",
+    centered_v_not_center: "\u2B0D",
+    sibling_fill_candidate: "\u{1F532}",
+    full_bleed_not_stretch: "\u2B1C"
+  };
+  var KIND_LABEL = {
+    corner_constraint_mismatch: "Corner Constraint",
+    edge_constraint_mismatch: "Edge Constraint",
+    both_edges_not_stretch: "Both Edges \u2014 Not Stretch",
+    wide_not_fill: "Wide \u2014 Not Fill",
+    tall_not_fill: "Tall \u2014 Not Fill",
+    centered_h_not_center: "Centered H \u2014 No CENTER",
+    centered_v_not_center: "Centered V \u2014 No CENTER",
+    sibling_fill_candidate: "Sibling Fill Candidate",
+    full_bleed_not_stretch: "Full Bleed \u2014 Not Stretch"
+  };
+  var KIND_ORDER = [
+    "corner_constraint_mismatch",
+    "edge_constraint_mismatch",
+    "both_edges_not_stretch",
+    "sibling_fill_candidate",
+    "wide_not_fill",
+    "tall_not_fill",
+    "full_bleed_not_stretch",
+    "centered_h_not_center",
+    "centered_v_not_center"
+  ];
+  function initLayoutTab() {
+    parent.postMessage({ pluginMessage: { type: "loadLayoutConfig" } }, "*");
+  }
+  function runLayoutScan() {
+    const scopeInput = document.querySelector(
+      'input[name="layoutScope"]:checked'
+    );
+    const scope = scopeInput ? scopeInput.value : "current";
+    const btn = document.getElementById("layoutScanBtn");
+    btn.disabled = true;
+    btn.textContent = "\u23F3 Scanning...";
+    const resultsEl = document.getElementById("layoutResults");
+    resultsEl.innerHTML = '<div class="analyze-empty">\u23F3 Scanning layout\u2026</div>';
+    parent.postMessage(
+      { pluginMessage: { type: "analyzeLayout", scope } },
+      "*"
+    );
+  }
+  function handleLayoutResult(response) {
+    var _a, _b, _c;
+    const btn = document.getElementById("layoutScanBtn");
+    btn.disabled = false;
+    btn.textContent = "\u{1F4D0} Scan Layout";
+    const resultsEl = document.getElementById("layoutResults");
+    if (!response.success) {
+      resultsEl.innerHTML = `<div class="analyze-empty">\u274C Error: ${escapeHtml2(response.error || "Unknown error")}</div>`;
+      return;
+    }
+    if (response.config) {
+      currentConfig = response.config;
+      populateConfigPanel(currentConfig);
+    }
+    const issues = (_a = response.data) != null ? _a : [];
+    lastLayoutData = issues;
+    const highCount = issues.filter((i) => i.severity === "high").length;
+    const mediumCount = issues.filter((i) => i.severity === "medium").length;
+    document.getElementById("layoutTotal").textContent = String(issues.length);
+    document.getElementById("layoutHigh").textContent = String(highCount);
+    document.getElementById("layoutMedium").textContent = String(mediumCount);
+    if (issues.length === 0) {
+      resultsEl.innerHTML = '<div class="analyze-empty">\u2705 No layout issues found! Constraints look good.</div>';
+      return;
+    }
+    const grouped = /* @__PURE__ */ new Map();
+    for (const kind of KIND_ORDER) grouped.set(kind, []);
+    for (const issue of issues) {
+      if (!grouped.has(issue.kind)) grouped.set(issue.kind, []);
+      grouped.get(issue.kind).push(issue);
+    }
+    let html = "";
+    for (const [kind, group] of grouped) {
+      if (group.length === 0) continue;
+      const icon = (_b = KIND_ICON[kind]) != null ? _b : "\u26A0\uFE0F";
+      const label = (_c = KIND_LABEL[kind]) != null ? _c : kind;
+      html += buildAccordion2(
+        `layout-${kind}`,
+        `${icon} ${label}`,
+        group.length,
+        group.map((issue) => buildLayoutCard(issue, issues.indexOf(issue))).join("")
+      );
+    }
+    resultsEl.innerHTML = html;
+    resultsEl.querySelectorAll(".accordion-header").forEach((header) => {
+      header.addEventListener("click", () => {
+        const body = header.nextElementSibling;
+        const isOpen = body.style.display !== "none";
+        body.style.display = isOpen ? "none" : "block";
+        const chevron = header.querySelector(".chevron");
+        if (chevron) chevron.textContent = isOpen ? "\u25B6" : "\u25BC";
+      });
+    });
+    resultsEl.querySelectorAll(".issue-card[data-node-id]").forEach((card) => {
+      card.addEventListener("click", () => {
+        const nodeId = card.dataset.nodeId;
+        if (nodeId) {
+          parent.postMessage({ pluginMessage: { type: "focusNode", nodeId } }, "*");
+        }
+      });
+    });
+    resultsEl.querySelectorAll(".layout-fix-btn[data-fix-index]").forEach((btn2) => {
+      btn2.addEventListener("click", (e) => {
+        var _a2;
+        e.stopPropagation();
+        const idx = parseInt((_a2 = btn2.dataset.fixIndex) != null ? _a2 : "", 10);
+        if (isNaN(idx) || !lastLayoutData || !lastLayoutData[idx]) return;
+        btn2.disabled = true;
+        btn2.textContent = "\u23F3\u2026";
+        parent.postMessage({
+          pluginMessage: { type: "fixLayoutIssue", issue: lastLayoutData[idx] }
+        }, "*");
+      });
+    });
+    const fixAllBtn = document.getElementById("layoutFixAllBtn");
+    if (fixAllBtn) {
+      fixAllBtn.style.display = issues.length > 0 ? "block" : "none";
+      fixAllBtn.disabled = false;
+      fixAllBtn.textContent = `\u{1F527} Fix All (${issues.length})`;
+    }
+  }
+  function handleFixLayoutIssueResult(response) {
+    const result = response.result;
+    if (!result) return;
+    const resultsEl = document.getElementById("layoutResults");
+    const cards = resultsEl.querySelectorAll(`.issue-card[data-node-id="${result.nodeId}"]`);
+    cards.forEach((card) => {
+      const btn = card.querySelector(".layout-fix-btn");
+      if (result.success) {
+        if (btn) {
+          btn.textContent = "\u2705 Fixed";
+          btn.disabled = true;
+          btn.classList.add("layout-fix-done");
+        }
+        card.style.opacity = "0.5";
+        removeFixError(card);
+      } else {
+        if (btn) {
+          btn.textContent = "\u{1F527} Fix";
+          btn.disabled = false;
+        }
+        showFixError(card, result.error || "Unknown error");
+      }
+    });
+  }
+  function handleFixAllLayoutIssuesResult(response) {
+    var _a;
+    const results = (_a = response.results) != null ? _a : [];
+    const successCount = results.filter((r) => r.success).length;
+    const failCount = results.filter((r) => !r.success).length;
+    const resultsEl = document.getElementById("layoutResults");
+    for (const result of results) {
+      const cards = resultsEl.querySelectorAll(`.issue-card[data-node-id="${result.nodeId}"]`);
+      cards.forEach((card) => {
+        const btn = card.querySelector(".layout-fix-btn");
+        if (result.success) {
+          if (btn) {
+            btn.textContent = "\u2705 Fixed";
+            btn.disabled = true;
+            btn.classList.add("layout-fix-done");
+          }
+          card.style.opacity = "0.5";
+          removeFixError(card);
+        } else {
+          if (btn) {
+            btn.textContent = "\u{1F527} Fix";
+            btn.disabled = false;
+          }
+          showFixError(card, result.error || "Unknown error");
+        }
+      });
+    }
+    const fixAllBtn = document.getElementById("layoutFixAllBtn");
+    if (fixAllBtn) {
+      if (failCount === 0) {
+        fixAllBtn.textContent = `\u2705 All Fixed (${successCount})`;
+        fixAllBtn.disabled = true;
+      } else {
+        fixAllBtn.textContent = `\u26A0\uFE0F ${successCount} fixed, ${failCount} failed`;
+        fixAllBtn.disabled = false;
+      }
+    }
+  }
+  function fixAllLayoutIssues() {
+    if (!lastLayoutData || lastLayoutData.length === 0) return;
+    const fixAllBtn = document.getElementById("layoutFixAllBtn");
+    if (fixAllBtn) {
+      fixAllBtn.disabled = true;
+      fixAllBtn.textContent = "\u23F3 Fixing\u2026";
+    }
+    parent.postMessage({
+      pluginMessage: { type: "fixAllLayoutIssues", issues: lastLayoutData }
+    }, "*");
+  }
+  function toggleLayoutConfig() {
+    const panel = document.getElementById("layoutConfigPanel");
+    const btn = document.getElementById("layoutConfigToggle");
+    const isHidden = panel.style.display === "none" || panel.style.display === "";
+    panel.style.display = isHidden ? "block" : "none";
+    btn.textContent = isHidden ? "\u25B2 Hide Config" : "\u2699\uFE0F Config";
+  }
+  function populateConfigPanel(cfg) {
+    currentConfig = cfg;
+    setNum("cfgEdgeProximity", cfg.edgeProximityRatio);
+    setNum("cfgFillRatio", cfg.fillRatio);
+    setNum("cfgFullBleedRatio", cfg.fullBleedRatio);
+    setNum("cfgCenterTolerance", cfg.centerTolerancePx);
+    setChk("cfgOnlyDefaults", cfg.onlyDefaults);
+    setChk("cfgCheckCorner", cfg.checks.cornerConstraint);
+    setChk("cfgCheckEdge", cfg.checks.edgeConstraint);
+    setChk("cfgCheckSibling", cfg.checks.siblingFill);
+    setChk("cfgCheckWideTall", cfg.checks.wideTall);
+    setChk("cfgCheckFullBleed", cfg.checks.fullBleed);
+    setChk("cfgCheckCentered", cfg.checks.centeredNotCenter);
+  }
+  function handleLoadLayoutConfig(response) {
+    if (response.config) populateConfigPanel(response.config);
+  }
+  function saveLayoutConfig() {
+    var _a;
+    const cfg = {
+      edgeProximityRatio: getNum("cfgEdgeProximity", DEFAULT_LAYOUT_CONFIG.edgeProximityRatio),
+      fillRatio: getNum("cfgFillRatio", DEFAULT_LAYOUT_CONFIG.fillRatio),
+      fullBleedRatio: getNum("cfgFullBleedRatio", DEFAULT_LAYOUT_CONFIG.fullBleedRatio),
+      centerTolerancePx: getNum("cfgCenterTolerance", DEFAULT_LAYOUT_CONFIG.centerTolerancePx),
+      onlyDefaults: getChk("cfgOnlyDefaults"),
+      checks: {
+        cornerConstraint: getChk("cfgCheckCorner"),
+        edgeConstraint: getChk("cfgCheckEdge"),
+        siblingFill: getChk("cfgCheckSibling"),
+        wideTall: getChk("cfgCheckWideTall"),
+        fullBleed: getChk("cfgCheckFullBleed"),
+        centeredNotCenter: getChk("cfgCheckCentered")
+      }
+    };
+    currentConfig = cfg;
+    parent.postMessage({ pluginMessage: { type: "saveLayoutConfig", config: cfg } }, "*");
+    const btn = document.getElementById("layoutConfigSaveBtn");
+    const orig = (_a = btn.textContent) != null ? _a : "Save";
+    btn.textContent = "\u2705 Saved!";
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.textContent = orig;
+      btn.disabled = false;
+    }, 1500);
+  }
+  function resetLayoutConfig() {
+    parent.postMessage({ pluginMessage: { type: "resetLayoutConfig" } }, "*");
+  }
+  function handleSaveLayoutConfig(response) {
+    if (response.config) populateConfigPanel(response.config);
+  }
+  function setNum(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.value = String(val);
+  }
+  function getNum(id, fallback) {
+    const el = document.getElementById(id);
+    if (!el) return fallback;
+    const v = parseFloat(el.value);
+    return isNaN(v) ? fallback : v;
+  }
+  function setChk(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.checked = val;
+  }
+  function getChk(id) {
+    const el = document.getElementById(id);
+    return el ? el.checked : true;
+  }
+  function buildAccordion2(id, title, count, content) {
+    return `
+    <div class="accordion">
+      <div class="accordion-header">
+        <span>${title} <span class="badge">${count}</span></span>
+        <span class="chevron">\u25BC</span>
+      </div>
+      <div class="accordion-body" id="accordion-${id}">
+        ${content}
+      </div>
+    </div>
+  `;
+  }
+  function buildLayoutCard(issue, index) {
+    var _a;
+    const sevIcon = (_a = SEVERITY_ICON[issue.severity]) != null ? _a : "\u26A0\uFE0F";
+    return `
+    <div class="issue-card layout-card-${issue.severity}" data-node-id="${escapeHtml2(issue.nodeId)}" data-issue-index="${index}" title="Click to focus in Figma">
+      <div class="issue-header">
+        <span class="issue-icon">${sevIcon}</span>
+        <div class="issue-meta">
+          <span class="issue-name">${escapeHtml2(issue.nodeName)}</span>
+          <span class="issue-type">${escapeHtml2(issue.nodeType)} \xB7 in "${escapeHtml2(issue.parentName)}"</span>
+        </div>
+        <span class="issue-focus-hint">\u{1F3AF}</span>
+      </div>
+      <div class="issue-desc">${escapeHtml2(issue.description)}</div>
+      <div class="layout-diff-row">
+        <span class="layout-diff-label">Now:</span>
+        <span class="layout-diff-actual">${escapeHtml2(issue.actual)}</span>
+        <span class="layout-diff-label">\u2192</span>
+        <span class="layout-diff-expected">${escapeHtml2(issue.expected)}</span>
+      </div>
+      <div class="issue-suggestion">\u{1F4A1} ${escapeHtml2(issue.suggestion)}</div>
+      <button class="layout-fix-btn" data-fix-index="${index}" title="Apply this fix">\u{1F527} Fix</button>
+    </div>
+  `;
+  }
+  function showFixError(card, message) {
+    removeFixError(card);
+    const el = document.createElement("div");
+    el.className = "layout-fix-error";
+    el.textContent = `\u274C ${message}`;
+    card.appendChild(el);
+  }
+  function removeFixError(card) {
+    const existing = card.querySelector(".layout-fix-error");
+    if (existing) existing.remove();
+  }
+  function escapeHtml2(str) {
     return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
@@ -1288,7 +2013,7 @@
         if (!r.found) {
           return buildPreviewRow("\u274C", r.nodeId, `Node not found`, "", true);
         }
-        return buildPreviewRow("\u270F\uFE0F", r.oldName, `\u2192 <strong>${escapeHtml2(r.newName)}</strong>`, r.nodeType);
+        return buildPreviewRow("\u270F\uFE0F", r.oldName, `\u2192 <strong>${escapeHtml3(r.newName)}</strong>`, r.nodeType);
       }).join(""));
     }
     if (safeAreas.length > 0) {
@@ -1347,8 +2072,8 @@
     <div class="preview-row ${isError ? "preview-row-error" : ""}">
       <span class="preview-icon">${icon}</span>
       <div class="preview-info">
-        <span class="preview-name">${escapeHtml2(name)}</span>
-        <span class="preview-detail">${detail}${type ? ` <em>${escapeHtml2(type)}</em>` : ""}</span>
+        <span class="preview-name">${escapeHtml3(name)}</span>
+        <span class="preview-detail">${detail}${type ? ` <em>${escapeHtml3(type)}</em>` : ""}</span>
       </div>
     </div>
   `;
@@ -1366,13 +2091,13 @@
     <div class="preview-row ${success ? "" : "preview-row-error"}">
       <span class="preview-icon">${success ? "\u2705" : "\u274C"}</span>
       <div class="preview-info">
-        <span class="preview-name">${escapeHtml2(name)}</span>
-        <span class="preview-detail">${escapeHtml2(detail)}</span>
+        <span class="preview-name">${escapeHtml3(name)}</span>
+        <span class="preview-detail">${escapeHtml3(detail)}</span>
       </div>
     </div>
   `;
   }
-  function escapeHtml2(str) {
+  function escapeHtml3(str) {
     return String(str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
@@ -1413,10 +2138,10 @@
     const resultsEl = document.getElementById("variantsResults");
     if (!response.success) {
       const data2 = response.data;
-      const errList = ((_a = data2 == null ? void 0 : data2.errors) == null ? void 0 : _a.length) ? data2.errors.map((e) => `<div class="preview-row preview-row-error"><span class="preview-icon">\u274C</span><div class="preview-info"><span class="preview-detail">${escapeHtml3(e)}</span></div></div>`).join("") : "";
+      const errList = ((_a = data2 == null ? void 0 : data2.errors) == null ? void 0 : _a.length) ? data2.errors.map((e) => `<div class="preview-row preview-row-error"><span class="preview-icon">\u274C</span><div class="preview-info"><span class="preview-detail">${escapeHtml4(e)}</span></div></div>`).join("") : "";
       resultsEl.innerHTML = `
       <div class="apply-summary has-errors">
-        \u274C ${escapeHtml3(response.error || "Combine as Variants failed")}
+        \u274C ${escapeHtml4(response.error || "Combine as Variants failed")}
       </div>
       ${errList}
     `;
@@ -1426,18 +2151,18 @@
     const warningHtml = ((_b = data.errors) == null ? void 0 : _b.length) ? data.errors.map((e) => `
         <div class="preview-row preview-row-error">
           <span class="preview-icon">\u26A0\uFE0F</span>
-          <div class="preview-info"><span class="preview-detail">${escapeHtml3(e)}</span></div>
+          <div class="preview-info"><span class="preview-detail">${escapeHtml4(e)}</span></div>
         </div>`).join("") : "";
     resultsEl.innerHTML = `
     <div class="apply-summary all-success">
-      \u2705 Combined ${data.variantCount} variant${data.variantCount !== 1 ? "s" : ""} into <strong>${escapeHtml3(data.componentSetName)}</strong>
+      \u2705 Combined ${data.variantCount} variant${data.variantCount !== 1 ? "s" : ""} into <strong>${escapeHtml4(data.componentSetName)}</strong>
     </div>
     <div class="preview-section">
       <div class="preview-section-title">\u{1F500} Component Set Created</div>
       <div class="preview-row">
         <span class="preview-icon">\u{1F9E9}</span>
         <div class="preview-info">
-          <span class="preview-name">${escapeHtml3(data.componentSetName)}</span>
+          <span class="preview-name">${escapeHtml4(data.componentSetName)}</span>
           <span class="preview-detail">${data.variantCount} variants \xB7 instances placed back on canvas</span>
         </div>
       </div>
@@ -1450,6 +2175,8 @@
       'input[name="compScope"]:checked'
     );
     const scope = scopeInput ? scopeInput.value : "current";
+    const includeProtectedInput = document.getElementById("compIncludeProtected");
+    const includeProtected = (includeProtectedInput == null ? void 0 : includeProtectedInput.checked) === true;
     const scanBtn = document.getElementById("compScanBtn");
     scanBtn.disabled = true;
     scanBtn.textContent = "\u23F3 Scanning...";
@@ -1458,7 +2185,7 @@
     const resultsEl = document.getElementById("compResults");
     resultsEl.innerHTML = '<div class="analyze-empty">\u23F3 Scanning for similar structures...</div>';
     parent.postMessage(
-      { pluginMessage: { type: "scanComponents", scope } },
+      { pluginMessage: { type: "scanComponents", scope, includeProtected } },
       "*"
     );
   }
@@ -1504,21 +2231,22 @@
       const hasFillDiff = diff && diff.fillDiffs && diff.fillDiffs.length > 0;
       let diffHtml = "";
       if (hasTextDiff) {
-        const texts = diff.textDiffs.map((td) => `<em>${escapeHtml3(td.childName)}</em>: "${escapeHtml3(td.value)}"`).join(", ");
+        const texts = diff.textDiffs.map((td) => `<em>${escapeHtml4(td.childName)}</em>: "${escapeHtml4(td.value)}"`).join(", ");
         diffHtml += `<span class="comp-diff-hint">\u270F\uFE0F ${texts}</span>`;
       }
       if (hasFillDiff) {
-        const swatches = diff.fillDiffs.map((fd) => `<span class="comp-color-swatch" style="background:${escapeHtml3(fd.hex)}" title="${escapeHtml3(fd.hex)}"></span>`).join(" ");
-        diffHtml += `<span class="comp-diff-hint">\u{1F3A8} ${swatches} ${diff.fillDiffs.map((fd) => escapeHtml3(fd.hex)).join(", ")}</span>`;
+        const swatches = diff.fillDiffs.map((fd) => `<span class="comp-color-swatch" style="background:${escapeHtml4(fd.hex)}" title="${escapeHtml4(fd.hex)}"></span>`).join(" ");
+        diffHtml += `<span class="comp-diff-hint">\u{1F3A8} ${swatches} ${diff.fillDiffs.map((fd) => escapeHtml4(fd.hex)).join(", ")}</span>`;
       }
+      const protectedBadge = n.insideProtected ? `<span class="badge badge-protected" title="Inside a Component or Instance \u2014 will be cloned out">\u{1F513} inside component</span>` : "";
       return `
         <div class="comp-node-row ${ni === 0 ? "comp-master-row" : ""} comp-node-focusable"
-             data-node-id="${escapeHtml3(n.id)}"
+             data-node-id="${escapeHtml4(n.id)}"
              title="Click to focus in Figma">
           <span class="comp-node-icon">${ni === 0 ? "\u2B50" : "\u{1F517}"}</span>
           <div class="comp-node-info">
-            <span class="comp-node-name">${escapeHtml3(n.name)}</span>
-            <span class="comp-node-meta">${escapeHtml3(n.type)} \xB7 ${Math.round(n.width)}\xD7${Math.round(n.height)} \xB7 <em>${escapeHtml3(n.parentName)}</em></span>
+            <span class="comp-node-name">${escapeHtml4(n.name)} ${protectedBadge}</span>
+            <span class="comp-node-meta">${escapeHtml4(n.type)} \xB7 ${Math.round(n.width)}\xD7${Math.round(n.height)} \xB7 <em>${escapeHtml4(n.parentName)}</em></span>
             ${diffHtml}
           </div>
           <span class="comp-focus-hint">\u{1F3AF}</span>
@@ -1531,11 +2259,11 @@
       <div class="comp-group-header">
         <label class="comp-group-label">
           <input type="checkbox" class="group-check" data-idx="${idx}">
-          <span class="comp-group-title">${escapeHtml3(group.label)}</span>
+          <span class="comp-group-title">${escapeHtml4(group.label)}</span>
           <span class="badge">${group.nodes.length} nodes</span>
           ${diffBadge}
         </label>
-        <span class="comp-pages">${group.pages.map((p) => escapeHtml3(p)).join(", ")}</span>
+        <span class="comp-pages">${group.pages.map((p) => escapeHtml4(p)).join(", ")}</span>
       </div>
       <div class="comp-group-body">
         <div class="comp-legend">\u2B50 = master &nbsp;\xB7&nbsp; \u{1F517} = instance &nbsp;\xB7&nbsp; click row to focus${hasDiffs ? " &nbsp;\xB7&nbsp; \u26A0\uFE0F overrides will restore differing values" : ""}</div>
@@ -1601,11 +2329,11 @@
       const overrideInfo = result.overridesApplied > 0 ? ` \xB7 ${result.overridesApplied} override${result.overridesApplied !== 1 ? "s" : ""} applied` : "";
       html += `
       <div class="preview-section">
-        <div class="preview-section-title">${statusIcon} ${escapeHtml3(result.label)}</div>
+        <div class="preview-section-title">${statusIcon} ${escapeHtml4(result.label)}</div>
         <div class="preview-row">
           <span class="preview-icon">\u2B50</span>
           <div class="preview-info">
-            <span class="preview-name">Master: ${escapeHtml3(result.componentName)}</span>
+            <span class="preview-name">Master: ${escapeHtml4(result.componentName)}</span>
             <span class="preview-detail">${result.instanceCount} instance${result.instanceCount !== 1 ? "s" : ""} created${overrideInfo}</span>
           </div>
         </div>
@@ -1613,7 +2341,7 @@
           <div class="preview-row preview-row-error">
             <span class="preview-icon">\u274C</span>
             <div class="preview-info">
-              <span class="preview-detail">${escapeHtml3(e)}</span>
+              <span class="preview-detail">${escapeHtml4(e)}</span>
             </div>
           </div>
         `).join("")}
@@ -1625,7 +2353,7 @@
     document.getElementById("compGroupCount").textContent = "-";
     document.getElementById("compNodeCount").textContent = "-";
   }
-  function escapeHtml3(str) {
+  function escapeHtml4(str) {
     return String(str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
@@ -1633,11 +2361,17 @@
   window.exportPageJSON = exportPageJSON;
   window.runAnalysis = runAnalysis;
   window.downloadAnalysisReport = downloadAnalysisReport;
+  window.runLayoutScan = runLayoutScan;
+  window.toggleLayoutConfig = toggleLayoutConfig;
+  window.saveLayoutConfig = saveLayoutConfig;
+  window.resetLayoutConfig = resetLayoutConfig;
+  window.fixAllLayoutIssues = fixAllLayoutIssues;
   window.previewRulesUI = previewRulesUI;
   window.applyRulesUI = applyRulesUI;
   window.runComponentScan = runComponentScan;
   window.runConvert = runConvert;
   window.runCombineAsVariants = runCombineAsVariants;
+  var layoutTabInitialized = false;
   function switchTab(tabName) {
     document.querySelectorAll(".tab-btn").forEach((btn) => {
       btn.classList.remove("active");
@@ -1649,6 +2383,10 @@
     const activePanel = document.getElementById(`tab-${tabName}`);
     if (activeBtn) activeBtn.classList.add("active");
     if (activePanel) activePanel.style.display = "block";
+    if (tabName === "layout" && !layoutTabInitialized) {
+      layoutTabInitialized = true;
+      initLayoutTab();
+    }
   }
   window.switchTab = switchTab;
   var rulesInput = document.getElementById("rulesFileInput");
@@ -1664,6 +2402,21 @@
         break;
       case "analyzeResult":
         handleAnalyzeResult(response);
+        break;
+      case "analyzeLayoutResult":
+        handleLayoutResult(response);
+        break;
+      case "loadLayoutConfigResult":
+        handleLoadLayoutConfig(response);
+        break;
+      case "saveLayoutConfigResult":
+        handleSaveLayoutConfig(response);
+        break;
+      case "fixLayoutIssueResult":
+        handleFixLayoutIssueResult(response);
+        break;
+      case "fixAllLayoutIssuesResult":
+        handleFixAllLayoutIssuesResult(response);
         break;
       case "previewResult":
         handlePreviewResult(response);
