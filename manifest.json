@@ -1,12 +1,18 @@
 {
   "name": "Fixma",
-  "id": "1234567890123456789",
+  "id": "1608897227377517247",
   "api": "1.0.0",
   "main": "code.js",
   "ui": "ui.html",
   "permissions": [
     "currentuser"
   ],
+  "networkAccess": {
+    "allowedDomains": [
+      "none"
+    ]
+  },
+  "documentAccess": "dynamic-page",
   "editorType": [
     "figma"
   ]
