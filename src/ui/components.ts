@@ -1,5 +1,5 @@
 // ============================================================================
-// FigmaOrganizer UI - Components Tab Logic
+// Fixma UI - Components Tab Logic
 // ============================================================================
 
 // Last scan results stored for convert step

@@ -1,5 +1,5 @@
 // ============================================================================
-// FigmaOrganizer - Scene Node Serializer (REST API compatible)
+// Fixma - Scene Node Serializer (REST API compatible)
 // ============================================================================
 
 import { safeClone, convertPaintsToRest, getFontWeight } from "../utils";

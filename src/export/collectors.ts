@@ -1,5 +1,5 @@
 // ============================================================================
-// FigmaOrganizer - Data Collectors (Components, Styles, etc.)
+// Fixma - Data Collectors (Components, Styles, etc.)
 // ============================================================================
 
 import { safeClone } from "../utils";

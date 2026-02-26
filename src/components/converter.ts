@@ -1,5 +1,5 @@
 // ============================================================================
-// FigmaOrganizer - Component Converter
+// Fixma - Component Converter
 //
 // Flow (offset placement + parent preservation):
 //   1. Compute maxRight across ALL nodes in ALL requests (canvas-space).

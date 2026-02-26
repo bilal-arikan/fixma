@@ -1,5 +1,5 @@
 // ============================================================================
-// FigmaOrganizer - Analysis Module Entry Point
+// Fixma - Analysis Module Entry Point
 // ============================================================================
 
 import { checkNaming, NamingIssue } from "./naming";

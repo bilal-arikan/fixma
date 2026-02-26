@@ -1,5 +1,5 @@
 // ============================================================================
-// FigmaOrganizer - Layout Intent Analysis
+// Fixma - Layout Intent Analysis
 // Detects mismatches between a node's visual position/size and its
 // constraints / Auto-Layout sizing settings.
 // ============================================================================

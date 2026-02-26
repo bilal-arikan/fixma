@@ -598,6 +598,67 @@
       transform: none !important;
     }
 
+    /* ── About Modal ─────────────────────────────────────────────────────── */
+    .about-modal-content {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      width: 300px;
+      max-width: 90%;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    }
+    .about-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .about-logo { font-size: 32px; }
+    .about-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #333;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .about-version {
+      font-size: 11px;
+      color: #999;
+      font-weight: 600;
+    }
+    .about-body { font-size: 11px; color: #555; line-height: 1.6; }
+    .about-section-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .about-list {
+      margin: 0 0 0 16px;
+      padding: 0;
+      margin-bottom: 10px;
+    }
+    .about-list li { margin-bottom: 3px; }
+    .about-list li strong { color: #667eea; }
+    .about-divider {
+      height: 1px;
+      background: #eee;
+      margin: 10px 0;
+    }
+    .about-developer {
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+    }
+    .about-copy {
+      font-size: 10px;
+      color: #aaa;
+    }
+
     /* ── Scrollbar ───────────────────────────────────────────────────────── */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
@@ -785,6 +846,46 @@
       <button class="tab-btn" data-tab="variants" onclick="switchTab('variants')">🔀 Variants</button>
       <button class="tab-btn" data-tab="analyze" onclick="switchTab('analyze')">🔍 Analyze</button>
       <button class="tab-btn" data-tab="layout" onclick="switchTab('layout')">📐 Layout</button>
+      <button class="tab-btn" style="flex:0; padding:10px 10px;" onclick="document.getElementById('aboutModal').style.display='flex'" title="About">ℹ️</button>
+    </div>
+
+    <!-- ── About Modal ── -->
+    <div id="aboutModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:999; align-items:center; justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
+      <div class="about-modal-content">
+        <div class="about-header">
+          <span class="about-logo">🔧</span>
+          <div>
+            <div class="about-title">Fixma</div>
+            <div class="about-version">v1.0.0</div>
+          </div>
+        </div>
+        <div class="about-body">
+          <p style="margin-bottom:10px; color:#666;">
+            All-in-one Figma plugin for analyzing, fixing and organizing your design files.
+          </p>
+          <div class="about-section-title">Features</div>
+          <ul class="about-list">
+            <li><strong>Export</strong> — Page JSON export (REST API compatible)</li>
+            <li><strong>Components</strong> — Detect &amp; convert similar structures</li>
+            <li><strong>Variants</strong> — Combine selection as Component Set</li>
+            <li><strong>Analyze</strong> — Naming, safe area, cleanup checks with auto-fix</li>
+            <li><strong>Layout</strong> — Constraint &amp; sizing intent analysis with auto-fix</li>
+          </ul>
+          <div class="about-divider"></div>
+          <div class="about-section-title">Developer</div>
+          <div class="about-developer">Bilal Arikan</div>
+          <div class="about-divider"></div>
+          <div class="about-section-title">Open Source</div>
+          <p style="margin-bottom:6px;">
+            Licensed under <strong>MIT</strong>. Contributions welcome!
+          </p>
+          <a href="https://github.com/bilal-arikan/fixma" target="_blank" style="display:inline-flex; align-items:center; gap:5px; color:#667eea; text-decoration:none; font-weight:600; font-size:11px;">
+            <span>&#9733;</span> github.com/bilal-arikan/fixma
+          </a>
+          <div class="about-copy" style="margin-top:10px;">&copy; 2026 Bilal Arikan &middot; MIT License</div>
+        </div>
+        <button class="btn-secondary" style="width:100%; margin-top:12px;" onclick="document.getElementById('aboutModal').style.display='none'">Close</button>
+      </div>
     </div>
 
     <div class="main-wrapper">

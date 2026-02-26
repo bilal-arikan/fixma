@@ -1,5 +1,5 @@
 // ============================================================================
-// FigmaOrganizer - Layout Fix Engine
+// Fixma - Layout Fix Engine
 // Applies constraint / sizing changes to fix detected layout issues.
 // ============================================================================
 

@@ -1,5 +1,5 @@
 // ============================================================================
-// FigmaOrganizer - Analyze Fix Engine
+// Fixma - Analyze Fix Engine
 // Applies fixes for issues detected by the Analyze tab.
 // Follows the same pattern as layoutFix.ts.
 // ============================================================================

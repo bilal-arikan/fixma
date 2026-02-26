@@ -1,184 +1,82 @@
-# FigmaOrganizer - Figma Plugin
+# 🔧 Fixma
 
-A powerful Figma plugin that applies JSON-based design rules to automate design changes in Figma documents.
+All-in-one Figma plugin for **analyzing**, **fixing** and **organizing** your design files.
 
-## ✨ Features
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Figma Plugin](https://img.shields.io/badge/Figma-Plugin-ff69b4.svg)](https://www.figma.com/community)
 
-- **Rename**: Rename nodes by ID or name with fallback search
-- **Create Components**: Convert selected nodes into components
-- **Auto Layout**: Apply automatic layout rules to frames
-- **Generate Variants**: Create variant sets for components
-- **Apply Styles**: Set text styles and fill colors
+---
 
-## 🎯 Core Capabilities
+## Screenshots
 
-- 🔍 **Smart Node Search**: Falls back to name-based search if ID not found
-- 🔄 **Group to Frame Conversion**: Automatically converts Group nodes to Frames
-- 🛡️ **Safety Checks**: Validates locked layers and component conflicts
-- 📋 **Dry-run Mode**: Preview changes before applying them
-- 📊 **Detailed Logging**: Track all operations with timestamps and error details
+| Export | Components | Variants |
+|--------|------------|----------|
+| ![Export](https://github.com/user-attachments/assets/ea55a166-889e-4a28-9886-8b8b0623097d) | ![Components](https://github.com/user-attachments/assets/8718c4c1-f252-4a50-abb7-d7aad14f48d1) | ![Variants](https://github.com/user-attachments/assets/0c534667-29d1-4c05-8c35-caac63061f60) |
 
-## 📁 Project Structure
+| Analyze | Layout |
+|---------|--------|
+| ![Analyze](https://github.com/user-attachments/assets/4ae409a2-dbd3-4f87-a9e6-f22ebd745659) | ![Layout](https://github.com/user-attachments/assets/dc3034ea-9efa-4c36-900a-a62e6c5161e5) |
 
-```
-manifest.json           # Plugin metadata
-code.ts                 # Main plugin logic
-ui.html                 # User interface
-types.ts                # TypeScript types
-tsconfig.json           # TypeScript config
-package.json            # Dependencies
-example-rules.json      # Sample rules
-```
+---
 
-## 🚀 Quick Start
+## Features
 
-### Prerequisites
+- **📦 Export** — Page JSON export compatible with the Figma REST API format
+- **🧩 Components** — Detect structurally similar frames and convert them into master components + instances
+- **🔀 Variants** — Combine selected objects into a Component Set with one click
+- **🔍 Analyze** — Naming issues, missing safe areas, empty frames, zero-size objects — detect and auto-fix
+- **📐 Layout** — Constraint & sizing intent analysis with one-click auto-fix
+
+---
+
+## Getting Started
+
+### Requirements
+
 - Node.js 14+
-- TypeScript 4.9+
 - Figma Desktop
 
 ### Installation
 
-1. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-2. **Build**:
-   ```bash
-   npm run build
-   ```
-
-3. **Load in Figma**:
-   - Open Figma Desktop
-   - Plugins → Development → New plugin
-   - Select `manifest.json`
-
-## 📖 JSON Rules Format
-
-```json
-{
-  "rename": [
-    { "id": "12:32", "name": "btn_primary" }
-  ],
-  "makeComponent": [
-    { "id": "12:40", "type": "button" }
-  ],
-  "layout": [
-    { 
-      "id": "12:50", 
-      "mode": "auto", 
-      "spacing": 8,
-      "padding": { "horizontal": 16, "vertical": 12 }
-    }
-  ],
-  "variants": [
-    { "base": "btn_primary", "props": ["default", "hover", "pressed"] }
-  ],
-  "styles": [
-    {
-      "id": "14:2",
-      "textStyle": "h1",
-      "fillColor": { "r": 51, "g": 51, "b": 51 }
-    }
-  ]
-}
-```
-
-## 🎮 Usage
-
-1. **Paste JSON rules** into the input area
-2. **Check "Dry-run"** to preview changes (optional)
-3. **Click "Apply Rules"** to execute
-4. **Check logs** for results and errors
-5. **Undo (Ctrl+Z)** if needed
-
-## 📋 Rule Types
-
-### Rename
-```json
-{ "id": "NODE_ID", "name": "new_name" }
-```
-
-### Make Component
-```json
-{ "id": "NODE_ID", "type": "component_name" }
-```
-
-### Layout
-```json
-{ "id": "NODE_ID", "mode": "auto|absolute", "spacing": 8 }
-```
-
-### Variants
-```json
-{ "base": "component_name", "props": ["variant1", "variant2"] }
-```
-
-### Styles
-```json
-{ "id": "NODE_ID", "textStyle": "style_name", "fillColor": { "r": 255, "g": 255, "b": 255 } }
-```
-
-## 🛠️ Commands
-
 ```bash
-npm run build      # Build TypeScript
-npm run watch      # Watch and rebuild on changes
-npm run dev        # Build and watch
+git clone https://github.com/bilal-arikan/fixma.git
+cd fixma
+npm install
+npm run build
 ```
 
-## 🐛 Troubleshooting
+### Load in Figma
 
-| Issue | Solution |
-|-------|----------|
-| Plugin won't load | Check `manifest.json`, rebuild with `npm run build` |
-| JSON errors | Validate JSON syntax, check quotes and commas |
-| Node not found | Copy node ID from Figma (Right-click → Copy/Paste) |
-| Styles not applied | Create local styles in Figma first |
-
-## 📊 Example Workflow
-
-```
-Prepare JSON Rules
-    ↓
-Paste into Plugin UI
-    ↓
-(Optional) Preview with Dry-run
-    ↓
-Click "Apply Rules"
-    ↓
-Review logs
-    ↓
-Undo if needed (Ctrl+Z)
-```
-
-## 🔐 Safety Features
-
-- ✅ Locked layer detection with warnings
-- ✅ Duplicate component checks
-- ✅ Full undo/redo support
-- ✅ Missing style/node fallback handling
-- ✅ Error logging with recovery options
-
-## 📄 Technical Stack
-
-- **Language**: TypeScript 4.9+
-- **API**: Figma Plugin API v1.0.0
-- **UI**: HTML5 + Inline CSS
-- **Build**: tsc (TypeScript Compiler)
-
-## 📝 Version
-
-**v1.0.0** - Active Development
-
-## 📖 API Reference
-
-See [Figma Plugin Docs](https://www.figma.com/plugin-docs/) for detailed API documentation.
+1. Open Figma Desktop
+2. **Plugins → Development → Import plugin from manifest...**
+3. Select the `manifest.json` file
 
 ---
 
-**Status**: Production Ready  
-**License**: MIT  
-**Support**: Check logs for detailed error information
+## Commands
 
+```bash
+npm run build      # Build plugin
+npm run watch      # Watch & rebuild on changes
+npm run dev        # Build + watch
+```
+
+---
+
+## Tech Stack
+
+- **TypeScript** + Figma Plugin API
+- **esbuild** — fast bundler
+- **HTML/CSS** — inline UI
+
+---
+
+## Author
+
+**Bilal Arikan**
+
+---
+
+## License
+
+[MIT](LICENSE) — Open source, contributions welcome!

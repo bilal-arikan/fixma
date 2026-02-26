@@ -1,5 +1,5 @@
 // ============================================================================
-// FigmaOrganizer - Naming Analysis
+// Fixma - Naming Analysis
 // Detects default Figma names, Turkish characters, and case inconsistencies
 // ============================================================================
 

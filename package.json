@@ -1,8 +1,12 @@
 {
-  "name": "figma-unity-bridge-organizer",
+  "name": "fixma",
   "version": "1.0.0",
-  "description": "Figma plugin that applies JSON rules prepared to Figma documents",
+  "description": "All-in-one Figma plugin for analyzing, fixing and organizing your design files",
   "main": "code.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bilal-arikan/fixma"
+  },
   "scripts": {
     "build": "node esbuild.config.js",
     "watch": "node esbuild.config.js --watch",
@@ -13,11 +17,14 @@
   "keywords": [
     "figma",
     "plugin",
-    "unity",
+    "fixma",
+    "lint",
+    "organize",
     "components",
+    "layout",
     "automation"
   ],
-  "author": "Your Name",
+  "author": "Bilal Arikan",
   "license": "MIT",
   "devDependencies": {
     "@figma/plugin-typings": "^1.123.0",

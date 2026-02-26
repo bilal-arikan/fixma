@@ -1,5 +1,5 @@
 // ============================================================================
-// FigmaOrganizer UI - Layout Tab Logic
+// Fixma UI - Layout Tab Logic
 // ============================================================================
 
 import type { LayoutIssue, LayoutIssueKind, LayoutIssueSeverity } from "../analyze/layout";

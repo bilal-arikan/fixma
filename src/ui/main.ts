@@ -1,5 +1,5 @@
 // ============================================================================
-// FigmaOrganizer UI - Entry Point
+// Fixma UI - Entry Point
 // Wires up all tab event handlers and message routing
 // ============================================================================
 

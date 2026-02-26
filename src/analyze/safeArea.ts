@@ -1,5 +1,5 @@
 // ============================================================================
-// FigmaOrganizer - Safe Area Analysis
+// Fixma - Safe Area Analysis
 // Detects FRAME / COMPONENT nodes that are missing a "safearea" child frame
 // ============================================================================
 

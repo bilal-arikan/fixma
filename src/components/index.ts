@@ -1,5 +1,5 @@
 // ============================================================================
-// FigmaOrganizer - Components Module Entry Point
+// Fixma - Components Module Entry Point
 // ============================================================================
 
 export { scanComponentCandidates, ComponentGroup, ComponentNode_ } from "./scanner";

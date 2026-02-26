@@ -1,5 +1,5 @@
 // ============================================================================
-// FigmaOrganizer - Component Scanner
+// Fixma - Component Scanner
 //
 // Strategy: hierarchical fingerprinting
 //   Each node gets a "structural fingerprint" that encodes:

@@ -1,5 +1,5 @@
 // ============================================================================
-// FigmaOrganizer - Apply: Convert to Component
+// Fixma - Apply: Convert to Component
 // Converts FRAME or GROUP nodes into Figma Components
 // ============================================================================
 

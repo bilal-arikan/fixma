@@ -1,5 +1,5 @@
 // ============================================================================
-// FigmaOrganizer - Plugin Entry Point
+// Fixma - Plugin Entry Point
 // All modules are bundled into a single code.js by esbuild at build time
 // ============================================================================
 

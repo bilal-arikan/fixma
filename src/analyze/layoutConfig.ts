@@ -1,5 +1,5 @@
 // ============================================================================
-// FigmaOrganizer - Layout Analysis Configuration
+// Fixma - Layout Analysis Configuration
 // All tunable thresholds and check toggles live here.
 // Stored persistently via Figma clientStorage (key: "layoutConfig").
 // ============================================================================

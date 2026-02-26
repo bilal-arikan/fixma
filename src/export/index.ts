@@ -1,5 +1,5 @@
 // ============================================================================
-// FigmaOrganizer - Document Export (REST API compatible JSON)
+// Fixma - Document Export (REST API compatible JSON)
 // ============================================================================
 
 import { countNodes, safeClone } from "../utils";

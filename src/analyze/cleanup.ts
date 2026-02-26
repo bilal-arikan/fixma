@@ -1,5 +1,5 @@
 // ============================================================================
-// FigmaOrganizer - Cleanup Analysis
+// Fixma - Cleanup Analysis
 // Detects empty frames/groups and zero-size objects
 // ============================================================================
 

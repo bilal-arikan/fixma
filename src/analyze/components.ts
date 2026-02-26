@@ -1,5 +1,5 @@
 // ============================================================================
-// FigmaOrganizer - Component Candidate Analysis
+// Fixma - Component Candidate Analysis
 // Finds repeating frame/group structures that could be converted to components
 // ============================================================================
 

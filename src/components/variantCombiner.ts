@@ -1,5 +1,5 @@
 // ============================================================================
-// FigmaOrganizer - Variant Combiner
+// Fixma - Variant Combiner
 //
 // Takes a list of selected node IDs and combines them into a single
 // ComponentSet (Figma Variants) where each node becomes a variant.
