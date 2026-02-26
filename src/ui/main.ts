@@ -19,17 +19,16 @@ import {
   fixAllLayoutIssues,
 } from "./layout";
 import {
-  handleRulesUpload,
-  previewRulesUI,
-  applyRulesUI,
-  handlePreviewResult,
-  handleApplyResult,
-} from "./edit";
+  handleFixAnalyzeIssueResult,
+  handleFixAllAnalyzeIssuesResult,
+  fixAllAnalyzeIssues as fixAllAnalyze,
+} from "./analyze";
 import {
   runComponentScan,
   handleScanResult,
   runConvert,
   handleConvertResult,
+  convertAllComponents,
   runCombineAsVariants,
   handleGetSelectionResult,
   handleCombineAsVariantsResult,
@@ -44,10 +43,10 @@ import {
 (window as any).saveLayoutConfig      = saveLayoutConfig;
 (window as any).resetLayoutConfig     = resetLayoutConfig;
 (window as any).fixAllLayoutIssues    = fixAllLayoutIssues;
-(window as any).previewRulesUI = previewRulesUI;
-(window as any).applyRulesUI = applyRulesUI;
+(window as any).fixAllAnalyzeIssues   = fixAllAnalyze;
 (window as any).runComponentScan = runComponentScan;
 (window as any).runConvert = runConvert;
+(window as any).convertAllComponents = convertAllComponents;
 (window as any).runCombineAsVariants = runCombineAsVariants;
 
 // ── Tab switching ─────────────────────────────────────────────────────────
@@ -74,12 +73,6 @@ function switchTab(tabName: string): void {
 }
 
 (window as any).switchTab = switchTab;
-
-// ── Rules file upload handler ─────────────────────────────────────────────
-const rulesInput = document.getElementById("rulesFileInput") as HTMLInputElement | null;
-if (rulesInput) {
-  rulesInput.addEventListener("change", handleRulesUpload);
-}
 
 // ── Listen for messages from the Figma plugin ─────────────────────────────
 window.onmessage = (event: MessageEvent) => {
@@ -108,11 +101,11 @@ window.onmessage = (event: MessageEvent) => {
     case "fixAllLayoutIssuesResult":
       handleFixAllLayoutIssuesResult(response);
       break;
-    case "previewResult":
-      handlePreviewResult(response);
+    case "fixAnalyzeIssueResult":
+      handleFixAnalyzeIssueResult(response);
       break;
-    case "applyResult":
-      handleApplyResult(response);
+    case "fixAllAnalyzeIssuesResult":
+      handleFixAllAnalyzeIssuesResult(response);
       break;
     case "scanComponentsResult":
       handleScanResult(response);

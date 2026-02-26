@@ -11,8 +11,8 @@ import {
   LAYOUT_CONFIG_STORAGE_KEY,
   mergeWithDefaults,
 } from "./analyze/layoutConfig";
-import { previewRules, applyRules } from "./apply";
 import { fixLayoutIssue, fixAllLayoutIssues } from "./apply/layoutFix";
+import { fixAnalyzeIssue, fixAllAnalyzeIssues } from "./apply/analyzeFix";
 import { scanComponentCandidates, convertGroups, combineAsVariants } from "./components";
 
 // Show the plugin UI
@@ -64,42 +64,6 @@ figma.ui.onmessage = (msg: any) => {
     } catch (error: any) {
       figma.ui.postMessage({
         type: "analyzeResult",
-        success: false,
-        error: error.message || String(error),
-      });
-    }
-  }
-
-  // ── Preview Rules ────────────────────────────────────────────────────────
-  if (msg.type === "previewRules") {
-    try {
-      const result = previewRules(msg.rules || {});
-      figma.ui.postMessage({
-        type: "previewResult",
-        success: true,
-        data: result,
-      });
-    } catch (error: any) {
-      figma.ui.postMessage({
-        type: "previewResult",
-        success: false,
-        error: error.message || String(error),
-      });
-    }
-  }
-
-  // ── Apply Rules ──────────────────────────────────────────────────────────
-  if (msg.type === "applyRules") {
-    try {
-      const result = applyRules(msg.rules || {});
-      figma.ui.postMessage({
-        type: "applyResult",
-        success: true,
-        data: result,
-      });
-    } catch (error: any) {
-      figma.ui.postMessage({
-        type: "applyResult",
         success: false,
         error: error.message || String(error),
       });
@@ -324,6 +288,41 @@ figma.ui.onmessage = (msg: any) => {
     } catch (error: any) {
       figma.ui.postMessage({
         type: "fixAllLayoutIssuesResult",
+        results: [],
+        error: error.message || String(error),
+      });
+    }
+  }
+
+  // ── Fix Analyze Issue (single) ──────────────────────────────────────────
+  if (msg.type === "fixAnalyzeIssue") {
+    try {
+      const result = fixAnalyzeIssue(msg.issue);
+      figma.ui.postMessage({ type: "fixAnalyzeIssueResult", result, index: msg.index });
+    } catch (error: any) {
+      figma.ui.postMessage({
+        type: "fixAnalyzeIssueResult",
+        index: msg.index,
+        result: {
+          nodeId: msg.issue?.nodeId ?? "",
+          nodeName: msg.issue?.nodeName ?? "",
+          kind: msg.issue?.kind ?? "",
+          success: false,
+          error: error.message || String(error),
+          detail: "",
+        },
+      });
+    }
+  }
+
+  // ── Fix All Analyze Issues ────────────────────────────────────────────
+  if (msg.type === "fixAllAnalyzeIssues") {
+    try {
+      const results = fixAllAnalyzeIssues(msg.issues);
+      figma.ui.postMessage({ type: "fixAllAnalyzeIssuesResult", results });
+    } catch (error: any) {
+      figma.ui.postMessage({
+        type: "fixAllAnalyzeIssuesResult",
         results: [],
         error: error.message || String(error),
       });

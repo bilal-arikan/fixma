@@ -61,7 +61,12 @@ function scanSafeArea(node: any, issues: SafeAreaIssue[]): void {
   if (applicableTypes.includes(node.type)) {
     const container = node as FrameNode | ComponentNode;
 
-    if (isCandidate(container) && !hasSafeAreaFrame(container)) {
+    if (isCandidate(container)) {
+      if (hasSafeAreaFrame(container)) {
+        // Already has safearea — skip scanning children entirely
+        return;
+      }
+
       issues.push({
         nodeId: container.id,
         nodeName: container.name,

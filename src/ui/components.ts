@@ -157,6 +157,22 @@ export function handleScanResult(response: any): void {
     cb.addEventListener("change", updateConvertButton);
   });
 
+  // Wire up fold/unfold: clicking the header (but not the checkbox) toggles body
+  resultsEl.querySelectorAll(".comp-group-header").forEach((header) => {
+    header.addEventListener("click", (e) => {
+      // Don't toggle when clicking the checkbox itself
+      if ((e.target as HTMLElement).classList.contains("group-check")) return;
+      const card = header.closest(".comp-group-card") as HTMLElement;
+      if (!card) return;
+      const body = card.querySelector(".comp-group-body") as HTMLElement;
+      if (!body) return;
+      const isOpen = body.style.display !== "none";
+      body.style.display = isOpen ? "none" : "block";
+      const chevron = header.querySelector(".comp-chevron") as HTMLElement;
+      if (chevron) chevron.textContent = isOpen ? "▶" : "▼";
+    });
+  });
+
   // Wire up node row clicks → focus in Figma
   resultsEl.querySelectorAll(".comp-node-focusable").forEach((row) => {
     row.addEventListener("click", () => {
@@ -165,6 +181,14 @@ export function handleScanResult(response: any): void {
       parent.postMessage({ pluginMessage: { type: "focusNode", nodeId } }, "*");
     });
   });
+
+  // Show Convert All button
+  const convertAllBtn = document.getElementById("compConvertAllBtn") as HTMLButtonElement | null;
+  if (convertAllBtn) {
+    convertAllBtn.style.display = groups.length > 0 ? "inline-block" : "none";
+    convertAllBtn.disabled = false;
+    convertAllBtn.textContent = `🧩 Convert All (${groups.length})`;
+  }
 
   updateConvertButton();
 }
@@ -222,7 +246,7 @@ function buildGroupCard(group: any, idx: number): string {
 
   return `
     <div class="comp-group-card" data-idx="${idx}">
-      <div class="comp-group-header">
+      <div class="comp-group-header" style="cursor:pointer;">
         <label class="comp-group-label">
           <input type="checkbox" class="group-check" data-idx="${idx}">
           <span class="comp-group-title">${escapeHtml(group.label)}</span>
@@ -230,8 +254,9 @@ function buildGroupCard(group: any, idx: number): string {
           ${diffBadge}
         </label>
         <span class="comp-pages">${group.pages.map((p: string) => escapeHtml(p)).join(", ")}</span>
+        <span class="comp-chevron chevron" style="margin-left:4px;">▶</span>
       </div>
-      <div class="comp-group-body">
+      <div class="comp-group-body" style="display:none;">
         <div class="comp-legend">⭐ = master &nbsp;·&nbsp; 🔗 = instance &nbsp;·&nbsp; click row to focus${hasDiffs ? " &nbsp;·&nbsp; ⚠️ overrides will restore differing values" : ""}</div>
         ${nodeRows}
       </div>
@@ -337,6 +362,20 @@ export function handleConvertResult(response: any): void {
 
   document.getElementById("compGroupCount")!.textContent = "-";
   document.getElementById("compNodeCount")!.textContent = "-";
+}
+
+// ── Convert All ─────────────────────────────────────────────────────────────
+
+/**
+ * Selects all group checkboxes and triggers convert.
+ */
+export function convertAllComponents(): void {
+  // Check all group checkboxes
+  document.querySelectorAll('input[type="checkbox"].group-check').forEach((cb) => {
+    (cb as HTMLInputElement).checked = true;
+  });
+  updateConvertButton();
+  runConvert();
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

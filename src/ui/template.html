@@ -598,182 +598,11 @@
       transform: none !important;
     }
 
-    /* ── Edit Tab ────────────────────────────────────────────────────────── */
-    .upload-area {
-      display: block;
-      width: 100%;
-      border: 2px dashed #ccc;
-      border-radius: 6px;
-      padding: 16px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: #fafafa;
-      box-sizing: border-box;
-    }
-
-    .upload-area:hover {
-      border-color: #667eea;
-      background: #667eea08;
-    }
-
-    .upload-area input[type="file"] {
-      display: none;
-    }
-
-    .upload-icon {
-      font-size: 24px;
-      margin-bottom: 6px;
-    }
-
-    .upload-text {
-      font-size: 12px;
-      color: #666;
-      margin-bottom: 4px;
-    }
-
-    .upload-hint {
-      font-size: 10px;
-      color: #aaa;
-    }
-
-    .rules-file-info {
-      display: none;
-      width: 100%;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-      margin-top: 8px;
-      background: #667eea10;
-      border: 1px solid #667eea30;
-      border-radius: 4px;
-      box-sizing: border-box;
-    }
-
-    .rules-file-name {
-      font-size: 11px;
-      font-weight: 600;
-      color: #667eea;
-      flex: 1;
-    }
-
-    .rules-file-summary {
-      font-size: 10px;
-      color: #888;
-    }
-
-    /* Preview / Apply results */
-    .preview-summary {
-      padding: 8px 10px;
-      background: #667eea15;
-      border-radius: 4px;
-      font-size: 11px;
-      color: #333;
-      margin-bottom: 4px;
-    }
-
-    .apply-summary {
-      padding: 8px 10px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .apply-summary.all-success {
-      background: #d4edda;
-      color: #155724;
-    }
-
-    .apply-summary.has-errors {
-      background: #fff3cd;
-      color: #856404;
-    }
-
-    .preview-section {
-      border: 1px solid #eee;
-      border-radius: 5px;
-      overflow: hidden;
-      margin-bottom: 4px;
-    }
-
-    .preview-section-title {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 6px 10px;
-      background: #f5f5f5;
-      color: #555;
-      border-bottom: 1px solid #eee;
-    }
-
-    .preview-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      padding: 7px 10px;
-      border-bottom: 1px solid #f5f5f5;
-      font-size: 11px;
-    }
-
-    .preview-row:last-child {
-      border-bottom: none;
-    }
-
-    .preview-row-error {
-      background: #fff5f5;
-    }
-
-    .preview-icon {
-      font-size: 12px;
-      flex-shrink: 0;
-    }
-
-    .preview-info {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      min-width: 0;
-    }
-
-    .preview-name {
-      font-weight: 600;
-      color: #333;
-      word-break: break-all;
-    }
-
-    .preview-detail {
-      color: #666;
-      font-size: 10px;
-      word-break: break-all;
-    }
-
-    .preview-detail em {
-      color: #aaa;
-      font-style: normal;
-    }
-
     /* ── Scrollbar ───────────────────────────────────────────────────────── */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
     ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: #999; }
-
-    /* ── Edit results scrollable ─────────────────────────────────────────── */
-    .edit-results {
-      max-height: 260px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      background: #fafafa;
-      border: 1px solid #eee;
-      border-radius: 4px;
-      padding: 8px;
-    }
-
-    .edit-results .analyze-empty {
-      padding: 16px;
-    }
 
     /* ── Components Tab ──────────────────────────────────────────────────── */
     .comp-group-card {
@@ -956,7 +785,6 @@
       <button class="tab-btn" data-tab="variants" onclick="switchTab('variants')">🔀 Variants</button>
       <button class="tab-btn" data-tab="analyze" onclick="switchTab('analyze')">🔍 Analyze</button>
       <button class="tab-btn" data-tab="layout" onclick="switchTab('layout')">📐 Layout</button>
-      <button class="tab-btn" data-tab="edit" onclick="switchTab('edit')">⚙️ Edit</button>
     </div>
 
     <div class="main-wrapper">
@@ -1100,7 +928,12 @@
         </div>
 
         <div class="section-card" style="flex:1; min-height:0; display:flex; flex-direction:column;">
-          <h3>🔎 Detected Issues</h3>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+            <h3>🔎 Detected Issues <span style="font-size:10px;font-weight:400;color:#888;">· click any card to focus in Figma</span></h3>
+            <button class="btn-fix-all" id="analyzeFixAllBtn" onclick="fixAllAnalyzeIssues()" style="display:none;">
+              🔧 Fix All
+            </button>
+          </div>
           <div class="analyze-results" id="analyzeResults" style="flex:1; overflow-y:auto; margin-top:8px;">
             <div class="analyze-empty">
               Click Scan to start the analysis.
@@ -1156,7 +989,12 @@
         </div>
 
         <div class="section-card" style="flex:1; min-height:0; display:flex; flex-direction:column;">
-          <h3>🔎 Similar Groups</h3>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+            <h3>🔎 Similar Groups</h3>
+            <button class="btn-fix-all" id="compConvertAllBtn" onclick="convertAllComponents()" style="display:none;">
+              🧩 Convert All
+            </button>
+          </div>
           <div class="comp-results-wrap" id="compResults">
             <div class="analyze-empty">
               Click Scan to find similar structures.
@@ -1308,55 +1146,6 @@
           <div class="analyze-results" id="layoutResults" style="flex:1; overflow-y:auto; margin-top:8px;">
             <div class="analyze-empty">
               Click Scan to detect layout intent issues.
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- ==================== TAB: Edit ==================== -->
-      <div class="tab-panel" id="tab-edit" style="display:none;">
-
-        <div class="section-card">
-          <h3>⚙️ Rule-Based Editing</h3>
-          <p class="section-desc">
-            Load a <code>rules.json</code> file. Preview the changes first, then apply them to Figma.
-          </p>
-
-          <!-- Upload Area -->
-          <label class="upload-area" for="rulesFileInput">
-            <input type="file" id="rulesFileInput" accept=".json">
-            <div class="upload-icon">📂</div>
-            <div class="upload-text">Select or drop your rules.json file here</div>
-            <div class="upload-hint">Format: { "rename": [...], "addSafeArea": [...] }</div>
-          </label>
-
-          <!-- File Info (visible after load) -->
-          <div class="rules-file-info" id="rulesFileInfo">
-            <span>📄</span>
-            <div style="flex:1; min-width:0;">
-              <div class="rules-file-name" id="rulesFileName">-</div>
-              <div class="rules-file-summary" id="rulesFileSummary">-</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="section-card">
-          <div class="controls" style="gap:8px;">
-            <button class="btn-secondary" onclick="previewRulesUI()" id="previewBtn" disabled style="flex:1;">
-              👁 Preview
-            </button>
-            <button class="btn-danger" onclick="applyRulesUI()" id="applyBtn" disabled style="flex:1;">
-              ✅ Apply to Figma
-            </button>
-          </div>
-        </div>
-
-        <div class="section-card" style="flex:1; min-height:0; display:flex; flex-direction:column;">
-          <h3>📋 Change List</h3>
-          <div class="edit-results" id="editResults" style="flex:1; margin-top:8px; max-height:none;">
-            <div class="analyze-empty">
-              Load a rules file and click Preview.
             </div>
           </div>
         </div>

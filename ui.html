@@ -598,182 +598,11 @@
       transform: none !important;
     }
 
-    /* ── Edit Tab ────────────────────────────────────────────────────────── */
-    .upload-area {
-      display: block;
-      width: 100%;
-      border: 2px dashed #ccc;
-      border-radius: 6px;
-      padding: 16px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: #fafafa;
-      box-sizing: border-box;
-    }
-
-    .upload-area:hover {
-      border-color: #667eea;
-      background: #667eea08;
-    }
-
-    .upload-area input[type="file"] {
-      display: none;
-    }
-
-    .upload-icon {
-      font-size: 24px;
-      margin-bottom: 6px;
-    }
-
-    .upload-text {
-      font-size: 12px;
-      color: #666;
-      margin-bottom: 4px;
-    }
-
-    .upload-hint {
-      font-size: 10px;
-      color: #aaa;
-    }
-
-    .rules-file-info {
-      display: none;
-      width: 100%;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-      margin-top: 8px;
-      background: #667eea10;
-      border: 1px solid #667eea30;
-      border-radius: 4px;
-      box-sizing: border-box;
-    }
-
-    .rules-file-name {
-      font-size: 11px;
-      font-weight: 600;
-      color: #667eea;
-      flex: 1;
-    }
-
-    .rules-file-summary {
-      font-size: 10px;
-      color: #888;
-    }
-
-    /* Preview / Apply results */
-    .preview-summary {
-      padding: 8px 10px;
-      background: #667eea15;
-      border-radius: 4px;
-      font-size: 11px;
-      color: #333;
-      margin-bottom: 4px;
-    }
-
-    .apply-summary {
-      padding: 8px 10px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .apply-summary.all-success {
-      background: #d4edda;
-      color: #155724;
-    }
-
-    .apply-summary.has-errors {
-      background: #fff3cd;
-      color: #856404;
-    }
-
-    .preview-section {
-      border: 1px solid #eee;
-      border-radius: 5px;
-      overflow: hidden;
-      margin-bottom: 4px;
-    }
-
-    .preview-section-title {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 6px 10px;
-      background: #f5f5f5;
-      color: #555;
-      border-bottom: 1px solid #eee;
-    }
-
-    .preview-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      padding: 7px 10px;
-      border-bottom: 1px solid #f5f5f5;
-      font-size: 11px;
-    }
-
-    .preview-row:last-child {
-      border-bottom: none;
-    }
-
-    .preview-row-error {
-      background: #fff5f5;
-    }
-
-    .preview-icon {
-      font-size: 12px;
-      flex-shrink: 0;
-    }
-
-    .preview-info {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      min-width: 0;
-    }
-
-    .preview-name {
-      font-weight: 600;
-      color: #333;
-      word-break: break-all;
-    }
-
-    .preview-detail {
-      color: #666;
-      font-size: 10px;
-      word-break: break-all;
-    }
-
-    .preview-detail em {
-      color: #aaa;
-      font-style: normal;
-    }
-
     /* ── Scrollbar ───────────────────────────────────────────────────────── */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
     ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: #999; }
-
-    /* ── Edit results scrollable ─────────────────────────────────────────── */
-    .edit-results {
-      max-height: 260px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      background: #fafafa;
-      border: 1px solid #eee;
-      border-radius: 4px;
-      padding: 8px;
-    }
-
-    .edit-results .analyze-empty {
-      padding: 16px;
-    }
 
     /* ── Components Tab ──────────────────────────────────────────────────── */
     .comp-group-card {
@@ -956,7 +785,6 @@
       <button class="tab-btn" data-tab="variants" onclick="switchTab('variants')">🔀 Variants</button>
       <button class="tab-btn" data-tab="analyze" onclick="switchTab('analyze')">🔍 Analyze</button>
       <button class="tab-btn" data-tab="layout" onclick="switchTab('layout')">📐 Layout</button>
-      <button class="tab-btn" data-tab="edit" onclick="switchTab('edit')">⚙️ Edit</button>
     </div>
 
     <div class="main-wrapper">
@@ -1100,7 +928,12 @@
         </div>
 
         <div class="section-card" style="flex:1; min-height:0; display:flex; flex-direction:column;">
-          <h3>🔎 Detected Issues</h3>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+            <h3>🔎 Detected Issues <span style="font-size:10px;font-weight:400;color:#888;">· click any card to focus in Figma</span></h3>
+            <button class="btn-fix-all" id="analyzeFixAllBtn" onclick="fixAllAnalyzeIssues()" style="display:none;">
+              🔧 Fix All
+            </button>
+          </div>
           <div class="analyze-results" id="analyzeResults" style="flex:1; overflow-y:auto; margin-top:8px;">
             <div class="analyze-empty">
               Click Scan to start the analysis.
@@ -1156,7 +989,12 @@
         </div>
 
         <div class="section-card" style="flex:1; min-height:0; display:flex; flex-direction:column;">
-          <h3>🔎 Similar Groups</h3>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+            <h3>🔎 Similar Groups</h3>
+            <button class="btn-fix-all" id="compConvertAllBtn" onclick="convertAllComponents()" style="display:none;">
+              🧩 Convert All
+            </button>
+          </div>
           <div class="comp-results-wrap" id="compResults">
             <div class="analyze-empty">
               Click Scan to find similar structures.
@@ -1314,55 +1152,6 @@
 
       </div>
 
-      <!-- ==================== TAB: Edit ==================== -->
-      <div class="tab-panel" id="tab-edit" style="display:none;">
-
-        <div class="section-card">
-          <h3>⚙️ Rule-Based Editing</h3>
-          <p class="section-desc">
-            Load a <code>rules.json</code> file. Preview the changes first, then apply them to Figma.
-          </p>
-
-          <!-- Upload Area -->
-          <label class="upload-area" for="rulesFileInput">
-            <input type="file" id="rulesFileInput" accept=".json">
-            <div class="upload-icon">📂</div>
-            <div class="upload-text">Select or drop your rules.json file here</div>
-            <div class="upload-hint">Format: { "rename": [...], "addSafeArea": [...] }</div>
-          </label>
-
-          <!-- File Info (visible after load) -->
-          <div class="rules-file-info" id="rulesFileInfo">
-            <span>📄</span>
-            <div style="flex:1; min-width:0;">
-              <div class="rules-file-name" id="rulesFileName">-</div>
-              <div class="rules-file-summary" id="rulesFileSummary">-</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="section-card">
-          <div class="controls" style="gap:8px;">
-            <button class="btn-secondary" onclick="previewRulesUI()" id="previewBtn" disabled style="flex:1;">
-              👁 Preview
-            </button>
-            <button class="btn-danger" onclick="applyRulesUI()" id="applyBtn" disabled style="flex:1;">
-              ✅ Apply to Figma
-            </button>
-          </div>
-        </div>
-
-        <div class="section-card" style="flex:1; min-height:0; display:flex; flex-direction:column;">
-          <h3>📋 Change List</h3>
-          <div class="edit-results" id="editResults" style="flex:1; margin-top:8px; max-height:none;">
-            <div class="analyze-empty">
-              Load a rules file and click Preview.
-            </div>
-          </div>
-        </div>
-
-      </div>
-
     </div>
   </div>
 
@@ -1442,6 +1231,14 @@
 
   // src/ui/analyze.ts
   var lastAnalysisData = null;
+  var lastAnalyzeIssues = [];
+  var FIXABLE_KINDS = /* @__PURE__ */ new Set([
+    "turkish_chars",
+    "case_inconsistency",
+    "empty_frame",
+    "zero_size",
+    "missing_safearea_frame"
+  ]);
   function downloadAnalysisReport() {
     if (!lastAnalysisData) return;
     const jsonStr = JSON.stringify(lastAnalysisData, null, 2);
@@ -1473,6 +1270,8 @@
     btn.textContent = "\u23F3 Scanning...";
     const resultsEl = document.getElementById("analyzeResults");
     resultsEl.innerHTML = '<div class="analyze-empty">\u23F3 Scanning page...</div>';
+    const fixAllBtn = document.getElementById("analyzeFixAllBtn");
+    if (fixAllBtn) fixAllBtn.style.display = "none";
     parent.postMessage(
       {
         pluginMessage: {
@@ -1491,6 +1290,7 @@
     const resultsEl = document.getElementById("analyzeResults");
     if (!response.success) {
       resultsEl.innerHTML = `<div class="analyze-empty">\u274C Error: ${response.error || "Unknown error"}</div>`;
+      lastAnalyzeIssues = [];
       return;
     }
     const data = response.data;
@@ -1506,24 +1306,81 @@
     document.getElementById("analyzedSafeArea").textContent = String(safeAreaIssues.length);
     document.getElementById("analyzedEmptyFrames").textContent = String(emptyFrameIssues.length);
     document.getElementById("analyzedZeroSize").textContent = String(zeroSizeIssues.length);
+    lastAnalyzeIssues = [];
+    let globalIndex = 0;
+    for (const issue of namingIssues) {
+      lastAnalyzeIssues.push({
+        nodeId: issue.nodeId,
+        nodeName: issue.nodeName,
+        nodeType: issue.nodeType,
+        kind: issue.issue,
+        // "default_name" | "turkish_chars" | "case_inconsistency"
+        description: issue.description,
+        suggestion: issue.suggestion
+      });
+      globalIndex++;
+    }
+    for (const issue of safeAreaIssues) {
+      lastAnalyzeIssues.push({
+        nodeId: issue.nodeId,
+        nodeName: issue.nodeName,
+        nodeType: issue.nodeType,
+        kind: issue.issue,
+        // "missing_safearea_frame"
+        description: issue.description,
+        suggestion: issue.suggestion,
+        width: issue.width,
+        height: issue.height
+      });
+      globalIndex++;
+    }
+    for (const issue of [...emptyFrameIssues, ...zeroSizeIssues]) {
+      lastAnalyzeIssues.push({
+        nodeId: issue.nodeId,
+        nodeName: issue.nodeName,
+        nodeType: issue.nodeType,
+        kind: issue.kind,
+        // "empty_frame" | "zero_size"
+        description: issue.description,
+        suggestion: issue.suggestion,
+        width: issue.width,
+        height: issue.height
+      });
+      globalIndex++;
+    }
     if (totalIssues === 0) {
       resultsEl.innerHTML = '<div class="analyze-empty">\u2705 No issues found! Your page looks clean.</div>';
+      lastAnalyzeIssues = [];
       return;
     }
+    const fixableCount = lastAnalyzeIssues.filter((i) => FIXABLE_KINDS.has(i.kind)).length;
+    const fixAllBtn = document.getElementById("analyzeFixAllBtn");
+    if (fixAllBtn) {
+      fixAllBtn.style.display = fixableCount > 0 ? "inline-block" : "none";
+      fixAllBtn.disabled = false;
+      fixAllBtn.textContent = `\u{1F527} Fix All (${fixableCount})`;
+    }
     let html = "";
+    let idx = 0;
     if (namingIssues.length > 0) {
       html += buildAccordion(
         "naming",
         `\u270F\uFE0F Naming Issues`,
         namingIssues.length,
-        namingIssues.map((issue) => buildIssueCard(
-          getIssueIcon(issue.issue),
-          issue.nodeName,
-          issue.nodeType,
-          issue.nodeId,
-          issue.description,
-          issue.suggestion
-        )).join("")
+        namingIssues.map((issue) => {
+          const card = buildIssueCard(
+            getIssueIcon(issue.issue),
+            issue.nodeName,
+            issue.nodeType,
+            issue.nodeId,
+            issue.description,
+            issue.suggestion,
+            idx,
+            issue.issue
+          );
+          idx++;
+          return card;
+        }).join("")
       );
     }
     if (safeAreaIssues.length > 0) {
@@ -1531,14 +1388,20 @@
         "safearea",
         `\u{1F4F1} Safe Area Issues`,
         safeAreaIssues.length,
-        safeAreaIssues.map((issue) => buildIssueCard(
-          "\u{1F4F1}",
-          issue.nodeName,
-          `${issue.nodeType} \xB7 ${issue.width}\xD7${issue.height}`,
-          issue.nodeId,
-          issue.description,
-          issue.suggestion
-        )).join("")
+        safeAreaIssues.map((issue) => {
+          const card = buildIssueCard(
+            "\u{1F4F1}",
+            issue.nodeName,
+            `${issue.nodeType} \xB7 ${issue.width}\xD7${issue.height}`,
+            issue.nodeId,
+            issue.description,
+            issue.suggestion,
+            idx,
+            issue.issue
+          );
+          idx++;
+          return card;
+        }).join("")
       );
     }
     if (emptyFrameIssues.length > 0) {
@@ -1546,14 +1409,20 @@
         "emptyframes",
         `\u{1F4ED} Empty Frames`,
         emptyFrameIssues.length,
-        emptyFrameIssues.map((issue) => buildIssueCard(
-          "\u{1F4ED}",
-          issue.nodeName,
-          `${issue.nodeType} \xB7 ${issue.width}\xD7${issue.height}`,
-          issue.nodeId,
-          issue.description,
-          issue.suggestion
-        )).join("")
+        emptyFrameIssues.map((issue) => {
+          const card = buildIssueCard(
+            "\u{1F4ED}",
+            issue.nodeName,
+            `${issue.nodeType} \xB7 ${issue.width}\xD7${issue.height}`,
+            issue.nodeId,
+            issue.description,
+            issue.suggestion,
+            idx,
+            issue.kind
+          );
+          idx++;
+          return card;
+        }).join("")
       );
     }
     if (zeroSizeIssues.length > 0) {
@@ -1561,14 +1430,20 @@
         "zerosize",
         `\u{1F50D} Zero-Size Objects`,
         zeroSizeIssues.length,
-        zeroSizeIssues.map((issue) => buildIssueCard(
-          "\u{1F50D}",
-          issue.nodeName,
-          `${issue.nodeType} \xB7 ${issue.width}\xD7${issue.height}`,
-          issue.nodeId,
-          issue.description,
-          issue.suggestion
-        )).join("")
+        zeroSizeIssues.map((issue) => {
+          const card = buildIssueCard(
+            "\u{1F50D}",
+            issue.nodeName,
+            `${issue.nodeType} \xB7 ${issue.width}\xD7${issue.height}`,
+            issue.nodeId,
+            issue.description,
+            issue.suggestion,
+            idx,
+            issue.kind
+          );
+          idx++;
+          return card;
+        }).join("")
       );
     }
     resultsEl.innerHTML = html;
@@ -1589,6 +1464,123 @@
         }
       });
     });
+    resultsEl.querySelectorAll(".analyze-fix-btn[data-fix-index]").forEach((btn2) => {
+      btn2.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const index = parseInt(btn2.dataset.fixIndex, 10);
+        const issue = lastAnalyzeIssues[index];
+        if (!issue) return;
+        btn2.disabled = true;
+        btn2.textContent = "\u23F3 Fixing...";
+        removeFixError(index);
+        parent.postMessage({
+          pluginMessage: {
+            type: "fixAnalyzeIssue",
+            issue: {
+              nodeId: issue.nodeId,
+              nodeName: issue.nodeName,
+              nodeType: issue.nodeType,
+              kind: issue.kind,
+              suggestion: issue.suggestion,
+              width: issue.width,
+              height: issue.height
+            },
+            index
+          }
+        }, "*");
+      });
+    });
+  }
+  function handleFixAnalyzeIssueResult(response) {
+    var _a;
+    const result = response.result;
+    const index = (_a = response.index) != null ? _a : -1;
+    const btn = document.querySelector(`.analyze-fix-btn[data-fix-index="${index}"]`);
+    if (!btn) return;
+    if (result.success) {
+      btn.textContent = "\u2705 Fixed";
+      btn.classList.add("layout-fix-done");
+      btn.disabled = true;
+    } else {
+      btn.textContent = "\u{1F527} Fix";
+      btn.disabled = false;
+      showFixError(index, result.error || "Unknown error");
+    }
+  }
+  function handleFixAllAnalyzeIssuesResult(response) {
+    const fixAllBtn = document.getElementById("analyzeFixAllBtn");
+    if (fixAllBtn) {
+      fixAllBtn.disabled = false;
+      fixAllBtn.textContent = "\u{1F527} Fix All";
+    }
+    const results = response.results || [];
+    let successCount = 0;
+    let failCount = 0;
+    let resultIdx = 0;
+    for (let i = 0; i < lastAnalyzeIssues.length; i++) {
+      const issue = lastAnalyzeIssues[i];
+      if (!FIXABLE_KINDS.has(issue.kind)) continue;
+      const result = results[resultIdx];
+      resultIdx++;
+      if (!result) continue;
+      const btn = document.querySelector(`.analyze-fix-btn[data-fix-index="${i}"]`);
+      if (!btn) continue;
+      if (result.success) {
+        successCount++;
+        btn.textContent = "\u2705 Fixed";
+        btn.classList.add("layout-fix-done");
+        btn.disabled = true;
+        removeFixError(i);
+      } else {
+        failCount++;
+        btn.textContent = "\u{1F527} Fix";
+        btn.disabled = false;
+        showFixError(i, result.error || "Unknown error");
+      }
+    }
+    if (fixAllBtn && successCount > 0) {
+      fixAllBtn.textContent = `\u2705 ${successCount} fixed` + (failCount > 0 ? `, ${failCount} failed` : "");
+    }
+  }
+  function fixAllAnalyzeIssues() {
+    const fixable = lastAnalyzeIssues.filter((i) => FIXABLE_KINDS.has(i.kind)).map((i) => ({
+      nodeId: i.nodeId,
+      nodeName: i.nodeName,
+      nodeType: i.nodeType,
+      kind: i.kind,
+      suggestion: i.suggestion,
+      width: i.width,
+      height: i.height
+    }));
+    if (fixable.length === 0) return;
+    const fixAllBtn = document.getElementById("analyzeFixAllBtn");
+    if (fixAllBtn) {
+      fixAllBtn.disabled = true;
+      fixAllBtn.textContent = "\u23F3 Fixing...";
+    }
+    document.querySelectorAll(".analyze-fix-btn").forEach((btn) => {
+      btn.disabled = true;
+    });
+    parent.postMessage({
+      pluginMessage: {
+        type: "fixAllAnalyzeIssues",
+        issues: fixable
+      }
+    }, "*");
+  }
+  function showFixError(index, message) {
+    removeFixError(index);
+    const btn = document.querySelector(`.analyze-fix-btn[data-fix-index="${index}"]`);
+    if (!btn) return;
+    const errEl = document.createElement("div");
+    errEl.className = "layout-fix-error";
+    errEl.dataset.fixErrorIndex = String(index);
+    errEl.textContent = `\u274C ${message}`;
+    btn.insertAdjacentElement("afterend", errEl);
+  }
+  function removeFixError(index) {
+    const existing = document.querySelector(`.layout-fix-error[data-fix-error-index="${index}"]`);
+    if (existing) existing.remove();
   }
   function getIssueIcon(issue) {
     switch (issue) {
@@ -1615,7 +1607,9 @@
     </div>
   `;
   }
-  function buildIssueCard(icon, name, type, nodeId, description, suggestion) {
+  function buildIssueCard(icon, name, type, nodeId, description, suggestion, globalIndex, kind) {
+    const isFixable = FIXABLE_KINDS.has(kind);
+    const fixBtnHtml = isFixable ? `<button class="layout-fix-btn analyze-fix-btn" data-fix-index="${globalIndex}">\u{1F527} Fix</button>` : "";
     return `
     <div class="issue-card" data-node-id="${escapeHtml(nodeId)}" title="Click to focus in Figma">
       <div class="issue-header">
@@ -1628,6 +1622,7 @@
       </div>
       <div class="issue-desc">${escapeHtml(description)}</div>
       ${suggestion ? `<div class="issue-suggestion">\u{1F4A1} ${escapeHtml(suggestion)}</div>` : ""}
+      ${fixBtnHtml}
     </div>
   `;
   }
@@ -1805,13 +1800,13 @@
           btn.classList.add("layout-fix-done");
         }
         card.style.opacity = "0.5";
-        removeFixError(card);
+        removeFixError2(card);
       } else {
         if (btn) {
           btn.textContent = "\u{1F527} Fix";
           btn.disabled = false;
         }
-        showFixError(card, result.error || "Unknown error");
+        showFixError2(card, result.error || "Unknown error");
       }
     });
   }
@@ -1832,13 +1827,13 @@
             btn.classList.add("layout-fix-done");
           }
           card.style.opacity = "0.5";
-          removeFixError(card);
+          removeFixError2(card);
         } else {
           if (btn) {
             btn.textContent = "\u{1F527} Fix";
             btn.disabled = false;
           }
-          showFixError(card, result.error || "Unknown error");
+          showFixError2(card, result.error || "Unknown error");
         }
       });
     }
@@ -1978,181 +1973,19 @@
     </div>
   `;
   }
-  function showFixError(card, message) {
-    removeFixError(card);
+  function showFixError2(card, message) {
+    removeFixError2(card);
     const el = document.createElement("div");
     el.className = "layout-fix-error";
     el.textContent = `\u274C ${message}`;
     card.appendChild(el);
   }
-  function removeFixError(card) {
+  function removeFixError2(card) {
     const existing = card.querySelector(".layout-fix-error");
     if (existing) existing.remove();
   }
   function escapeHtml2(str) {
     return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-  }
-
-  // src/ui/edit.ts
-  var loadedRules = null;
-  function handleRulesUpload(event) {
-    var _a;
-    const input = event.target;
-    const file = (_a = input.files) == null ? void 0 : _a[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      var _a2;
-      try {
-        const text = (_a2 = e.target) == null ? void 0 : _a2.result;
-        const rules = JSON.parse(text);
-        loadedRules = rules;
-        document.getElementById("rulesFileName").textContent = file.name;
-        document.getElementById("rulesFileInfo").style.display = "flex";
-        const renameCount = (rules.rename || []).length;
-        const safeAreaCount = (rules.addSafeArea || []).length;
-        const total = renameCount + safeAreaCount;
-        document.getElementById("rulesFileSummary").textContent = `${total} rules: ${renameCount} rename, ${safeAreaCount} safe area`;
-        const previewBtn = document.getElementById("previewBtn");
-        previewBtn.disabled = false;
-        const applyBtn = document.getElementById("applyBtn");
-        applyBtn.disabled = true;
-        document.getElementById("editResults").innerHTML = '<div class="analyze-empty">\u{1F4CB} Rules file loaded. Click Preview to inspect changes.</div>';
-      } catch (err) {
-        document.getElementById("editResults").innerHTML = `<div class="analyze-empty">\u274C JSON parse error: ${err.message}</div>`;
-        loadedRules = null;
-      }
-    };
-    reader.readAsText(file);
-  }
-  function previewRulesUI() {
-    if (!loadedRules) return;
-    const previewBtn = document.getElementById("previewBtn");
-    previewBtn.disabled = true;
-    previewBtn.textContent = "\u23F3 Loading...";
-    document.getElementById("editResults").innerHTML = '<div class="analyze-empty">\u23F3 Calculating preview...</div>';
-    parent.postMessage(
-      { pluginMessage: { type: "previewRules", rules: loadedRules } },
-      "*"
-    );
-  }
-  function applyRulesUI() {
-    if (!loadedRules) return;
-    const applyBtn = document.getElementById("applyBtn");
-    applyBtn.disabled = true;
-    applyBtn.textContent = "\u23F3 Applying...";
-    parent.postMessage(
-      { pluginMessage: { type: "applyRules", rules: loadedRules } },
-      "*"
-    );
-  }
-  function handlePreviewResult(response) {
-    const previewBtn = document.getElementById("previewBtn");
-    previewBtn.disabled = false;
-    previewBtn.textContent = "\u{1F441} Preview";
-    const resultsEl = document.getElementById("editResults");
-    if (!response.success) {
-      resultsEl.innerHTML = `<div class="analyze-empty">\u274C Preview error: ${response.error || "Unknown error"}</div>`;
-      return;
-    }
-    const data = response.data;
-    const { renames, safeAreas, totalChanges } = data;
-    if (totalChanges === 0) {
-      resultsEl.innerHTML = '<div class="analyze-empty">\u2139\uFE0F No changes to apply.</div>';
-      return;
-    }
-    let html = `<div class="preview-summary">\u{1F4CB} <strong>${totalChanges}</strong> changes will be applied</div>`;
-    if (renames.length > 0) {
-      html += buildPreviewSection("\u270F\uFE0F Rename", renames.map((r) => {
-        if (!r.found) {
-          return buildPreviewRow("\u274C", r.nodeId, `Node not found`, "", true);
-        }
-        return buildPreviewRow("\u270F\uFE0F", r.oldName, `\u2192 <strong>${escapeHtml3(r.newName)}</strong>`, r.nodeType);
-      }).join(""));
-    }
-    if (safeAreas.length > 0) {
-      html += buildPreviewSection("\u{1F4F1} Safe Area", safeAreas.map((s) => {
-        if (!s.found || !s.applicable) {
-          return buildPreviewRow("\u274C", s.nodeName || s.nodeId, s.reason || "Not applicable", s.nodeType, true);
-        }
-        return buildPreviewRow("\u{1F4F1}", s.nodeName, s.reason, s.nodeType);
-      }).join(""));
-    }
-    resultsEl.innerHTML = html;
-    const applyBtn = document.getElementById("applyBtn");
-    applyBtn.disabled = false;
-  }
-  function handleApplyResult(response) {
-    var _a, _b;
-    const applyBtn = document.getElementById("applyBtn");
-    applyBtn.disabled = false;
-    applyBtn.textContent = "\u2705 Apply to Figma";
-    const resultsEl = document.getElementById("editResults");
-    if (!response.success) {
-      resultsEl.innerHTML = `<div class="analyze-empty">\u274C Apply error: ${response.error || "Unknown error"}</div>`;
-      return;
-    }
-    const data = response.data;
-    const { successCount, failCount } = data;
-    let html = `
-    <div class="apply-summary ${failCount > 0 ? "has-errors" : "all-success"}">
-      \u2705 ${successCount} succeeded${failCount > 0 ? `, \u274C ${failCount} failed` : ""}
-    </div>
-  `;
-    if (((_a = data.renames) == null ? void 0 : _a.length) > 0) {
-      html += buildApplySection("\u270F\uFE0F Rename", data.renames.map(
-        (r) => buildApplyRow(r.success, r.oldName, r.success ? `\u2192 ${r.newName}` : r.error || "Error")
-      ).join(""));
-    }
-    if (((_b = data.safeAreas) == null ? void 0 : _b.length) > 0) {
-      html += buildApplySection("\u{1F4F1} Safe Area", data.safeAreas.map(
-        (s) => buildApplyRow(s.success, s.nodeName, s.success ? s.changes || "Updated" : s.error || "Error")
-      ).join(""));
-    }
-    resultsEl.innerHTML = html;
-    const applyBtn2 = document.getElementById("applyBtn");
-    applyBtn2.disabled = true;
-  }
-  function buildPreviewSection(title, rows) {
-    return `
-    <div class="preview-section">
-      <div class="preview-section-title">${title}</div>
-      ${rows}
-    </div>
-  `;
-  }
-  function buildPreviewRow(icon, name, detail, type, isError = false) {
-    return `
-    <div class="preview-row ${isError ? "preview-row-error" : ""}">
-      <span class="preview-icon">${icon}</span>
-      <div class="preview-info">
-        <span class="preview-name">${escapeHtml3(name)}</span>
-        <span class="preview-detail">${detail}${type ? ` <em>${escapeHtml3(type)}</em>` : ""}</span>
-      </div>
-    </div>
-  `;
-  }
-  function buildApplySection(title, rows) {
-    return `
-    <div class="preview-section">
-      <div class="preview-section-title">${title}</div>
-      ${rows}
-    </div>
-  `;
-  }
-  function buildApplyRow(success, name, detail) {
-    return `
-    <div class="preview-row ${success ? "" : "preview-row-error"}">
-      <span class="preview-icon">${success ? "\u2705" : "\u274C"}</span>
-      <div class="preview-info">
-        <span class="preview-name">${escapeHtml3(name)}</span>
-        <span class="preview-detail">${escapeHtml3(detail)}</span>
-      </div>
-    </div>
-  `;
-  }
-  function escapeHtml3(str) {
-    return String(str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
   // src/ui/components.ts
@@ -2192,10 +2025,10 @@
     const resultsEl = document.getElementById("variantsResults");
     if (!response.success) {
       const data2 = response.data;
-      const errList = ((_a = data2 == null ? void 0 : data2.errors) == null ? void 0 : _a.length) ? data2.errors.map((e) => `<div class="preview-row preview-row-error"><span class="preview-icon">\u274C</span><div class="preview-info"><span class="preview-detail">${escapeHtml4(e)}</span></div></div>`).join("") : "";
+      const errList = ((_a = data2 == null ? void 0 : data2.errors) == null ? void 0 : _a.length) ? data2.errors.map((e) => `<div class="preview-row preview-row-error"><span class="preview-icon">\u274C</span><div class="preview-info"><span class="preview-detail">${escapeHtml3(e)}</span></div></div>`).join("") : "";
       resultsEl.innerHTML = `
       <div class="apply-summary has-errors">
-        \u274C ${escapeHtml4(response.error || "Combine as Variants failed")}
+        \u274C ${escapeHtml3(response.error || "Combine as Variants failed")}
       </div>
       ${errList}
     `;
@@ -2205,18 +2038,18 @@
     const warningHtml = ((_b = data.errors) == null ? void 0 : _b.length) ? data.errors.map((e) => `
         <div class="preview-row preview-row-error">
           <span class="preview-icon">\u26A0\uFE0F</span>
-          <div class="preview-info"><span class="preview-detail">${escapeHtml4(e)}</span></div>
+          <div class="preview-info"><span class="preview-detail">${escapeHtml3(e)}</span></div>
         </div>`).join("") : "";
     resultsEl.innerHTML = `
     <div class="apply-summary all-success">
-      \u2705 Combined ${data.variantCount} variant${data.variantCount !== 1 ? "s" : ""} into <strong>${escapeHtml4(data.componentSetName)}</strong>
+      \u2705 Combined ${data.variantCount} variant${data.variantCount !== 1 ? "s" : ""} into <strong>${escapeHtml3(data.componentSetName)}</strong>
     </div>
     <div class="preview-section">
       <div class="preview-section-title">\u{1F500} Component Set Created</div>
       <div class="preview-row">
         <span class="preview-icon">\u{1F9E9}</span>
         <div class="preview-info">
-          <span class="preview-name">${escapeHtml4(data.componentSetName)}</span>
+          <span class="preview-name">${escapeHtml3(data.componentSetName)}</span>
           <span class="preview-detail">${data.variantCount} variants \xB7 instances placed back on canvas</span>
         </div>
       </div>
@@ -2267,6 +2100,19 @@
     resultsEl.querySelectorAll('input[type="checkbox"].group-check').forEach((cb) => {
       cb.addEventListener("change", updateConvertButton);
     });
+    resultsEl.querySelectorAll(".comp-group-header").forEach((header) => {
+      header.addEventListener("click", (e) => {
+        if (e.target.classList.contains("group-check")) return;
+        const card = header.closest(".comp-group-card");
+        if (!card) return;
+        const body = card.querySelector(".comp-group-body");
+        if (!body) return;
+        const isOpen = body.style.display !== "none";
+        body.style.display = isOpen ? "none" : "block";
+        const chevron = header.querySelector(".comp-chevron");
+        if (chevron) chevron.textContent = isOpen ? "\u25B6" : "\u25BC";
+      });
+    });
     resultsEl.querySelectorAll(".comp-node-focusable").forEach((row) => {
       row.addEventListener("click", () => {
         const nodeId = row.dataset.nodeId;
@@ -2274,6 +2120,12 @@
         parent.postMessage({ pluginMessage: { type: "focusNode", nodeId } }, "*");
       });
     });
+    const convertAllBtn = document.getElementById("compConvertAllBtn");
+    if (convertAllBtn) {
+      convertAllBtn.style.display = groups.length > 0 ? "inline-block" : "none";
+      convertAllBtn.disabled = false;
+      convertAllBtn.textContent = `\u{1F9E9} Convert All (${groups.length})`;
+    }
     updateConvertButton();
   }
   function buildGroupCard(group, idx) {
@@ -2285,22 +2137,22 @@
       const hasFillDiff = diff && diff.fillDiffs && diff.fillDiffs.length > 0;
       let diffHtml = "";
       if (hasTextDiff) {
-        const texts = diff.textDiffs.map((td) => `<em>${escapeHtml4(td.childName)}</em>: "${escapeHtml4(td.value)}"`).join(", ");
+        const texts = diff.textDiffs.map((td) => `<em>${escapeHtml3(td.childName)}</em>: "${escapeHtml3(td.value)}"`).join(", ");
         diffHtml += `<span class="comp-diff-hint">\u270F\uFE0F ${texts}</span>`;
       }
       if (hasFillDiff) {
-        const swatches = diff.fillDiffs.map((fd) => `<span class="comp-color-swatch" style="background:${escapeHtml4(fd.hex)}" title="${escapeHtml4(fd.hex)}"></span>`).join(" ");
-        diffHtml += `<span class="comp-diff-hint">\u{1F3A8} ${swatches} ${diff.fillDiffs.map((fd) => escapeHtml4(fd.hex)).join(", ")}</span>`;
+        const swatches = diff.fillDiffs.map((fd) => `<span class="comp-color-swatch" style="background:${escapeHtml3(fd.hex)}" title="${escapeHtml3(fd.hex)}"></span>`).join(" ");
+        diffHtml += `<span class="comp-diff-hint">\u{1F3A8} ${swatches} ${diff.fillDiffs.map((fd) => escapeHtml3(fd.hex)).join(", ")}</span>`;
       }
       const protectedBadge = n.insideProtected ? `<span class="badge badge-protected" title="Inside a Component or Instance \u2014 will be cloned out">\u{1F513} inside component</span>` : "";
       return `
         <div class="comp-node-row ${ni === 0 ? "comp-master-row" : ""} comp-node-focusable"
-             data-node-id="${escapeHtml4(n.id)}"
+             data-node-id="${escapeHtml3(n.id)}"
              title="Click to focus in Figma">
           <span class="comp-node-icon">${ni === 0 ? "\u2B50" : "\u{1F517}"}</span>
           <div class="comp-node-info">
-            <span class="comp-node-name">${escapeHtml4(n.name)} ${protectedBadge}</span>
-            <span class="comp-node-meta">${escapeHtml4(n.type)} \xB7 ${Math.round(n.width)}\xD7${Math.round(n.height)} \xB7 <em>${escapeHtml4(n.parentName)}</em></span>
+            <span class="comp-node-name">${escapeHtml3(n.name)} ${protectedBadge}</span>
+            <span class="comp-node-meta">${escapeHtml3(n.type)} \xB7 ${Math.round(n.width)}\xD7${Math.round(n.height)} \xB7 <em>${escapeHtml3(n.parentName)}</em></span>
             ${diffHtml}
           </div>
           <span class="comp-focus-hint">\u{1F3AF}</span>
@@ -2310,16 +2162,17 @@
     const diffBadge = hasDiffs ? `<span class="badge badge-warn" title="Text or fill differences detected \u2014 overrides will be applied">\u26A0\uFE0F diffs</span>` : "";
     return `
     <div class="comp-group-card" data-idx="${idx}">
-      <div class="comp-group-header">
+      <div class="comp-group-header" style="cursor:pointer;">
         <label class="comp-group-label">
           <input type="checkbox" class="group-check" data-idx="${idx}">
-          <span class="comp-group-title">${escapeHtml4(group.label)}</span>
+          <span class="comp-group-title">${escapeHtml3(group.label)}</span>
           <span class="badge">${group.nodes.length} nodes</span>
           ${diffBadge}
         </label>
-        <span class="comp-pages">${group.pages.map((p) => escapeHtml4(p)).join(", ")}</span>
+        <span class="comp-pages">${group.pages.map((p) => escapeHtml3(p)).join(", ")}</span>
+        <span class="comp-chevron chevron" style="margin-left:4px;">\u25B6</span>
       </div>
-      <div class="comp-group-body">
+      <div class="comp-group-body" style="display:none;">
         <div class="comp-legend">\u2B50 = master &nbsp;\xB7&nbsp; \u{1F517} = instance &nbsp;\xB7&nbsp; click row to focus${hasDiffs ? " &nbsp;\xB7&nbsp; \u26A0\uFE0F overrides will restore differing values" : ""}</div>
         ${nodeRows}
       </div>
@@ -2383,11 +2236,11 @@
       const overrideInfo = result.overridesApplied > 0 ? ` \xB7 ${result.overridesApplied} override${result.overridesApplied !== 1 ? "s" : ""} applied` : "";
       html += `
       <div class="preview-section">
-        <div class="preview-section-title">${statusIcon} ${escapeHtml4(result.label)}</div>
+        <div class="preview-section-title">${statusIcon} ${escapeHtml3(result.label)}</div>
         <div class="preview-row">
           <span class="preview-icon">\u2B50</span>
           <div class="preview-info">
-            <span class="preview-name">Master: ${escapeHtml4(result.componentName)}</span>
+            <span class="preview-name">Master: ${escapeHtml3(result.componentName)}</span>
             <span class="preview-detail">${result.instanceCount} instance${result.instanceCount !== 1 ? "s" : ""} created${overrideInfo}</span>
           </div>
         </div>
@@ -2395,7 +2248,7 @@
           <div class="preview-row preview-row-error">
             <span class="preview-icon">\u274C</span>
             <div class="preview-info">
-              <span class="preview-detail">${escapeHtml4(e)}</span>
+              <span class="preview-detail">${escapeHtml3(e)}</span>
             </div>
           </div>
         `).join("")}
@@ -2407,7 +2260,14 @@
     document.getElementById("compGroupCount").textContent = "-";
     document.getElementById("compNodeCount").textContent = "-";
   }
-  function escapeHtml4(str) {
+  function convertAllComponents() {
+    document.querySelectorAll('input[type="checkbox"].group-check').forEach((cb) => {
+      cb.checked = true;
+    });
+    updateConvertButton();
+    runConvert();
+  }
+  function escapeHtml3(str) {
     return String(str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
@@ -2420,10 +2280,10 @@
   window.saveLayoutConfig = saveLayoutConfig;
   window.resetLayoutConfig = resetLayoutConfig;
   window.fixAllLayoutIssues = fixAllLayoutIssues;
-  window.previewRulesUI = previewRulesUI;
-  window.applyRulesUI = applyRulesUI;
+  window.fixAllAnalyzeIssues = fixAllAnalyzeIssues;
   window.runComponentScan = runComponentScan;
   window.runConvert = runConvert;
+  window.convertAllComponents = convertAllComponents;
   window.runCombineAsVariants = runCombineAsVariants;
   var layoutTabInitialized = false;
   function switchTab(tabName) {
@@ -2443,10 +2303,6 @@
     }
   }
   window.switchTab = switchTab;
-  var rulesInput = document.getElementById("rulesFileInput");
-  if (rulesInput) {
-    rulesInput.addEventListener("change", handleRulesUpload);
-  }
   window.onmessage = (event) => {
     const response = event.data.pluginMessage;
     if (!response) return;
@@ -2472,11 +2328,11 @@
       case "fixAllLayoutIssuesResult":
         handleFixAllLayoutIssuesResult(response);
         break;
-      case "previewResult":
-        handlePreviewResult(response);
+      case "fixAnalyzeIssueResult":
+        handleFixAnalyzeIssueResult(response);
         break;
-      case "applyResult":
-        handleApplyResult(response);
+      case "fixAllAnalyzeIssuesResult":
+        handleFixAllAnalyzeIssuesResult(response);
         break;
       case "scanComponentsResult":
         handleScanResult(response);
